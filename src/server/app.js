@@ -15,7 +15,6 @@ import helmet from 'helmet';
 import i18n from 'i18n-express';
 import cookieParser from 'cookie-parser';
 import config from './config';
-import routes from './routes';
 
 const SIXTY_DAYS_IN_SECONDS = 5184000;
 
@@ -120,7 +119,7 @@ export default async () => {
   });
   app.use(awsServerlessExpressMiddleware.eventContext());
   // Load routes module dynamically to allow config to initialise
-  app.use('/', routes);
+  app.use('/', require('./routes').default);
 
   app.use(errorhandler());
   return app;

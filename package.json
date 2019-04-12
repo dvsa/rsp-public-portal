@@ -8,10 +8,9 @@
   "main": "build/handler.js",
   "scripts": {
     "bundle": "npm run clean && npm run build-prod && webpack",
-    "build": "npm run build-server && npm run build-frontend && npm run build-handler",
+    "build": "npm run build-server && npm run build-frontend",
     "build-server": "babel ./src/server --out-dir ./build/server --ignore ./src/server/public/ --copy-files",
     "build-frontend": "gulp build-production && webpack --config ./dvsa-frontend-webpack/webpack.config.development.babel.js",
-    "build-handler": "babel ./src/handler.js --out-dir ./build  --copy-files",
     "watch-scss": "gulp watch-scss",
     "build-prod": "cross-env NODE_ENV=production concurrently \"npm run build-server\" \"npm run build-frontend\"",
     "start-server": "npm run build-server && node build/server/app.local.js",

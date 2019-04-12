@@ -39,6 +39,7 @@
     "aws-sdk": "^2.290.0",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
+    "babel-plugin-add-module-exports": "^1.0.0",
     "blissfuljs": "1.0.3",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.1.1",

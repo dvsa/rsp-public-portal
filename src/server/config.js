@@ -1,6 +1,7 @@
 /* eslint-disable no-multi-spaces */
 import dotenv from 'dotenv';
 import path from 'path';
+/* eslint-disable-next-line import/no-extraneous-dependencies */
 import { SecretsManager } from 'aws-sdk';
 
 dotenv.config();

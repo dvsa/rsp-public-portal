@@ -8,7 +8,8 @@
         "chai-friendly/no-unused-expressions": 2,
         "no-console": "off",
         "import/no-named-as-default": "off",
-        "import/no-named-as-default-member": "off"
+        "import/no-named-as-default-member": "off",
+        "import/prefer-default-export": "off"
     },
     "plugins": [
         "chai-friendly",

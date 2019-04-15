@@ -48,5 +48,5 @@ export default async (event, context) => {
   }
   console.log('path modified');
   console.log(event.path);
-  return awsServerlessExpress.proxy(lambdaExpressServer, event, context, 'PROMISE').promise();
+  return awsServerlessExpress.proxy(lambdaExpressServer, event, context, 'PROMISE').promise;
 };

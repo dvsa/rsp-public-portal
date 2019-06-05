@@ -18,7 +18,6 @@
     {% call components.columnTwoThirds() %}
       {% call components.form(action=redirectUrl, method='POST')  %}
         {{ components.heading(text=t.payment_pending_page.title, tag='h1', size='xlarge') }}
-        {# {{ components.heading(text=t.penalty_details_page.intro_part_paid, tag='h2', size='medium') }} #}
         <div class="pending-payment-info-container">
           {{ components.notice(text=t.payment_pending_page.pending_notice) }}
         </div>

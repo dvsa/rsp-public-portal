@@ -109,7 +109,6 @@ export const warnPendingPayment = [
     try {
       const entityData = await service[getMethod](paymentCode);
       const { enabled, location } = entityData;
-      console.log(entityData);
       if (enabled || typeof enabled === 'undefined') {
         // Detailed location stored in single penalty for multi-penalties
         const locationText = isSinglePenalty ?

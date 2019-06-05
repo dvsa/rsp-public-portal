@@ -2,6 +2,7 @@ import awsServerlessExpress from 'aws-serverless-express';
 import app from '../server/app';
 import config from '../server/config';
 import modifyPath from '../server/utils/modifyPath';
+import { logInfo } from '../server/utils/logger';
 
 // NOTE: If you get ERR_CONTENT_DECODING_FAILED in your browser, this is likely
 // due to a compressed response (e.g. gzip) which has not been handled correctly
@@ -35,18 +36,13 @@ function isProd() {
 let lambdaExpressServer;
 export default async (event, context) => {
   if (!lambdaExpressServer) {
-    console.log('Creating new express server');
+    logInfo('ServerInit', 'Creating new express server');
     const expressApp = await app();
     lambdaExpressServer = awsServerlessExpress.createServer(expressApp, null, binaryMimeTypes);
   }
-  console.log('NODE_ENV');
-  console.log(config.env());
-  console.log('event.path');
-  console.log(event.path);
   if (isProd()) {
     event.path = modifyPath(event.path); // eslint-disable-line
   }
-  console.log('path modified');
-  console.log(event.path);
+  logInfo('VisitedPage', { path: event.path });
   return awsServerlessExpress.proxy(lambdaExpressServer, event, context, 'PROMISE').promise;
 };

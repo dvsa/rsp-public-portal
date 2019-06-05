@@ -33,7 +33,10 @@ const redirectForSinglePenalty = (req, res, penaltyDetails, redirectHost) => {
     redirectUrl,
     penaltyDetails.reference,
   ).then((response) => {
-    logInfo('RedirectFromSinglePenaltyResponse', response.data);
+    logInfo('RedirectPaymentPage', {
+      paymentCode,
+      redirectUrl: response.data.gateway_url,
+    });
     res.redirect(response.data.gateway_url);
   }).catch(() => {
     res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}`);
@@ -53,8 +56,19 @@ const redirectForPenaltyGroup = (req, res, penaltyGroupDetails, penaltyType, red
     penaltyType,
     penaltyOverviewsForType,
     redirectUrl,
-  ).then(response => res.redirect(response.data.gateway_url))
+  ).then((response) => {
+    logInfo('RedirectPaymentPage', {
+      paymentCode: penaltyGroupDetails.paymentCode,
+      penaltyType,
+      redirectUrl: response.data.gateway_url,
+    });
+    return res.redirect(response.data.gateway_url);
+  })
     .catch(() => {
+      logError('RedirectPaymentPageError', {
+        paymentCode: penaltyGroupDetails.paymentCode,
+        penaltyType,
+      });
       res.redirect(`${config.urlRoot()}/payment-code/${penaltyGroupDetails.paymentCode}`);
     });
 };
@@ -117,8 +131,11 @@ export const redirectToPaymentPage = async (req, res) => {
     entityForCode = await getPenaltyOrGroupDetails(req);
 
     if (entityForCode.status === 'PAID' || entityForCode.paymentStatus === 'PAID') {
-      const url = `${config.urlRoot()}/payment-code/${entityForCode.paymentCode}`;
-      return res.redirect(url);
+      const redirectUrl = `${config.urlRoot()}/payment-code/${entityForCode.paymentCode}`;
+      logInfo('RedirectAlreadyPaid', {
+        paymentCode: entityForCode.paymentCode,
+      });
+      return res.redirect(redirectUrl);
     }
 
     if (entityForCode.isPenaltyGroup) {
@@ -151,15 +168,20 @@ export const redirectToPaymentPage = async (req, res) => {
     }
     return redirectForSinglePenalty(req, res, entityForCode, config.redirectUrl());
   } catch (err) {
+    logError('RedirectPaymentPageError', {
+      paymentCode: req.params.payment_code,
+      penaltyDocumentId: req.params.penalty_id,
+      error: err.message,
+    });
     return res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
   }
 };
 
 export const confirmPayment = async (req, res) => {
-  console.log('confirming payment');
   const receiptReference = req.query.receipt_reference;
   const paymentCode = req.params.payment_code;
   let penaltyDetails;
+  const logMessage = { receiptReference, paymentCode };
 
   try {
     penaltyDetails = await getPenaltyOrGroupDetails(req);
@@ -169,6 +191,7 @@ export const confirmPayment = async (req, res) => {
       penaltyDetails.type,
     ).then(async (response) => {
       if (response.data.code === 801) {
+        logInfo('PaymentConfirmed', logMessage);
         // Payment successful
         const details = {
           PaymentCode: penaltyDetails.paymentCode,
@@ -184,34 +207,49 @@ export const confirmPayment = async (req, res) => {
           },
         };
         await paymentService.makePayment(details)
-          .then(() => res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}/receipt`))
-          .catch(() => {
+          .then(() => {
+            logInfo('RecordPaymentSuccess', logMessage);
+            res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}/receipt`);
+          })
+          .catch((error) => {
+            logError('RecordPaymentError', { ...logMessage, error: error.message });
             res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}`);
           });
       } else {
         if (response.data.code === 807) {
           logInfo('UserCancelledPayment', {
+            ...logMessage,
             statusCode: 807,
-            receiptReference,
-            paymentCode,
           });
         } else {
-          logError('ConfirmPaymentNon801', response.data);
+          logError('ConfirmPaymentNon801', {
+            ...logMessage,
+            responseData: response.data,
+          });
         }
         res.render('payment/failedPayment', { paymentCode });
       }
-    }).catch(() => {
+    }).catch((error) => {
+      logError('CPMSConfirmPaymentError', {
+        ...logMessage,
+        error: error.message,
+      });
       res.render('payment/failedPayment', { paymentCode });
     });
   } catch (error) {
+    logError('ConfirmPaymentPageError', {
+      ...logMessage,
+      error: error.message,
+    });
     res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
   }
 };
 
 export const confirmGroupPayment = async (req, res) => {
   const paymentCode = req.params.payment_code;
+  const receiptReference = req.query.receipt_reference;
+  const logMessage = { paymentCode, receiptReference };
   try {
-    const receiptReference = req.query.receipt_reference;
     const { type } = req.params;
     const confirmPromise = cpmsService.confirmPayment(receiptReference, type);
     const groupDetailsPromise = getPenaltyOrGroupDetails(req);
@@ -220,6 +258,7 @@ export const confirmGroupPayment = async (req, res) => {
     const cpmsCode = confirmResp.data.code;
 
     if (cpmsCode === 801) {
+      logInfo('CPMSConfirmSuccess', logMessage);
       const payload = buildGroupPaymentPayload(
         paymentCode,
         receiptReference,
@@ -228,6 +267,7 @@ export const confirmGroupPayment = async (req, res) => {
         confirmResp,
       );
       await paymentService.recordGroupPayment(payload);
+      logInfo('RecordGroupPaymentSuccess', logMessage);
       res.redirect(`${config.urlRoot()}/payment-code/${paymentCode}/${type}/receipt`);
     } else if (cpmsCode === 807) {
       logInfo('UserCancelledPayment', {
@@ -237,10 +277,14 @@ export const confirmGroupPayment = async (req, res) => {
       });
       res.redirect(`${config.urlRoot()}/payment-code/${paymentCode}`);
     } else {
-      logError('ConfirmPaymentNon801Or807', confirmResp.data);
+      logError('ConfirmGroupPaymentUnhandlerCode', confirmResp.data);
       res.render('payment/failedPayment', { paymentCode });
     }
   } catch (error) {
+    logError('ConfirmGroupPaymentPageError', {
+      ...logMessage,
+      error: error.message,
+    });
     res.render('payment/failedPayment', { paymentCode });
   }
 };

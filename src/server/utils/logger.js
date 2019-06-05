@@ -5,19 +5,19 @@ export const ServiceName = {
 };
 
 export function logInfo(logName, message) {
-  console.log({
-    logLevel: 'INFO',
-    message,
+  console.log(JSON.stringify({
     logName,
-  });
+    message,
+    logLevel: 'INFO',
+  }, null, 2));
 }
 
 export function logError(logName, message) {
-  console.error({
-    logLevel: 'ERROR',
-    message,
+  console.error(JSON.stringify({
     logName,
-  });
+    message,
+    logLevel: 'ERROR',
+  }, null, 2));
 }
 
 
@@ -47,15 +47,15 @@ export function logAxiosError(logName, serviceName, error, details) {
   const message = errorMessageFromAxiosError(error);
 
   const log = {
-    logLevel: 'ERROR',
-    requestErrorMessage: message,
-    serviceName,
     logName,
+    serviceName,
+    requestErrorMessage: message,
+    logLevel: 'ERROR',
   };
 
   if (details !== undefined) {
     log.details = details;
   }
 
-  console.error(log);
+  console.error(JSON.stringify(log, null, 2));
 }

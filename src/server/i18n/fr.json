@@ -167,7 +167,7 @@
 	},
 	"payment_pending_page": {
 		"title": "Attention",
-		"pending_notice": "Un paiement se trouve déjà en attente pour ce code de pénalité et ce bouton est temporairement indisponible. Veuillez patienter jusqu’à 60 minutes pour que le premier paiement soit traité ou vous risquez d’être facturés deux fois.",
+		"pending_notice": "Un paiement se trouve déjà en attente pour ce code de pénalité et ce bouton est temporairement indisponible. Veuillez patienter jusqu’à MINUTES minutes pour que le premier paiement soit traité ou vous risquez d’être facturés deux fois.",
 		"go_back": "Retourner",
 		"pay_button": "Continuer"
 	}

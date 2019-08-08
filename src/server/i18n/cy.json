@@ -167,7 +167,7 @@
   },
   "payment_pending_page": {
     "title": "Rhybudd",
-    "pending_notice": "Mae taliad yn yr arfaeth ar gyfer y cod talu hwn ac nid yw'r botwm hwn ar gael ar hyn o bryd. Arhoswch hyd at 60 munud i’r taliad gael ei brosesu neu efallai y codir tâl arnoch ddwywaith.",
+    "pending_notice": "Mae taliad yn yr arfaeth ar gyfer y cod talu hwn ac nid yw'r botwm hwn ar gael ar hyn o bryd. Arhoswch hyd at MINUTES munud i’r taliad gael ei brosesu neu efallai y codir tâl arnoch ddwywaith.",
     "go_back": "Dychwelyd",
     "pay_button": "Parhau"
   }

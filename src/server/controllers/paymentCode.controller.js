@@ -88,10 +88,12 @@ export const getPaymentDetails = [
           // Only check for single penalty pending here as pending message
           // is shown on the details page for groups
           const paymentPending = isPaymentPending(entityData.paymentStartTime);
+          const pendingMinutes = Math.round(config.pendingPaymentTimeMilliseconds() / 60000);
           res.render(`payment/${template}`, {
             ...entityData,
             location: locationText,
             paymentPending,
+            pendingMinutes,
           });
         } else {
           res.redirect('../payment-code?invalidPaymentCode');
@@ -157,13 +159,14 @@ export const getMultiPenaltyPaymentSummary = [
       const paymentStatus = penaltiesForType.penaltyDetails.every(p => p.status === 'PAID') ? 'PAID' : 'UNPAID';
       const penaltyGroup = await penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
       const paymentPending = isGroupPaymentPending(penaltyGroup, type);
+      const pendingMinutes = Math.round(config.pendingPaymentTimeMilliseconds() / 60000);
       if (paymentPending) {
         logInfo('PaymentPending', {
           penaltyGroup,
         });
       }
       res.render('payment/multiPaymentSummary', {
-        paymentCode, paymentStatus, ...penaltiesForType, paymentPending,
+        paymentCode, paymentStatus, ...penaltiesForType, paymentPending, pendingMinutes,
       });
     } catch (err) {
       res.redirect('../payment-code?invalidPaymentCode');

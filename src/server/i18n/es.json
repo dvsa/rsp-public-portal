@@ -167,7 +167,7 @@
   },
   "payment_pending_page": {
     "title": "Advertencia",
-    "pending_notice": "El pago relativo a este código de pago está pendiente, y este botón se encuentra indisponible temporalmente. Por favor, espere 60 minutos a que el pago sea procesado o puede que se le cobre dos veces.",
+    "pending_notice": "El pago relativo a este código de pago está pendiente, y este botón se encuentra indisponible temporalmente. Por favor, espere MINUTES minutos a que el pago sea procesado o puede que se le cobre dos veces.",
     "go_back": "Regresa",
     "pay_button": "Continuar"
   }

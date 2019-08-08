@@ -94,7 +94,7 @@
         {% if paid == false %}
           {% if paymentPending %}
             <p>
-              {{ components.notice(text=t.payment_pending_page.pending_notice) }}
+              {{ components.notice(text=t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes)) }}
             </p>
           {% else %}
             <p>

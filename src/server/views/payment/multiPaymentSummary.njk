@@ -59,7 +59,7 @@
           <div class="panel panel-border-wide">{{ t.penalty_details_page.gdpr_notification }}</div>
           {% if paymentPending %}
             <p>
-              {{ components.notice(text=t.payment_pending_page.pending_notice) }}
+              {{ components.notice(text=t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes)) }}
             </p>
           {% endif %}
           <br />

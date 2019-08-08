@@ -167,7 +167,7 @@
   },
   "payment_pending_page": {
     "title": "Active payment session",
-    "pending_notice": "A payment is pending for this payment code and this button is temporarily unavailable. Please wait up to 60 minutes for the payment to be processed or you may be charged twice.",
+    "pending_notice": "A payment is pending for this payment code and this button is temporarily unavailable. Please wait up to MINUTES minutes for the payment to be processed or you may be charged twice.",
     "go_back": "Go back",
     "pay_button": "Continue to payment"
   }

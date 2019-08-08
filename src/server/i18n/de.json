@@ -167,7 +167,7 @@
   },
   "payment_pending_page": {
     "title": "Warnung",
-    "pending_notice": "Unter diesem Zahlungscode wird zur Zeit eine Zahlung verarbeitet und diese Schaltfläche ist vorübergehend außer Betrieb. Bitte warten Sie 60 Minuten, bis die Zahlung durchgeht, ansonsten könnte es zu einer doppelten Zahlung kommen.",
+    "pending_notice": "Unter diesem Zahlungscode wird zur Zeit eine Zahlung verarbeitet und diese Schaltfläche ist vorübergehend außer Betrieb. Bitte warten Sie MINUTES Minuten, bis die Zahlung durchgeht, ansonsten könnte es zu einer doppelten Zahlung kommen.",
     "go_back": "Geh zurück",
     "pay_button": "Fortsetzen"
   }

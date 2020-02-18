@@ -11,7 +11,7 @@ function displaysError() {
 
 context('enter payment code page', () => {
   beforeEach(() => {
-    cy.visit('payment-code');
+    cy.visit('http://localhost:3000/payment-code');
   });
 
   it('display the title', () => {

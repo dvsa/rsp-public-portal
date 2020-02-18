@@ -1,0 +1,24 @@
+<!-- cookie-banner -->
+{% block content %}
+  <div id="global-cookie-banner" role="region" aria-label="cookie banner" class="hidden">
+    <div class="cookie-banner">
+      {% call components.gridRow() %}
+        {% call components.columnTwoThirds() %}
+          <div class="cookie-banner__message">
+            <span class="cookie-banner__heading">{{ t.cookie_banner.title }}</span>
+            {{ components.paragraph(text=t.cookie_banner.message) }}
+          </div>
+          <div class="cookie-banner__buttons">
+            {% call components.columnHalf() %}
+              <button type="submit" class="button button--submit">{{ t.cookie_banner.button_accept }}</button>
+            {%- endcall %}
+            {% call components.columnHalf() %}
+              {{ components.button(text=t.cookie_banner.button_preferences, url="/cookie-preferences") }}
+            {%- endcall %}
+          </div>
+        {%- endcall %}
+      {%- endcall %}
+    </div>
+  </div>
+{% endblock %}
+<!-- /cookie-banner -->

@@ -14,6 +14,12 @@
     "payment": "Payment",
     "active_session": "Active session warning"
   },
+  "cookie_banner": {
+    "title": "Tell us whether you accept cookies",
+    "message": "We use <a href='https://www.gov.uk/help/cookies'>cookies to collect information</a> about how you use GOV.UK. We use this information to make the website work as well as possible and improve government services.",
+    "button_accept": "Accept all cookies",
+    "button_preferences": "Set cookie preferences"
+  },
   "languages": {
     "english": "English",
     "french": "French",
@@ -170,5 +176,28 @@
     "pending_notice": "A payment is pending for this payment code and this button is temporarily unavailable. Please wait up to MINUTES minutes for the payment to be processed or you may be charged twice.",
     "go_back": "Go back",
     "pay_button": "Continue to payment"
+  },
+  "cookie_preferences_page": {
+    "title": "Cookies on GOV.UK",
+    "cookies_text_definition": "Cookies are files saved on your phone, tablet or computer when you visit a website.",
+    "cookies_text_use": "We use cookies to store information about how you use the GOV.UK website, such as the pages you visit.",
+    "cookie_settings_title": "Cookie settings",
+    "cookie_settings_text": "We use 1 type of cookie. You can choose which cookies you're happy for us to use.",
+    "analytics_title": "Cookies that measure website use",
+    "analytics_text": "We use Google Analytics to measure how you use the website so we can improve it based on user needs. Google Analytics sets cookies that store anonymised information about:",
+    "analytics_text_list_one": "how you got to the site",
+    "analytics_text_list_two": "the pages you visit on GOV.UK and government digital services, and how long you spend on each page",
+    "analytics_text_list_three": "what you click on while you're visiting the site",
+    "analytics_privacy": "We do not allow Google to use or share the data about how you use this site.",
+    "essential_cookies_title": "Strictly necessary cookies",
+    "essential_cookies_text": "These essential cookies do things like remember your progress through a form (for example a licence application)",
+    "essential_cookies_info": "They always need to be on.",
+    "essential_find_out_more": "Find out more about cookies on GOV.UK",
+    "cookie_radio_on": "on",
+    "cookie_radio_off": "off",
+    "submit": "Save changes",
+    "confirmation_title": "Your cookie settings were saved",
+    "confirmation_text": "Government services may set additional cookies and, if so, will have their own cookie policy and banner.",
+    "confirmation_link": "Go back to the page you were looking at"
   }
 }

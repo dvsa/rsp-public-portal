@@ -1,6 +1,6 @@
 {
   "name": "dvsa-rsp-web-public",
-  "version": "1.0.0",
+  "version": "1.17.4",
   "description": "DVSA Public Payment Portal For RSP",
   "engines": {
     "node": "8.10"

@@ -7,7 +7,7 @@ export const index = (req, res) => {
     return res.render('cookies/index');
   }
   if (language === 'en') {
-    return res.redirect(`${config.urlRoot()}/cookie-preferences`);
+    return res.render('cookies/index');
   }
   return res.render('cookies/index');
 };

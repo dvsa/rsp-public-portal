@@ -12,11 +12,13 @@
     "receipt": "Receipt",
     "penalty_details": "Penalty details",
     "payment": "Payment",
-    "active_session": "Active session warning"
+    "active_session": "Active session warning",
+    "cookie_preferences": "Cookie preferences",
+    "cookie_details": "Cookie details"
   },
   "cookie_banner": {
     "title": "Tell us whether you accept cookies",
-    "message": "We use <a href='https://www.gov.uk/help/cookies'>cookies to collect information</a> about how you use GOV.UK. We use this information to make the website work as well as possible and improve government services.",
+    "message": "We use <a href='https://www.gov.uk/help/cookies'>cookies to collect information</a> about how you use the Roadside Payments service. We use this information to make the website work as well as possible and improve government services.",
     "button_accept": "Accept all cookies",
     "button_preferences": "Set cookie preferences"
   },
@@ -178,11 +180,11 @@
     "pay_button": "Continue to payment"
   },
   "cookie_preferences_page": {
-    "title": "Cookies on GOV.UK",
+    "title": "Cookies on Roadside Payments service",
     "cookies_text_definition": "Cookies are files saved on your phone, tablet or computer when you visit a website.",
-    "cookies_text_use": "We use cookies to store information about how you use the GOV.UK website, such as the pages you visit.",
+    "cookies_text_use": "We use cookies to store information about how you use the Roadside Payments service, such as the pages you visit.",
     "cookie_settings_title": "Cookie settings",
-    "cookie_settings_text": "We use 1 type of cookie. You can choose which cookies you're happy for us to use.",
+    "cookie_settings_text": "We use 2 types of cookie. You can choose which cookies you're happy for us to use.",
     "analytics_title": "Cookies that measure website use",
     "analytics_text": "We use Google Analytics to measure how you use the website so we can improve it based on user needs. Google Analytics sets cookies that store anonymised information about:",
     "analytics_text_list_one": "how you got to the site",

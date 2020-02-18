@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import * as mainController from './controllers/main.controller';
+import * as cookiePreferencesController from './controllers/cookiePreferences.controller';
 import * as paymentCodeController from './controllers/paymentCode.controller';
 import * as paymentController from './controllers/payment.controller';
 import { multiPaymentReceipt, singlePaymentReceipt } from './controllers/receipt.controller';
@@ -11,6 +12,9 @@ router.get('/robots.txt', mainController.robots);
 
 // Landing Page
 router.get('/', mainController.index);
+
+// Cookie Settings
+router.get('/cookie-preferences', cookiePreferencesController.index);
 
 // Payment Code
 router.get('/payment-code', paymentCodeController.index);

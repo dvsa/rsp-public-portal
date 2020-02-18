@@ -1,0 +1,67 @@
+{% extends 'layouts/default.layout.njk' %}
+
+{% set pageTitle = t.site_title %}
+{% set pageBreadcrumbItems = [
+  {
+    text: t.breadcrumbs.home,
+    url: '/'
+  }, {
+    text: t.breadcrumbs.payment_code
+  }
+] %}
+
+{% block content %}
+
+  {% call components.gridRow() %}
+    {% call components.columnTwoThirds() %}
+
+      <div id="cookie-preferences-confirmation" class="cookie-preferences-confirmation hidden">
+        <section aria-label="Notice" aria-live="polite" role="region">
+          {{ components.heading(text=t.cookie_preferences_page.confirmation_title, tag='h2') }}
+          <p>{{ t.cookie_preferences_page.confirmation_text }}</p>
+          <a id="confirmation-go-back" href="/">
+            {{ t.cookie_preferences_page.confirmation_link }}
+          </a>
+        </section>
+      </div>
+
+      <div class="cookie-preferences">
+        {{ components.heading(text=t.cookie_preferences_page.title, tag='h1', size='xlarge') }}
+        <p>{{ t.cookie_preferences_page.cookies_text_definition }}
+        <p>{{ t.cookie_preferences_page.cookies_text_use }}
+
+        {{ components.heading(text=t.cookie_preferences_page.cookie_settings_title, tag='h2', size='large') }}
+        <p>{{ t.cookie_preferences_page.cookie_settings_text }}
+
+        <form id="cookie-preferences-form">
+          {% call components.formGroup(label=t.cookie_preferences_page.analytics_title) %}
+
+            <p>{{ t.cookie_preferences_page.analytics_text }}</p>
+
+            <ul class="list-bullet">
+              <li>{{ t.cookie_preferences_page.analytics_text_list_one }}</li>
+              <li>{{ t.cookie_preferences_page.analytics_text_list_two }}</li>
+              <li>{{ t.cookie_preferences_page.analytics_text_list_three }}</li>
+            </ul>
+
+            <br />
+
+            <p>{{ t.cookie_preferences_page.analytics_privacy }}</p>
+
+            {{ components.radio(text=t.cookie_preferences_page.cookie_radio_on, value='on', id='analytics-on', name='analytics') }}
+            {{ components.radio(text=t.cookie_preferences_page.cookie_radio_off, value='off', id='analytics-off', name='analytics', checked='true') }}
+
+          {%- endcall %}
+
+          {{ components.heading(text=t.cookie_preferences_page.essential_cookies_title, tag='h3', size='large') }}
+          <p>{{ t.cookie_preferences_page.essential_cookies_text }}</p>
+          <p>{{ t.cookie_preferences_page.essential_cookies_info }}</p>
+          <p><a href="https://www.gov.uk/help/cookie-details" target="_blank">{{ t.cookie_preferences_page.essential_find_out_more }}</a></p>
+          <button type="submit" class="button button--submit">{{ t.cookie_preferences_page.submit }}</button>
+
+        </form>
+      </div>
+
+    {%- endcall %}
+  {%- endcall %}
+{% endblock %}

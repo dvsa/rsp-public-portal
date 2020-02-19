@@ -7,7 +7,11 @@ context('Cookie Preferences page', () => {
     describe('Change cookie preferences', () => {
 
         it('displays the Cookie Preferences title', () => {
-            cy.contains('Cookies on GOV.UK');
+            cy.contains('Cookies on Roadside Payments service');
+        });
+
+        it('displays the Cookie Preferences breadcrumb', () => {
+            cy.contains('Cookie preferences');
         });
 
         it('sets optional cookies to off by default', () => {
@@ -49,5 +53,26 @@ context('Cookie Preferences page', () => {
             buttonSavePrefs.click();
             cy.get('#cookie-preferences-confirmation').should('not.have.class', 'hidden');
         });
+
+        it('should navigate to the cookie details page', () => {
+            cy.contains('Find out more about cookies on Roadside Payments').click();
+            cy.url().should('include', '/cookie-details');
+        });
     });
+});
+
+context('Cookie Details page', () => {
+
+    beforeEach(() => {
+        cy.visit('http://localhost:3000/cookie-details');
+    });
+
+    it('displays the Cookie Details breadcrumb', () => {
+        cy.contains('Cookie details');
+    });
+
+    it('should navigate to the cookie preferences page', () => {
+        cy.contains('change which cookies you’re happy for us to use.').click();
+        cy.url().should('include', '/cookie-preferences');
+    })
 });

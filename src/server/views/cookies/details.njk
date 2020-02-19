@@ -46,43 +46,18 @@
           </thead>
           <tbody>
             <tr>
-              <td>_ga</td>
-              <td>These help us count how many people visit Roadside Payments by tracking if you’ve visited before</td>
-              <td>2 years</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_name_one }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_purpose_one }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_expires_one }}</td>
             </tr>
-            <tr>
-              <td>_gid</td>
-              <td>These help us count how many people visit Roadside Payments by tracking if you’ve visited before</td>
-              <td>24 hours</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_name_two }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_purpose_two }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_expires_two }}</td>
             </tr>
-          </tbody>
-        </table>
-
-        {{ components.heading(text=t.cookie_details_page.remember_title, tag='h2', size='medium') }}
-        <p>{{ t.cookie_details_page.remember_text }}
-
-
-        {{ components.heading(text=t.cookie_details_page.surveys_title, tag='h3', size='small') }}
-        <p>{{ t.cookie_details_page.surveys_text }}
-
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
             </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>govuk_taken[NameOfSurvey]</td>
-              <td>Saves a message to remember if you’ve taken the survey or dismissed it</td>
-              <td>4 months</td>
-            </tr>
-            <tr>
-              <td>govuk_surveySeen[NameOfSurvey]</td>
-              <td>Saves a message to remember how many times you’ve seen the survey</td>
-              <td>2 years</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_name_three }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_purpose_three }}</td>
+              <td>{{ t.cookie_details_page.analytics_cookie_expires_three }}</td>
             </tr>
           </tbody>
         </table>
@@ -102,9 +77,9 @@
           </thead>
           <tbody>
             <tr>
-              <td>locale</td>
-              <td>This lets us know which language you have selected so we can automatically display pages in your chosen language throughout your journey.</td>
-              <td>When you close your browser</td>
+              <td>{{ t.cookie_details_page.language_cookie_name_one }}</td>
+              <td>{{ t.cookie_details_page.language_cookie_purpose_one }}</td>
+              <td>{{ t.cookie_details_page.language_cookie_expires_one }}</td>
             </tr>
           </tbody>
         </table>
@@ -122,9 +97,9 @@
           </thead>
           <tbody>
             <tr>
-              <td>cm-user-preferences</td>
-              <td>Saves your cookie consent preferences</td>
-              <td>1 year</td>
+              <td>{{ t.cookie_details_page.cookie_preferences_cookie_name_one }}</td>
+              <td>{{ t.cookie_details_page.cookie_preferences_cookie_purpose_one }}</td>
+              <td>{{ t.cookie_details_page.cookie_preferences_cookie_expires_one }}</td>
             </tr>
           </tbody>
         </table>

@@ -48,8 +48,12 @@
 
             <p>{{ t.cookie_preferences_page.analytics_privacy }}</p>
 
-            {{ components.radio(text=t.cookie_preferences_page.cookie_radio_on, value='on', id='analytics-on', name='analytics') }}
-            {{ components.radio(text=t.cookie_preferences_page.cookie_radio_off, value='off', id='analytics-off', name='analytics', checked='true') }}
+            <div class="radio-item">
+              {{ components.radio(text=t.cookie_preferences_page.cookie_radio_on, value='on', id='analytics-on', name='analytics') }}
+            </div>
+            <div class="radio-item">
+              {{ components.radio(text=t.cookie_preferences_page.cookie_radio_off, value='off', id='analytics-off', name='analytics', checked='true') }}
+            </div>
 
           {%- endcall %}
 

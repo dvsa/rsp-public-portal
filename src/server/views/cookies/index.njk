@@ -27,11 +27,11 @@
 
       <div class="cookie-preferences">
         {{ components.heading(text=t.cookie_preferences_page.title, tag='h1', size='xlarge') }}
-        <p>{{ t.cookie_preferences_page.cookies_text_definition }}
-        <p>{{ t.cookie_preferences_page.cookies_text_use }}
+        <p>{{ t.cookie_preferences_page.cookies_text_definition }}</p>
+        <p>{{ t.cookie_preferences_page.cookies_text_use }}</p>
 
         {{ components.heading(text=t.cookie_preferences_page.cookie_settings_title, tag='h2', size='large') }}
-        <p>{{ t.cookie_preferences_page.cookie_settings_text }}
+        <p>{{ t.cookie_preferences_page.cookie_settings_text }}</p>
 
         <form id="cookie-preferences-form">
           {% call components.formGroup(label=t.cookie_preferences_page.analytics_title) %}

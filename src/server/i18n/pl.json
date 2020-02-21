@@ -32,7 +32,7 @@
   "footer": {
     "cookies": "Cookies",
     "terms_conditions": "Warunki",
-    "built_by": "Stworzone przez Agencję ds. Kierowców i Pojazdów (DVSA)",
+    "built_by": "Stworzone przez <a href='https://www.gov.uk/government/organisations/driver-and-vehicle-standards-agency' target='_blank'>Agencję ds. Kierowców i Pojazdów (DVSA)</a>",
     "licence": "Treść dostępna na mocy Open Government Licence w 3.0, o ile nie zaznaczono inaczej. ",
     "copyright": "Prawa autorskie Korony "
   },

@@ -1,10 +1,5 @@
-const dotenv = require('dotenv');
+const cucumber = require('cypress-cucumber-preprocessor').default
 
-dotenv.config();
-
-module.exports = () => ({
-  baseUrl: process.env.E2E_URL,
-  env: {
-    paymentCode: process.env.E2E_PAYMENT_CODE,
-  },
-});
+module.exports = (on, config) => {
+  on('file:preprocessor', cucumber())
+}

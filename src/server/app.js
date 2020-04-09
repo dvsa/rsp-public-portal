@@ -15,6 +15,7 @@ import helmet from 'helmet';
 import i18n from 'i18n-express';
 import cookieParser from 'cookie-parser';
 import config from './config';
+import { whitelist } from './utils/language-whitelist';
 
 const SIXTY_DAYS_IN_SECONDS = 5184000;
 
@@ -97,21 +98,32 @@ export default async () => {
     textsVarName: 't',
     cookieLangName: 'locale',
   }));
+
   // Make the selected language available globally
   app.use((req, res, next) => {
     let language;
+    const isLangPresent = typeof req.query.clang !== 'undefined';
+    const isLangValid = () => isLangPresent && whitelist.includes(req.query.clang);
+    const isLanguageSet = typeof req.cookies.locale !== 'undefined';
 
-    if (req.query.clang) {
+    const setLanguage = () => {
       res.cookie('locale', req.query.clang);
       language = req.query.clang;
-    } else if (req.cookies.locale) {
-      language = req.cookies.locale;
+    };
+
+    if (isLangValid()) {
+      setLanguage();
+    }
+
+    if (isLanguageSet) {
       req.query.clang = req.cookies.locale;
+      language = req.cookies.locale;
     }
 
     env.addGlobal('clang', language);
     next();
   });
+
   // Always sanitizes the body
   app.use((req, res, next) => {
     Object.keys(req.body).forEach((item) => {
@@ -119,6 +131,7 @@ export default async () => {
     });
     next();
   });
+
   app.use(awsServerlessExpressMiddleware.eventContext());
   // Load routes module dynamically to allow config to initialise
   app.use('/', require('./routes').default);

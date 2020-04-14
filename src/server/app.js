@@ -103,21 +103,25 @@ export default async () => {
   app.use((req, res, next) => {
     let language;
     const isLangPresent = typeof req.query.clang !== 'undefined';
-    const isLangValid = () => isLangPresent && whitelist.includes(req.query.clang);
     const isLanguageSet = typeof req.cookies.locale !== 'undefined';
+    const isLangValid = isLangPresent && whitelist.includes(req.query.clang);
 
     const setLanguage = () => {
       res.cookie('locale', req.query.clang);
       language = req.query.clang;
     };
 
-    if (isLangValid()) {
+    const useCurrentLanguage = () => {
+      req.query.clang = req.cookies.locale;
+      language = req.cookies.locale;
+    };
+
+    if (isLangValid) {
       setLanguage();
     }
 
     if (isLanguageSet) {
-      req.query.clang = req.cookies.locale;
-      language = req.cookies.locale;
+      useCurrentLanguage();
     }
 
     env.addGlobal('clang', language);

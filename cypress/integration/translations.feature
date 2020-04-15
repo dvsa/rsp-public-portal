@@ -1,33 +1,22 @@
 Feature: Language Translations
-  User can choose their preffered language
+  User can choose their preferred language
 
   Background:
     Given The entry point is the 'Home' page
     And The user navigates to the 'paymentCode' page
 
-  Scenario: Choose French language
-    Given I am on the 'Payment code' page
-    When I want to display the page in 'French'
-    Then I should see the page change to the 'French' language
-    And a cookie will be set with the 'fr' language code
+  Scenario Outline: Choose language
+    Given I am on the '<page name>' page
+    When I want to display the page in '<language>'
+    Then I should see the page change to the '<language>' language
+    And a cookie will be set with the '<language code>' language code
 
-  Scenario: Choose German language
-    Given I am on the 'Payment code' page
-    When I want to display the page in 'German'
-    Then I should see the page change to the 'German' language
-    And a cookie will be set with the 'de' language code
-
-  Scenario: Choose Polish language
-    Given I am on the 'Payment code' page
-    When I want to display the page in 'Polish'
-    Then I should see the page change to the 'Polish' language
-    And a cookie will be set with the 'pl' language code
-
-  Scenario: Choose Welsh language
-    Given I am on the 'Payment code' page
-    When I want to display the page in 'Welsh'
-    Then I should see the page change to the 'Welsh' language
-    And a cookie will be set with the 'cy' language code
+    Examples:
+    | page name    | language | language code |
+    | Payment code | French   | fr            |
+    | Payment code | German   | de            |
+    | Payment code | Polish   | pl            |
+    | Payment code | Welsh    | cy            |
 
   Scenario: Choose invalid language
     Given I am on the 'Payment code' page

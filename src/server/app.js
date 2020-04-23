@@ -51,6 +51,10 @@ export default async () => {
 
   app.use(helmet());
 
+  app.use(helmet.noSniff());
+
+  app.use(helmet.xssFilter({ setOnOldIE: true }));
+
   const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
 
   app.use(helmet.contentSecurityPolicy({

@@ -117,7 +117,9 @@ export const getPaymentDetails = [
 export const warnPendingPayment = [
   paymentCodeValidation,
   async (req, res) => {
+    console.log(req);
     const errors = validationResult(req);
+    console.log(errors.isEmpty());
     if (!errors.isEmpty()) {
       logError('ValidatePaymentCodeError', errors.mapped());
       res.redirect('../payment-code?invalidPaymentCode');

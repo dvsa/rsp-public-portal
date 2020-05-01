@@ -123,9 +123,10 @@ describe('Payment Code Controller', () => {
   });
 
   after(() => {
-    PenaltyService.prototype.getByPaymentCode.restore();
-    PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
+    mockPenaltySvc.restore();
+    mockPenaltyGroupSvc.restore();
     mockIsGroupPaymentPending.restore();
+    mockPenaltyGroupSvcPayments.restore();
   });
 
   afterEach(() => {

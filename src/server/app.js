@@ -98,7 +98,31 @@ export default async () => {
 
   app.use(i18n({
     translationsPath: path.join(__dirname, 'i18n'),
-    siteLangs: ['en', 'fr', 'de', 'cy', 'es', 'pl'],
+    siteLangs: [
+      'en',
+      'fr',
+      'de',
+      'cy',
+      'es',
+      'pl',
+      'bg',
+      'hr',
+      'cz',
+      'nl',
+      'ee',
+      'gr',
+      'hu',
+      'it',
+      'lv',
+      'lt',
+      'pt',
+      'ro',
+      'ru',
+      'rs',
+      'sk',
+      'sl',
+      'tr'
+    ],
     textsVarName: 't',
     cookieLangName: 'locale',
   }));

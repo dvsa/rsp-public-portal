@@ -4,5 +4,22 @@
     "German": "Geben Sie den Zahlungscode ein",
     "Polish": "Wpisz kod płatności",
     "Spanish": "Ponga el código de pago",
-    "Welsh": "Mewnbynnu cod talu"
+    "Welsh": "Mewnbynnu cod talu",
+    "Bulgarian": "Въведете валиден код за плащане",
+    "Croatian": "Unesite važeći kôd za plaćanje.",
+    "Czech": "Zadejte platný platební kód",
+    "Dutch": "Voer een geldige betalingscode in",
+    "Estonian": "Sisestage kehtiv maksekood",
+    "Greek": "Καταχωρήστε έναν έγκυρο κωδικό πληρωμής",
+    "Hungarian": "Adjon meg érvényes fizetési kódot!",
+    "Italian": "Inserire un codice di pagamento valido",
+    "Latvian": "Ievadiet derīgu maksājuma kodu",
+    "Lithuanian": "Įveskite teisingą įmokos kodą.",
+    "Portugeuse": "Introduzir um código de pagamento válido",
+    "Romanian": "Introduceți un cod valid de plată",
+    "Russian": "Введите действительный код платежа",
+    "Serbian-Cyrillic": "Унесите важећу шифру плаћања",
+    "Slovak": "Zadajte platný kód platby.",
+    "Slovenian": "Vnesite veljavno kodo za plačilo",
+    "Turkish": "Geçerli bir ödeme kodu girin"
 }

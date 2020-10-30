@@ -12,11 +12,28 @@ Feature: Language Translations
     And a cookie will be set with the '<language code>' language code
 
     Examples:
-    | page name    | language | language code |
-    | Payment code | French   | fr            |
-    | Payment code | German   | de            |
-    | Payment code | Polish   | pl            |
-    | Payment code | Welsh    | cy            |
+    | page name    | language         | language code |
+    | Payment code | French           | fr            |
+    | Payment code | German           | de            |
+    | Payment code | Polish           | pl            |
+    | Payment code | Welsh            | cy            |
+    | Payment code | Bulgarian        | bg            |
+    | Payment code | Croatian         | hr            |
+    | Payment code | Czech            | cz            |
+    | Payment code | Dutch            | nl            |
+    | Payment code | Estonian         | ee            |
+    | Payment code | Greek            | gr            |
+    | Payment code | Hungarian        | hu            |
+    | Payment code | Italian          | it            |
+    | Payment code | Latvian          | lv            |
+    | Payment code | Lithuanian       | lt            |
+    | Payment code | Portugeuse       | pt            |
+    | Payment code | Romanian         | ro            |
+    | Payment code | Russian          | ru            |
+    | Payment code | Serbian-Cyrillic | rs            |
+    | Payment code | Slovak           | sk            |
+    | Payment code | Slovenian        | sl            |
+    | Payment code | Turkish          | tr            |
 
   Scenario: Choose invalid language
     Given I am on the 'Payment code' page

@@ -21,5 +21,5 @@ export const whitelist = [
   'rs',
   'sk',
   'sl',
-  'tr'
+  'tr',
 ];

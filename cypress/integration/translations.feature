@@ -19,10 +19,10 @@ Feature: Language Translations
     | Payment code | Welsh            | cy            |
     | Payment code | Bulgarian        | bg            |
     | Payment code | Croatian         | hr            |
-    | Payment code | Czech            | cz            |
+    | Payment code | Czech            | cs            |
     | Payment code | Dutch            | nl            |
     | Payment code | Estonian         | ee            |
-    | Payment code | Greek            | gr            |
+    | Payment code | Greek            | el            |
     | Payment code | Hungarian        | hu            |
     | Payment code | Italian          | it            |
     | Payment code | Latvian          | lv            |
@@ -30,7 +30,7 @@ Feature: Language Translations
     | Payment code | Portugeuse       | pt            |
     | Payment code | Romanian         | ro            |
     | Payment code | Russian          | ru            |
-    | Payment code | Serbian-Cyrillic | rs            |
+    | Payment code | Serbian-Cyrillic | sr            |
     | Payment code | Slovak           | sk            |
     | Payment code | Slovenian        | sl            |
     | Payment code | Turkish          | tr            |

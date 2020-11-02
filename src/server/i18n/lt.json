@@ -133,7 +133,7 @@
     "reference": "Nuoroda",
     "vehicle_reg": "Transporto priemonės registracijos Nr.",
     "penalty_date": "Bauda išrašyta",
-    "location": "Bauda išrašyta",
+    "location": "Vieta",
     "not_available": "Not available"
   },
   "payment_details": {

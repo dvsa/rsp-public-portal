@@ -143,7 +143,7 @@
     "transaction_fixed_penalties_details": "Fixed penalties details",
     "transaction_immobilisation_fee_details": "Immobilisation fee details",
     "payment_reference": "Referenční číslo platby",
-    "authorisation_code": "Autorizační kód:",
+    "authorisation_code": "Autorizační kód",
     "paid_on": "Datum úhrady",
     "payment_receipt_info_header": "Get a payment receipt",
     "payment_receipt_print_header": "Print a receipt",

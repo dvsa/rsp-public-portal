@@ -80,7 +80,7 @@
     "title": "Въведете валиден код за плащане",
     "payment_code": "Код за плащане",
     "hint": "Например, 'a1b2c3d4e5f6e7b8'",
-    "hidden_panel_title": "Не разполагам с токен за плащане.",
+    "hidden_panel_title": "Не разполагам с токен за плащане",
     "hidden_panel_text": "A DVSA examiner should have sent you a payment code by text message or email. <br /><br />Call DVSA customer service centre on <a href='tel:+44 (0)300 123 9000'>+44 (0)300 123 9000</a> - Monday to Friday, 7.30am to 6pm. <br /><br />You will need your payment code, penalty reference numbers or the vehicle registration number (number plate).",
     "call_charges_link": "Find out about call charges",
     "continue_button": "Продължаване",

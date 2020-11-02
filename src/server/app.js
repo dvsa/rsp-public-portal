@@ -109,7 +109,7 @@ export default async () => {
       'hr',
       'cs',
       'nl',
-      'ee',
+      'et',
       'el',
       'hu',
       'it',

@@ -21,7 +21,7 @@ Feature: Language Translations
     | Payment code | Croatian         | hr            |
     | Payment code | Czech            | cs            |
     | Payment code | Dutch            | nl            |
-    | Payment code | Estonian         | ee            |
+    | Payment code | Estonian         | et            |
     | Payment code | Greek            | el            |
     | Payment code | Hungarian        | hu            |
     | Payment code | Italian          | it            |

@@ -9,7 +9,7 @@ export const whitelist = [
   'hr',
   'cs',
   'nl',
-  'ee',
+  'et',
   'el',
   'hu',
   'it',

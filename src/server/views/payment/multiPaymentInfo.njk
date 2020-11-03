@@ -5,7 +5,7 @@
     { text: t.breadcrumbs.home, url: '/' },
     { text: t.breadcrumbs.payment_code, url: '/payment-code' },
     { text: t.breadcrumbs.penalty_details }
-  ] 
+  ]
 %}
 
 {% set paid = true if paymentStatus == 'PAID' else false %}
@@ -177,6 +177,23 @@
             <li>{{ components.link(text='Español', url='?clang=es') if clang != 'es' else components.link(text='English', url='?clang=en') }}</li>
             <li>{{ components.link(text='Français', url='?clang=fr') if clang != 'fr' else components.link(text='English', url='?clang=en') }}</li>
             <li>{{ components.link(text='Polski', url='?clang=pl') if clang != 'pl' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Bulgarian', url='?clang=bg') if clang != 'bg' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Croatian', url='?clang=hr') if clang != 'hr' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Czech', url='?clang=cs') if clang != 'cz' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Dutch', url='?clang=nl') if clang != 'nl' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Estonian', url='?clang=et') if clang != 'ee' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Greek', url='?clang=el') if clang != 'gr' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Hungarian', url='?clang=hu') if clang != 'hu' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Italian', url='?clang=it') if clang != 'it' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Latvian', url='?clang=lv') if clang != 'lv' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Lithuanian', url='?clang=lt') if clang != 'lt' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Portugeuse', url='?clang=pt') if clang != 'pt' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Romanian', url='?clang=ro') if clang != 'ro' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Russian', url='?clang=ru') if clang != 'ru' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Serbian-Cyrillic', url='?clang=sr') if clang != 'rs' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Slovak', url='?clang=sk') if clang != 'sk' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Slovenian', url='?clang=sl') if clang != 'sl' else components.link(text='English', url='?clang=en') }}</li>
+            <li>{{ components.link(text='Turkish', url='?clang=tr') if clang != 'tr' else components.link(text='English', url='?clang=en') }}</li>
           </ul>
         </nav>
       </aside>

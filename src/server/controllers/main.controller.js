@@ -18,5 +18,6 @@ export const index = (req, res) => {
   if (language === 'cy') {
     return res.redirect('https://www.gov.uk/talu-dirwy-ymylffordd-dvsa');
   }
+
   return res.render('main/index');
 };

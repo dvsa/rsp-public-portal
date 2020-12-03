@@ -7,6 +7,7 @@ export default [
       registrationNumber: '17FFA,17FFB,17FFC',
       location: 'Bury St Edmunds Sector Office(Bury St Edmunds - E. Anglia)',
       date: '03/10/2018',
+      dateTime: 1538524800,
       amount: 370,
       splitAmounts: [
         {
@@ -20,6 +21,9 @@ export default [
           status: 'UNPAID',
         },
       ],
+      fpnPaymentStartTime: 7898372400,
+      imPaymentStartTime: 7898372400,
+      cdnPaymentStartTime: 7898372400
     },
     penaltyDetails: [
       {

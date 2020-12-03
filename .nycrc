@@ -1,0 +1,14 @@
+{
+    "extends": "@istanbuljs/nyc-config-babel",
+    "all": "true",
+    "include": [ "src/**/*.js" ],
+    "exclude": [
+        "src/public/",
+        "src/lambdas",
+        "test/**/*.spec.js",
+        "src/server/*js",
+        "src/server/validation",
+        "src/server/cookie-management"
+    ],
+    "reporter": [ "lcov", "text-summary" ]
+}

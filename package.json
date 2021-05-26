@@ -87,7 +87,7 @@
     "@babel/polyfill": "^7.12.1",
     "@dvsa/cookie-manager": "^1.0.10",
     "archiver": "^2.1.1",
-    "aws-sdk": "^2.860.0",
+    "aws-sdk": "^2.900.0",
     "aws-serverless-express": "^3.4.0",
     "aws4": "^1.11.0",
     "axios": "^0.21.1",

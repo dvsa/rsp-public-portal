@@ -46,7 +46,7 @@ export const validatePaymentCode = [
 
 export const getPaymentDetails = [
   paymentCodeValidation,
-  (req, res) => {
+  async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       logError('ValidatePaymentCodeError', errors.mapped());
@@ -98,7 +98,8 @@ export const getPaymentDetails = [
         } else {
           res.redirect('../payment-code?invalidPaymentCode');
         }
-      }).catch(() => {
+      }).catch((e) => {
+        console.log(e);
         res.redirect('../payment-code?invalidPaymentCode');
       });
     }

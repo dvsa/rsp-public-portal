@@ -1,0 +1,20 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Tests Payment Code Controller",
+            "type": "node",
+            "request": "launch",
+            "runtimeVersion": "10.18",
+            "runtimeArgs": [
+              "--inspect-brk",
+              "${workspaceRoot}/node_modules/mocha/bin/mocha",
+              "--require",
+              "@babel/register",
+              "${workspaceRoot}/test/controllers/paymentCode.controller.spec.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+        }
+    ]
+}

@@ -28,6 +28,9 @@ function requestForPaymentCode(paymentCode) {
 sinon.stub(config, 'redirectUrl').returns('https://localhost');
 
 describe('Payment Controller', () => {
+  after(() => {
+    sinon.reset();
+  });
   describe('redirects to payment page for penalty groups', () => {
     let mockPenaltySvc;
     let mockPenaltyGroupSvc;
@@ -50,6 +53,7 @@ describe('Payment Controller', () => {
       PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
       CpmsService.prototype.createCardPaymentTransaction.restore();
       CpmsService.prototype.createGroupCardPaymentTransaction.restore();
+      sinon.reset();
     });
 
     afterEach(() => {
@@ -59,6 +63,7 @@ describe('Payment Controller', () => {
       mockCpmsSvcGroup.resetHistory();
       redirectSpy.resetHistory();
     });
+
 
     describe('for single penalty payment codes', () => {
       beforeEach(() => {

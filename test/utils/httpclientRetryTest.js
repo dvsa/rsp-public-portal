@@ -23,7 +23,7 @@ describe('httpclient', () => {
     });
     it('should reject due to the 502', async () => {
       try {
-        await httpClient.post('/test', {});
+        await httpClient.post('test', {});
       } catch (err) {
         expect(err.response.status).to.equal(502);
         return;
@@ -41,7 +41,7 @@ describe('httpclient', () => {
         .reply(200, 'OK');
     });
     it('should retry in order to get the 200 response', async () => {
-      const resp = await httpClient.post('/test', {}, 1);
+      const resp = await httpClient.post('test', {}, 1);
       expect(resp.status).to.equal(200);
     });
   });
@@ -57,7 +57,7 @@ describe('httpclient', () => {
         .reply(200, 'OK');
     });
     it('should retry in order to get the 200 response', async () => {
-      const resp = await httpClient.post('/test', {}, 2);
+      const resp = await httpClient.post('test', {}, 2);
       expect(resp.status).to.equal(200);
     });
   });

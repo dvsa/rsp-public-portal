@@ -92,6 +92,11 @@
       "title": "Tekkis probleem",
       "description": "Süsteem ei tuvastanud teie poolt sisestatud koodi.",
       "invalid_code": "Sisestage kehtiv maksekood"
+    },
+    "overdue_error": {
+      "title": "Tekkis probleem",
+      "description": "Süsteem ei tuvastanud teie poolt sisestatud koodi.",
+      "invalid_code": "Sisestage kehtiv maksekood"
     }
   },
   "penalty_details_page": {

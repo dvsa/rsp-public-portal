@@ -92,6 +92,11 @@
       "title": "Houve um problema",
       "description": "O código de pagamento que introduziu não foi reconhecido pelo sistema.",
       "invalid_code": "Introduzir um código de pagamento válido"
+    },
+    "overdue_error": {
+      "title": "Houve um problema",
+      "description": "O código de pagamento que introduziu não foi reconhecido pelo sistema.",
+      "invalid_code": "Introduzir um código de pagamento válido"
     }
   },
   "penalty_details_page": {

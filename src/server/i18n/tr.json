@@ -92,6 +92,11 @@
       "title": "Bir sorun oluştu",
       "description": "Girdiğiniz ödeme kodu sistem tarafından tanınmadı.",
       "invalid_code": "Geçerli bir ödeme kodu girin"
+    },
+    "overdue_error": {
+      "title": "Bir sorun oluştu",
+      "description": "Girdiğiniz ödeme kodu sistem tarafından tanınmadı.",
+      "invalid_code": "Geçerli bir ödeme kodu girin"
     }
   },
   "penalty_details_page": {

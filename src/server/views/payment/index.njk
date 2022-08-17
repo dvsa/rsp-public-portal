@@ -14,18 +14,12 @@
 
       {% call components.form(action='/payment-code', method='post') %}
         {% if invalidPaymentCode %}
-          <div class="error-summary" role="alert" aria-labelledby="error-summary-payment-code" tabindex="1">
-            <h2 class="heading-medium error-summary-heading" id="error-summary-payment-code">
-              {{ t.payment_code_page.error.title }}
-            </h2>
-            <ul class="error-summary-list">
-              <li>
-                <a href="#payment_code">
-                  {{ t.payment_code_page.error.description }}
-                </a>
-              </li>
-            </ul>
-          </div>
+          {% if type === 'invalid' %}
+            {{ components.validation(title=t.payment_code_page.error.title, description=t.payment_code_page.error.description) }}
+          {% endif %}
+          {% if type === 'overdue' %}
+            {{ components.validation(title=t.payment_code_page.overdue_error.title, description=t.payment_code_page.overdue_error.description) }}
+          {% endif %}
         {% endif %}
 
         {{ components.heading(text=t.payment_code_page.title, tag='h1', size='xlarge') }}

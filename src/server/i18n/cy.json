@@ -92,6 +92,11 @@
       "title": "Cafwyd problem",
       "description": "Nid yw'r system yn cydnabod y cod talu rydych wedi'i fewnbynnu.",
       "invalid_code": "Mewnbynnwch cod talu dilys"
+    },
+    "overdue_error": {
+      "title": "Cafwyd problem",
+      "description": "Nid yw'r system yn cydnabod y cod talu rydych wedi'i fewnbynnu.",
+      "invalid_code": "Mewnbynnwch cod talu dilys"
     }
   },
   "penalty_details_page": {

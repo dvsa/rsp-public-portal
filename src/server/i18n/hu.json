@@ -92,6 +92,11 @@
       "title": "Hiba történt",
       "description": "Az Ön által megadott fizetési kódot a rendszer nem ismerte fel.",
       "invalid_code": "Adjon meg érvényes fizetési kódot!"
+    },
+    "overdue_error": {
+      "title": "Hiba történt",
+      "description": "Az Ön által megadott fizetési kódot a rendszer nem ismerte fel.",
+      "invalid_code": "Adjon meg érvényes fizetési kódot!"
     }
   },
   "penalty_details_page": {

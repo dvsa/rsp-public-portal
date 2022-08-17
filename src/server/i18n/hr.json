@@ -92,6 +92,11 @@
       "title": "Došlo je do problema",
       "description": "Naš sustav nije prepoznao kôd za plaćanje koji ste unijeli.",
       "invalid_code": "Unesite važeći kôd za plaćanje"
+    },
+    "overdue_error": {
+      "title": "Došlo je do problema",
+      "description": "Naš sustav nije prepoznao kôd za plaćanje koji ste unijeli.",
+      "invalid_code": "Unesite važeći kôd za plaćanje"
     }
   },
   "penalty_details_page": {

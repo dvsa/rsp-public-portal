@@ -92,6 +92,11 @@
       "title": "Įvyko klaida",
       "description": "Įvestą įmokos kodą neatpažįsta sistema.",
       "invalid_code": "Įveskite teisingą įmokos kodą"
+    },
+    "overdue_error": {
+      "title": "Įvyko klaida",
+      "description": "Įvestą įmokos kodą neatpažįsta sistema.",
+      "invalid_code": "Įveskite teisingą įmokos kodą"
     }
   },
   "penalty_details_page": {

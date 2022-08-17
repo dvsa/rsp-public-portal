@@ -92,6 +92,11 @@
       "title": "A fost o problemă",
       "description": "Codul de plată introdus de dvs. nu a fost recunoscut de sistem.",
       "invalid_code": "Introduceți un cod valid de plată"
+    },
+    "overdue_error": {
+      "title": "A fost o problemă",
+      "description": "Codul de plată introdus de dvs. nu a fost recunoscut de sistem.",
+      "invalid_code": "Introduceți un cod valid de plată"
     }
   },
   "penalty_details_page": {

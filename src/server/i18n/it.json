@@ -92,6 +92,11 @@
       "title": "Si è verificato un problema",
       "description": "Il codice di pagamento inserito non è stato riconosciuto dal sistema.",
       "invalid_code": "Inserire un codice di pagamento valido"
+    },
+    "overdue_error": {
+      "title": "Si è verificato un problema",
+      "description": "Il codice di pagamento inserito non è stato riconosciuto dal sistema.",
+      "invalid_code": "Inserire un codice di pagamento valido"
     }
   },
   "penalty_details_page": {

@@ -92,6 +92,11 @@
       "title": "Pojawił się problem",
       "description": "Wpisany kod płatności nie został rozpoznany przez system.",
       "invalid_code": "Wpisz ważny kod płatności"
+    },
+    "overdue_error": {
+      "title": "Pojawił się problem",
+      "description": "Wpisany kod płatności nie został rozpoznany przez system.",
+      "invalid_code": "Wpisz ważny kod płatności"
     }
   },
   "penalty_details_page": {

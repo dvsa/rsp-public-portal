@@ -92,6 +92,11 @@
       "title": "Es hat ein Problem gegeben",
       "description": "Der von Ihnen eingegebene Zahlungscode wurde vom System nicht erkannt. ",
       "invalid_code": "Geben Sie einen gültigen Zahlungscode ein"
+    },
+    "overdue_error": {
+      "title": "Es hat ein Problem gegeben",
+      "description": "Der von Ihnen eingegebene Zahlungscode wurde vom System nicht erkannt. ",
+      "invalid_code": "Geben Sie einen gültigen Zahlungscode ein"
     }
   },
   "penalty_details_page": {

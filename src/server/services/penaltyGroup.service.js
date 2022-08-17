@@ -49,6 +49,7 @@ export default class PenaltyGroupService {
         paymentCode: ID,
         penaltyDetails: parsedPenalties,
         paymentStatus: PaymentStatus,
+        issueDate: moment.unix(Timestamp).format('DD/MM/YYYY'),
         nextPayment,
       };
     });

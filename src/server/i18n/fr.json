@@ -92,6 +92,11 @@
       "title": "Il y problème",
       "description": "Le code de paiement que vous avez entré n'a pas été reconnu par le système.",
       "invalid_code": "Veuillez entrer un code de paiement valide"
+    },
+    "overdue_error": {
+      "title": "Il y problème",
+      "description": "Le code de paiement que vous avez entré n'a pas été reconnu par le système.",
+      "invalid_code": "Veuillez entrer un code de paiement valide"
     }
   },
   "penalty_details_page": {

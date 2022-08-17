@@ -92,6 +92,11 @@
       "title": "Er was een probleem",
       "description": "De door u ingevoerde betalingscode werd niet door het systeem erkend.",
       "invalid_code": "Voer een geldige betalingscode in"
+    },
+    "overdue_error": {
+      "title": "Er was een probleem",
+      "description": "De door u ingevoerde betalingscode werd niet door het systeem erkend.",
+      "invalid_code": "Voer een geldige betalingscode in"
     }
   },
   "penalty_details_page": {

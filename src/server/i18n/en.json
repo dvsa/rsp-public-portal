@@ -92,6 +92,11 @@
       "title": "There was a problem",
       "description": "The payment code you entered was not recognised by the system.",
       "invalid_code": "Enter a valid payment code"
+    },
+    "overdue_error": {
+      "title": "There was a problem",
+      "description": "The payment code you entered has passed the pay by date limit.",
+      "invalid_code": "Enter a valid payment code or call out helpline for further assistance."
     }
   },
   "penalty_details_page": {

@@ -92,6 +92,11 @@
       "title": "Vyskytol sa problém.",
       "description": "Systém nerozpoznal zadaný kód platby.",
       "invalid_code": "Zadajte platný kód platby"
+    },
+    "overdue_error": {
+      "title": "Vyskytol sa problém.",
+      "description": "Systém nerozpoznal zadaný kód platby.",
+      "invalid_code": "Zadajte platný kód platby"
     }
   },
   "penalty_details_page": {

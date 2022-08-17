@@ -92,6 +92,11 @@
       "title": "Prišlo je do težave",
       "description": "Sistem ni prepoznal vnesene kode za plačilo.",
       "invalid_code": "Vnesite veljavno kodo za plačilo"
+    },
+    "overdue_error": {
+      "title": "Prišlo je do težave",
+      "description": "Sistem ni prepoznal vnesene kode za plačilo.",
+      "invalid_code": "Vnesite veljavno kodo za plačilo"
     }
   },
   "penalty_details_page": {

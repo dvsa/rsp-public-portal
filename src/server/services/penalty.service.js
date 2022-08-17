@@ -1,6 +1,6 @@
 import { isEmpty, has } from 'lodash';
 import moment from 'moment';
-import SignedHttpClient from './../utils/httpclient';
+import SignedHttpClient from '../utils/httpclient';
 import { ServiceName } from '../utils/logger';
 
 export default class PenaltyService {

@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-import-module-exports
 import serveExpressApp from './lambdas/serveExpressApp';
 
-export { serveExpressApp };
+exports.serveExpressApp = serveExpressApp;

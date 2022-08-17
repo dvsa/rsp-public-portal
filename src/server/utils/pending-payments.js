@@ -1,4 +1,4 @@
-import config from './../config';
+import config from '../config';
 
 const paymentStartTimeField = {
   FPN: 'fpnPaymentStartTime',
@@ -16,4 +16,3 @@ export function isPaymentPending(lastPaymentAttemptTime) {
 export function isGroupPaymentPending(penaltyGroup, penaltyType) {
   return isPaymentPending(penaltyGroup.penaltyGroupDetails[paymentStartTimeField[penaltyType]]);
 }
-

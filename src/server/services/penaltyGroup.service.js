@@ -60,9 +60,9 @@ export default class PenaltyGroupService {
         throw new Error('Payment code not found');
       }
       const { Payments } = response.data;
-      const pensOfType = Payments.filter(p => p.PaymentCategory === type)[0].Penalties;
+      const pensOfType = Payments.filter((p) => p.PaymentCategory === type)[0].Penalties;
       return {
-        penaltyDetails: pensOfType.map(p => PenaltyService.parsePenalty(p)),
+        penaltyDetails: pensOfType.map((p) => PenaltyService.parsePenalty(p)),
         penaltyType: type,
         totalAmount: pensOfType.reduce((total, pen) => total + pen.Value.penaltyAmount, 0),
       };
@@ -88,15 +88,15 @@ export default class PenaltyGroupService {
         status: payment.PaymentStatus,
       };
     });
-    const types = uniq(paymentsArr.map(payment => payment.PaymentCategory));
+    const types = uniq(paymentsArr.map((payment) => payment.PaymentCategory));
     const parsedPenalties = types.map((type) => {
-      const penalties = paymentsArr.filter(p => p.PaymentCategory === type)[0].Penalties;
+      const penalties = paymentsArr.filter((p) => p.PaymentCategory === type)[0].Penalties;
       return {
         type,
-        penalties: penalties.map(p => PenaltyService.parsePenalty(p)),
+        penalties: penalties.map((p) => PenaltyService.parsePenalty(p)),
       };
     });
-    const unpaidPayments = paymentsArr.filter(payment => payment.PaymentStatus === 'UNPAID');
+    const unpaidPayments = paymentsArr.filter((payment) => payment.PaymentStatus === 'UNPAID');
     const nextPayment = PenaltyGroupService.getNextPayment(unpaidPayments);
     return { splitAmounts, parsedPenalties, nextPayment };
   }

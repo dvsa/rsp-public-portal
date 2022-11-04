@@ -61,6 +61,7 @@ export default async () => {
   app.use(helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'", assetsUrl],
+      formAction: ['*'],
       scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
       fontSrc: ['data:'],
       imgSrc: [
@@ -72,6 +73,7 @@ export default async () => {
       ],
     },
   }));
+
   app.use(helmet.hsts({
     maxAge: SIXTY_DAYS_IN_SECONDS,
   }));

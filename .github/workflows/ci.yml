@@ -11,7 +11,7 @@ jobs:
     uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v1.0.0
 
   security:
-    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@main
+    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v1.0.0
     with:
       args: --all-projects
     secrets:

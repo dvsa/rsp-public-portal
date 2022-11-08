@@ -20,7 +20,6 @@ export function logError(logName, message) {
   }, null, 2));
 }
 
-
 function errorMessageFromAxiosError(error) {
   if (error.response) {
     // The request was made and the server responded with a status code

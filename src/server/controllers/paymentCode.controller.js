@@ -1,10 +1,10 @@
-import { validationResult } from 'express-validator/check';
+import { validationResult } from 'express-validator';
 import moment from 'moment';
-import paymentCodeValidation from './../validation/paymentCode';
+import paymentCodeValidation from '../validation/paymentCode';
 import PenaltyService from '../services/penalty.service';
 import PenaltyGroupService from '../services/penaltyGroup.service';
 import config from '../config';
-import { logError, logInfo } from './../utils/logger';
+import { logError, logInfo } from '../utils/logger';
 import { isPaymentPending, isGroupPaymentPending } from '../utils/pending-payments';
 
 const penaltyService = new PenaltyService(config.penaltyServiceUrl());
@@ -12,7 +12,7 @@ const penaltyGroupService = new PenaltyGroupService(config.penaltyServiceUrl());
 
 // Index Route
 export const index = (req, res) => {
-  if (Object.keys(req.query).some(param => param === 'invalidPaymentCode')) {
+  if (Object.keys(req.query).some((param) => param === 'invalidPaymentCode')) {
     return res.render('payment/index', { invalidPaymentCode: true });
   }
   return res.render('payment/index');
@@ -66,8 +66,7 @@ export const getPaymentDetails = [
       service[getMethod](paymentCode).then((entityData) => {
         const { enabled, location } = entityData;
         if (entityData.issueDate) {
-          const issueDate =
-            moment((entityData.dateTime || entityData.penaltyGroupDetails.dateTime) * 1000);
+          const issueDate = moment((entityData.dateTime || entityData.penaltyGroupDetails.dateTime) * 1000);
           const now = moment(new Date());
           const ageDays = moment.duration(now.diff(issueDate)).asDays();
           if (Math.floor(ageDays) > 28) {
@@ -83,8 +82,8 @@ export const getPaymentDetails = [
 
         if (enabled || typeof enabled === 'undefined') {
           // Detailed location stored in single penalty for multi-penalties
-          const locationText = isSinglePenalty ?
-            location : entityData.penaltyDetails[0].penalties[0].location;
+          const locationText = isSinglePenalty
+            ? location : entityData.penaltyDetails[0].penalties[0].location;
           // Only check for single penalty pending here as pending message
           // is shown on the details page for groups
           const paymentPending = isPaymentPending(entityData.paymentStartTime);
@@ -133,8 +132,8 @@ export const warnPendingPayment = [
       const { enabled, location } = entityData;
       if (enabled || typeof enabled === 'undefined') {
         // Detailed location stored in single penalty for multi-penalties
-        const locationText = isSinglePenalty ?
-          location : entityData.penaltyDetails[0].penalties[0].location;
+        const locationText = isSinglePenalty
+          ? location : entityData.penaltyDetails[0].penalties[0].location;
         res.render(`payment/${template}`, {
           ...entityData,
           location: locationText,
@@ -154,9 +153,8 @@ export const getMultiPenaltyPaymentSummary = [
     const paymentCode = req.params.payment_code;
     const { type } = req.params;
     try {
-      const penaltiesForType =
-        await penaltyGroupService.getPaymentsByCodeAndType(paymentCode, type);
-      const paymentStatus = penaltiesForType.penaltyDetails.every(p => p.status === 'PAID') ? 'PAID' : 'UNPAID';
+      const penaltiesForType = await penaltyGroupService.getPaymentsByCodeAndType(paymentCode, type);
+      const paymentStatus = penaltiesForType.penaltyDetails.every((p) => p.status === 'PAID') ? 'PAID' : 'UNPAID';
       const penaltyGroup = await penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
       const paymentPending = isGroupPaymentPending(penaltyGroup, type);
       const pendingMinutes = Math.round(config.pendingPaymentTimeMilliseconds() / 60000);

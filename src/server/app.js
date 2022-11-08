@@ -1,19 +1,19 @@
 /* eslint-disable global-require */
 import '@babel/polyfill';
 import express from 'express';
+import { check } from 'express-validator';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import nunjucks from 'nunjucks';
 import path from 'path';
 import _ from 'lodash';
-import errorhandler from 'errorhandler';
 import walkSync from 'walk-sync';
 import resolvePath from 'resolve-path';
-import validator from 'express-validator';
 import helmet from 'helmet';
-import i18n from 'i18n-express';
 import cookieParser from 'cookie-parser';
+import nocache from 'nocache';
+import i18n from 'i18n-express';
 import config from './config';
 import { whitelist } from './utils/language-whitelist';
 
@@ -38,7 +38,7 @@ export default async () => {
 
   // Gets absolute path of each macro file
   const macros = walkSync(marcosPath, { directories: false })
-    .map(file => resolvePath(marcosPath, file));
+    .map((file) => resolvePath(marcosPath, file));
 
   env.addGlobal('macroFilePaths', macros);
   env.addGlobal('assets', config.isDevelopment() ? '' : config.assets());
@@ -54,12 +54,14 @@ export default async () => {
   app.use(helmet.noSniff());
 
   app.use(helmet.xssFilter({ setOnOldIE: true }));
+  app.use(helmet.crossOriginEmbedderPolicy({ policy: 'credentialless' }));
 
   const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
 
   app.use(helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'", assetsUrl],
+      formAction: ['*'],
       scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
       fontSrc: ['data:'],
       imgSrc: [
@@ -71,11 +73,12 @@ export default async () => {
       ],
     },
   }));
+
   app.use(helmet.hsts({
     maxAge: SIXTY_DAYS_IN_SECONDS,
   }));
 
-  app.use(helmet.noCache());
+  app.use(nocache());
 
   // Add express to the nunjucks enviroment instance
   env.express(app);
@@ -94,7 +97,7 @@ export default async () => {
   app.use(compression());
   app.use(bodyParser.urlencoded({ extended: true }));
   app.use(bodyParser.json());
-  app.use(validator());
+  app.use(express.json());
 
   app.use(i18n({
     translationsPath: path.join(__dirname, 'i18n'),
@@ -159,7 +162,7 @@ export default async () => {
   // Always sanitizes the body
   app.use((req, res, next) => {
     Object.keys(req.body).forEach((item) => {
-      req.sanitize(item).escape();
+      check(item).escape();
     });
     next();
   });
@@ -168,6 +171,5 @@ export default async () => {
   // Load routes module dynamically to allow config to initialise
   app.use('/', require('./routes').default);
 
-  app.use(errorhandler());
   return app;
 };

@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Public Portal",
+            "type": "node",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": ["run", "start-dev-server"],
+            "console": "integratedTerminal",
+            "sourceMaps" : true,
+            "program": "${workspaceFolder}/src/server/app.local.js"
+        },
+        {
+            "name": "Debug Payment Controller",
+            "type": "node",
+            "request": "launch",
+            "runtimeVersion": "16.16",
+            "runtimeArgs": [
+              "--inspect-brk",
+              "${workspaceRoot}/node_modules/mocha/bin/mocha",
+              "--require",
+              "@babel/register",
+              "--timeout",
+              "10000",
+              "${workspaceRoot}/test/controllers/payment.controller.spec.js"
+            ],
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+        },
+    ]
+}

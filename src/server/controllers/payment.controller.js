@@ -1,9 +1,9 @@
 /* eslint-disable no-use-before-define */
-import PaymentService from './../services/payment.service';
-import PenaltyService from './../services/penalty.service';
-import CpmsService from './../services/cpms.service';
-import config from './../config';
-import { logInfo, logError } from './../utils/logger';
+import PaymentService from '../services/payment.service';
+import PenaltyService from '../services/penalty.service';
+import CpmsService from '../services/cpms.service';
+import config from '../config';
+import { logInfo, logError } from '../utils/logger';
 import PenaltyGroupService from '../services/penaltyGroup.service';
 import { isGroupPaymentPending, isPaymentPending } from '../utils/pending-payments';
 
@@ -15,8 +15,8 @@ const cpmsService = new CpmsService(config.cpmsServiceUrl());
 const getPenaltyOrGroupDetails = (req) => {
   const paymentCode = req.params.payment_code;
   if (paymentCode) {
-    return paymentCode.length === 16 ?
-      penaltyService.getByPaymentCode(paymentCode)
+    return paymentCode.length === 16
+      ? penaltyService.getByPaymentCode(paymentCode)
       : penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
   }
   return penaltyService.getById(req.params.penalty_id);
@@ -47,7 +47,7 @@ const redirectForSinglePenalty = (req, res, penaltyDetails, redirectHost) => {
 const redirectForPenaltyGroup = (req, res, penaltyGroupDetails, penaltyType, redirectHost) => {
   const redirectUrl = `${redirectHost}/payment-code/${penaltyGroupDetails.paymentCode}/${penaltyType}/confirmGroupPayment`;
   const penaltyOverviewsForType = penaltyGroupDetails.penaltyDetails
-    .find(grouping => grouping.type === penaltyType).penalties;
+    .find((grouping) => grouping.type === penaltyType).penalties;
   const amountForType = penaltyOverviewsForType.reduce((total, pen) => total + pen.amount, 0);
 
   return cpmsService.createGroupCardPaymentTransaction(
@@ -273,7 +273,7 @@ export const confirmGroupPayment = async (req, res) => {
 
 function buildGroupPaymentPayload(paymentCode, receiptReference, type, penaltyGroup, confirmResp) {
   const amountForType = penaltyGroup.penaltyGroupDetails.splitAmounts
-    .find(a => a.type === type).amount;
+    .find((a) => a.type === type).amount;
   return {
     PaymentCode: paymentCode,
     PenaltyType: type,
@@ -285,7 +285,7 @@ function buildGroupPaymentPayload(paymentCode, receiptReference, type, penaltyGr
       PaymentDate: Math.floor(Date.now() / 1000),
     },
     PenaltyIds: penaltyGroup.penaltyDetails
-      .find(penaltiesOfType => penaltiesOfType.type === type).penalties
-      .map(penalties => `${penalties.reference}_${type}`),
+      .find((penaltiesOfType) => penaltiesOfType.type === type).penalties
+      .map((penalties) => `${penalties.reference}_${type}`),
   };
 }

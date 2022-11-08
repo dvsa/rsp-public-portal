@@ -67,3 +67,7 @@ build/
 !.vscode/launch.json
 
 cypress/videos
+cypress/screenshot
+
+# Macbook file
+.DS_Store

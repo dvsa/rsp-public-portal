@@ -101,7 +101,7 @@ function pendingPaymentTimeMilliseconds() {
 
 function port() {
   const portVar = configuration[configMetadata.port];
-  return portVar ? Number(portVar) : 3000;
+  return portVar ? Number(portVar) : 3004;
 }
 
 function redirectUrl() {

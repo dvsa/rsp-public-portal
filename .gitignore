@@ -70,4 +70,6 @@ cypress/videos
 cypress/screenshot
 
 # Macbook file
+
+# Mac files
 .DS_Store

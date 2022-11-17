@@ -34,7 +34,7 @@ function isProd() {
 }
 
 let lambdaExpressServer;
-export default async (event, context) => {
+export const handler = async (event, context) => {
   if (!lambdaExpressServer) {
     logInfo('ServerInit', 'Creating new express server');
     const expressApp = await app();
@@ -46,3 +46,5 @@ export default async (event, context) => {
   logInfo('VisitedPage', { path: event.path });
   return awsServerlessExpress.proxy(lambdaExpressServer, event, context, 'PROMISE').promise;
 };
+
+export default handler;

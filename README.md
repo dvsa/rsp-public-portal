@@ -14,17 +14,20 @@ More information about this available on [github](https://github.com/dvsa/front-
 
 To run this project locally, clone the repository and the instructions below:
 
-1. `npm install` 
+1. `nvm use 16.16`
+Set Node to the required versionß
+
+2. `npm install` 
 Installs all project dependencies
 
-2. `npm run build`
+3. `npm run build`
 Builds the dvsa-frontend specific resources and also the server related code.
 This will create a `build/` directory with the transpiled code and required assets as well
 
-3. `npm run start-server`
+4. `npm run start-server`
 Runs the server from the `build/` directory. Note that this will use the Views and Assets that sit within the `build/` directory. There is no automatic reloading (on source code change) so for development purposes please use the next command instead.
 
-4. `npm run start-dev-server`
+5. `npm run start-dev-server`
 Runs the application in development mode, meaning that source code changes will trigger a rebuild and server reload. 
 
 ### Testing

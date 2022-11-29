@@ -88,15 +88,23 @@
     "hidden_panel_text": "A DVSA examiner should have sent you a payment code by text message or email. <br /><br />Call DVSA customer service centre on <a href='tel:+44 (0)300 123 9000'>+44 (0)300 123 9000</a> - Monday to Friday, 7.30am to 6pm. <br /><br />You will need your payment code, penalty reference numbers or the vehicle registration number (number plate).",
     "call_charges_link": "Find out about call charges",
     "continue_button": "Pokračovat",
+    "contact_title": "DVSA customer support",
+    "contact_email": "enquiries@dvsa.gov.uk",
+    "contact_phone": "Telephone: 0300 123 9000",
+    "contact_opening_hours": "Monday to Friday, 7:30am to 6pm",
     "error": {
       "title": "Vyskytl se problém",
       "description": "Systém nerozpoznal vámi zadaný platební kód.",
       "invalid_code": "Zadejte platný platební kód"
     },
     "overdue_error": {
+      "payment_code_colon": "Payment code:",
       "title": "Vyskytl se problém",
       "description": "Systém nerozpoznal vámi zadaný platební kód.",
-      "invalid_code": "Zadejte platný platební kód"
+      "invalid_code": "Zadejte platný platební kód",
+      "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
+      "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
+      "contact": "Contact DVSA if it has not arrived within 3 weeks."
     }
   },
   "penalty_details_page": {

@@ -101,7 +101,7 @@
       "payment_code_colon": "Payment code:",
       "title": "There was a problem",
       "description": "The payment code you entered has expired.",
-      "invalid_code": "Enter a valid payment code or call out helpline for further assistance.",
+      "invalid_code": "Enter a valid payment code or call our helpline for further assistance.",
       "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
       "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
       "contact": "Contact DVSA if it has not arrived within 3 weeks."

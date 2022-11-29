@@ -88,15 +88,23 @@
     "hidden_panel_text": "Dylai bod archwiliwr y DVSA wedi anfon cod talu i chi ar neges destun neu e-bost. <br /><br />Ffoniwch y DVSA ar <a href='tel:+44 (0)300 123 9000'>+44 (0)300 123 9000</a> - Dydd Llun i ddydd Gwener, 7.30yb i 6yh. <br /><br />Bydd angen eich cyfeirnodau cosb neu rif cofrestru'r cerbyd (rhif cerbyd) arnoch.",
     "call_charges_link": "Dysgu am gostau galwadau",
     "continue_button": "Parhau",
+    "contact_title": "DVSA customer support",
+    "contact_email": "enquiries@dvsa.gov.uk",
+    "contact_phone": "Telephone: 0300 123 9000",
+    "contact_opening_hours": "Monday to Friday, 7:30am to 6pm",
     "error": {
       "title": "Cafwyd problem",
       "description": "Nid yw'r system yn cydnabod y cod talu rydych wedi'i fewnbynnu.",
       "invalid_code": "Mewnbynnwch cod talu dilys"
     },
     "overdue_error": {
-      "title": "Cafwyd problem",
-      "description": "Nid yw'r system yn cydnabod y cod talu rydych wedi'i fewnbynnu.",
-      "invalid_code": "Mewnbynnwch cod talu dilys"
+        "payment_code_colon": "Payment code:",
+        "title": "Cafwyd problem",
+        "description": "Nid yw'r system yn cydnabod y cod talu rydych wedi'i fewnbynnu.",
+        "invalid_code": "Mewnbynnwch cod talu dilys",
+        "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
+        "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
+        "contact": "Contact DVSA if it has not arrived within 3 weeks."
     }
   },
   "penalty_details_page": {

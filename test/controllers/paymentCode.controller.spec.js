@@ -3,16 +3,20 @@ import * as PaymentCodeController from '../../src/server/controllers/paymentCode
 
 describe('Payment Code Controller', () => {
   describe('redirects to home page with validation error', () => {
-    let redirectSpy;
+    const id = 'id123';
+    const query = {
+      invalidPaymentCode: 'invalidPaymentCode',
+      type: 'overdue',
+      id,
+    };
     let renderSpy;
     before(() => {
-      redirectSpy = sinon.spy({ redirect: () => { } }, 'redirect');
       renderSpy = sinon.spy();
     });
     it('should redirect to enter reference page with invalid payment code error type', async () => {
       const req = {
         query: {
-          invalidPaymentCode: 'invalidPaymentCode',
+          ...query,
           type: 'invalid',
         },
       };
@@ -22,14 +26,11 @@ describe('Payment Code Controller', () => {
     });
     it('should redirect to enter reference page with overdue payment code error type', async () => {
       const req = {
-        query: {
-          invalidPaymentCode: 'invalidPaymentCode',
-          type: 'overdue',
-        },
+        query,
       };
       const resp = { render: renderSpy };
       await PaymentCodeController.index(req, resp);
-      sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true, type: 'overdue' });
+      sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true, type: 'overdue', id });
     });
     it('should redirect to payment index page with no payment code error', async () => {
       const req = {
@@ -38,6 +39,23 @@ describe('Payment Code Controller', () => {
       const resp = { render: renderSpy };
       await PaymentCodeController.index(req, resp);
       sinon.assert.calledWith(renderSpy, 'payment/index');
+    });
+    it('send the payment ID to the payment page validation message', async () => {
+      const req = {
+        query,
+      };
+      const resp = { render: renderSpy };
+      await PaymentCodeController.index(req, resp);
+      sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true, type: 'overdue', id });
+    });
+    it('does not send the payment ID if none is provided', async () => {
+      const req = {
+        query,
+      };
+      delete req.query.id;
+      const resp = { render: renderSpy };
+      await PaymentCodeController.index(req, resp);
+      sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true, type: 'overdue' });
     });
   });
 });

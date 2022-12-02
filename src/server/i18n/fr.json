@@ -88,10 +88,23 @@
     "hidden_panel_text": "Un examinateur DVSA devrait vous avoir envoyé un code de paiement par texto ou par courrier électronique. <br /> <br /> appelez le service clientèle de DVSA au <a href='tel:+44 (0)300 123 9000'>+44 (0)300 123 9000</a> - du lundi au vendredi de 7h30 à 18h00. <br /> <br /> Vous avez besoin de votre code de paiement, des numéros de référence des pénalités ou du numéro d'immatriculation du véhicule (plaque d'immatriculation).",
     "call_charges_link": "Consultez lez frais d'appel",
     "continue_button": "Continuer",
+    "contact_title": "DVSA customer support",
+    "contact_email": "enquiries@dvsa.gov.uk",
+    "contact_phone": "Telephone: 0300 123 9000",
+    "contact_opening_hours": "Monday to Friday, 7:30am to 6pm",
     "error": {
       "title": "Il y problème",
       "description": "Le code de paiement que vous avez entré n'a pas été reconnu par le système.",
       "invalid_code": "Veuillez entrer un code de paiement valide"
+    },
+    "overdue_error": {
+      "payment_code_colon": "Payment code:",
+      "title": "Il y problème",
+      "description": "Le code de paiement que vous avez entré n'a pas été reconnu par le système.",
+      "invalid_code": "Veuillez entrer un code de paiement valide",
+      "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
+      "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
+      "contact": "Contact DVSA if it has not arrived within 3 weeks."
     }
   },
   "penalty_details_page": {

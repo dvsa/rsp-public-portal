@@ -13,7 +13,17 @@ const penaltyGroupService = new PenaltyGroupService(config.penaltyServiceUrl());
 // Index Route
 export const index = (req, res) => {
   if (Object.keys(req.query).some((param) => param === 'invalidPaymentCode')) {
-    return res.render('payment/index', { invalidPaymentCode: true });
+    if (Object.keys(req.query).some((param) => param === 'type' && req.query.type === 'overdue')) {
+      const viewData = {
+        invalidPaymentCode: true,
+        type: 'overdue',
+      };
+      if (Object.keys(req.query).some((param) => param === 'id')) {
+        return res.render('payment/index', { ...viewData, id: req.query.id });
+      }
+      return res.render('payment/index', viewData);
+    }
+    return res.render('payment/index', { invalidPaymentCode: true, type: 'invalid' });
   }
   return res.render('payment/index');
 };
@@ -75,7 +85,7 @@ export const getPaymentDetails = [
               paymentCode,
               ageDays,
             });
-            res.redirect('../payment-code?invalidPaymentCode');
+            res.redirect(`../payment-code?invalidPaymentCode&type=overdue&id=${paymentCode}`);
             return;
           }
         }

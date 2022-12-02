@@ -14,45 +14,79 @@
 
       {% call components.form(action='/payment-code', method='post') %}
         {% if invalidPaymentCode %}
-          <div class="error-summary" role="alert" aria-labelledby="error-summary-payment-code" tabindex="1">
-            <h2 class="heading-medium error-summary-heading" id="error-summary-payment-code">
-              {{ t.payment_code_page.error.title }}
-            </h2>
-            <ul class="error-summary-list">
-              <li>
-                <a href="#payment_code">
-                  {{ t.payment_code_page.error.description }}
-                </a>
-              </li>
-            </ul>
-          </div>
+          {% if type === 'overdue' %}
+            {{ components.validation(title=t.payment_code_page.overdue_error.title, description=t.payment_code_page.overdue_error.description) }}
+          {% else %}
+            {{ components.validation(title=t.payment_code_page.error.title, description=t.payment_code_page.error.description) }}
+          {% endif %}
         {% endif %}
 
         {{ components.heading(text=t.payment_code_page.title, tag='h1', size='xlarge') }}
         {{ components.field(id='payment_code', label=t.payment_code_page.payment_code, hint=t.payment_code_page.hint, error=t.payment_code_page.error.invalid_code if invalidPaymentCode, maxlength=19) }}
-        <p>
-          <details>
-            <summary><span class="summary">{{ t.payment_code_page.hidden_panel_title }}</span></summary>
-            <div class="panel panel-border-narrow">
+        {% if type === 'overdue' %}
+          <ul>
+            {% if id %}
               <p>
-                {{ t.penalty_details_page.details_assistance_panel_paragraph_1 }}
+                {{ components.heading(text=t.payment_code_page.overdue_error.payment_code_colon, tag='b', size='normal') }}
+                {{ id }}
               </p>
+            {% endif %}
+            <li>
+              {{ t.payment_code_page.overdue_error.assistance_intro }}
+            </li>
+            <br />
+            <li>
+              {{ t.payment_code_page.overdue_error.assistance_instructions }}
+            </li>
+            <br />
+            <li>
+              {{ t.payment_code_page.overdue_error.contact }}
+            </li>
+            <br />
+            <div class="panel panel-border-narrow">
               <ul>
                 <li>
-                  {{ t.penalty_details_page.tell_examiner }}
+                  {{ t.payment_code_page.contact_title }}
                 </li>
                 <li>
-                  {{ t.penalty_details_page.call_dvsa }}
-                  <br />
+                  {{ components.link(url="mailto:"+t.payment_code_page.contact_email, text=t.payment_code_page.contact_email) }}
+                </li>
+                <li>
+                  {{ t.payment_code_page.contact_phone }}
+                </li>
+                <li>
+                  {{ t.payment_code_page.contact_opening_hours }}
+                </li>
+                <li>
                   {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
-                  <br />
-                  {{ t.penalty_details_page.info_needed }}
                 </li>
               </ul>
             </div>
-          </details>    
-        </p>
-
+          </ul>
+        {% else %}
+          <p>
+            <details>
+              <summary><span class="summary">{{ t.payment_code_page.hidden_panel_title }}</span></summary>
+              <div class="panel panel-border-narrow">
+                <p>
+                  {{ t.penalty_details_page.details_assistance_panel_paragraph_1 }}
+                </p>
+                <ul>
+                  <li>
+                    {{ t.penalty_details_page.tell_examiner }}
+                  </li>
+                  <li>
+                    {{ t.penalty_details_page.call_dvsa }}
+                    <br />
+                    {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
+                    <br />
+                    {{ t.penalty_details_page.info_needed }}
+                  </li>
+                </ul>
+              </div>
+            </details>    
+          </p>
+        {% endif %}
         {{ components.button(text=t.payment_code_page.continue_button, type='submit') }}
       {%- endcall %}
     {%- endcall %}

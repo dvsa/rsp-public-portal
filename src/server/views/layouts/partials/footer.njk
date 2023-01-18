@@ -12,7 +12,7 @@
           <li>{{ t.footer.built_by }}</li>
         </ul>
         <h5 class="visuallyhidden">Languages</h5>
-        <ul id="translation-list">
+        <ul id="translation-list" data-testid="translations">
           <li>{{ components.link(text='French', url='?clang=fr') }}</li>
           <li>{{ components.link(text='German', url='?clang=de') }}</li>
           <li>{{ components.link(text='Polish', url='?clang=pl') }}</li>
@@ -46,7 +46,7 @@
         <div class="version-number">Version 3.1.4</div>
       </div>
 
-      <div class="copyright" id="copyright-id">
+      <div class="copyright" id="copyright-id" data-testid="copyright">
           <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">&copy; Crown copyright</a>
       </div>
     </div>

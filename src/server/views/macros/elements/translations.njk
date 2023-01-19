@@ -1,0 +1,29 @@
+{% from "macros/typography/link.njk" import link %}
+
+{% macro translations(id='', class='') %}
+    <ul {{ 'id="' + id + '"' if id }} {{ 'data-testid="' + id + '"' if id }} {{ 'class="' + class + '"' if class }} >
+        <li>{{ link(text='български', url='?clang=bg') }}</li>
+        <li>{{ link(text='Čeština', url='?clang=cs') }}</li>
+        <li>{{ link(text='Српски језик', url='?clang=sr') }}</li>
+        <li>{{ link(text='Cymraeg', url='?clang=cy') }}</li>
+        <li>{{ link(text='Deutsch', url='?clang=de') }}</li>
+        <li>{{ link(text='Ελληνικά', url='?clang=el') }}</li>
+        <li>{{ link(text='Eesti keel', url='?clang=et') }}</li>
+        <li>{{ link(text='Español', url='?clang=es') }}</li>
+        <li>{{ link(text='Français', url='?clang=fr') }}</li>
+        <li>{{ link(text='Hrvatski', url='?clang=hr') }}</li>
+        <li>{{ link(text='Italiano', url='?clang=it') }}</li>
+        <li>{{ link(text='Latviešu', url='?clang=lv') }}</li>
+        <li>{{ link(text='Lietuvių', url='?clang=lt') }}</li>
+        <li>{{ link(text='Magyar', url='?clang=hu') }}</li>
+        <li>{{ link(text='Nederlands', url='?clang=nl') }}</li>
+        <li>{{ link(text='Polski', url='?clang=pl') }}</li>
+        <li>{{ link(text='Português', url='?clang=pt') }}</li>
+        <li>{{ link(text='Ру́сский', url='?clang=ru') }}</li>
+        <li>{{ link(text='Română', url='?clang=ro') }}</li>
+        <li>{{ link(text='Slovenčina', url='?clang=sk') }}</li>
+        <li>{{ link(text='Slovenščina', url='?clang=sl') }}</li>
+        <li>{{ link(text='Türkçe', url='?clang=tr') }}</li>
+        <li>{{ link(text='English', url='?clang=en') }}</li>
+    </ul>
+{% endmacro %}§

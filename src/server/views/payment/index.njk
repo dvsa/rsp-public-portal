@@ -22,7 +22,7 @@
         {% endif %}
 
         {{ components.heading(text=t.payment_code_page.title, tag='h1', size='xlarge') }}
-        {{ components.field(id='payment_code', label=t.payment_code_page.payment_code, hint=t.payment_code_page.hint, error=t.payment_code_page.error.invalid_code if invalidPaymentCode, maxlength=19) }}
+        {{ components.field(id='payment_code', data-testid="payment_code", label=t.payment_code_page.payment_code, hint=t.payment_code_page.hint, error=t.payment_code_page.error.invalid_code if invalidPaymentCode, maxlength=19) }}
         {% if type === 'overdue' %}
           <ul>
             {% if id %}

@@ -31,6 +31,7 @@ jobs:
       id: echo zip path
       run: |
         echo ${{ env.KEY_PATH }}/release-S{{ needs.release-please.outputs.tag_name }}.zip
+        echo ${{ github.event.repository.name }}
   promote:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}

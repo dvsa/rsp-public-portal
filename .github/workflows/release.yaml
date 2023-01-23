@@ -29,7 +29,7 @@ jobs:
     steps:
       - name: echo zip path
         run: |
-          echo ${{ env.KEY_PATH }}/release-S{{ needs.release-please.outputs.tag_name }}.zip
+          echo ${{ env.KEY_PATH }}/release-${{ needs.release-please.outputs.tag_name }}.zip
           echo ${{ github.event.repository.name }}
   promote:
     runs-on: ubuntu-latest

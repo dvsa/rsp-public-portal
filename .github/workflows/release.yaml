@@ -3,7 +3,6 @@ name: Release
 on:
   push:
     branches:
-      - master
 
 env:
   COPY_SOURCE: public-portal/serveExpressApp/master.zip

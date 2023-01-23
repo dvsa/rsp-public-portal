@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: release-please
     steps:
-      - id: echo zip path
+      - name: echo zip path
         run: |
           echo ${{ env.KEY_PATH }}/release-S{{ needs.release-please.outputs.tag_name }}.zip
           echo ${{ github.event.repository.name }}

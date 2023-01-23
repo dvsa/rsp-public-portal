@@ -48,11 +48,11 @@
             </tr>
             <tr>
               {% if type == 'FPN' %}
-                <td>{{ t.penalty_details.type_fixed_penalty }}</td>
+                <td data-testid="type_fpn">{{ t.penalty_details.type_fixed_penalty }}</td>
               {% elif type == 'CDN' %}
-                <td>{{ t.penalty_details.type_court_deposit }}</td>
+                <td data-testid="type_cdn">{{ t.penalty_details.type_court_deposit }}</td>
               {% elif type == 'IM' %}
-                <td>{{ t.penalty_details.type_immobilisation }}</td>
+                <td data-testid="type_im">{{ t.penalty_details.type_immobilisation }}</td>
               {% endif %}
               <td>&pound;{{ amount }}</td>
               <td class="{{ statusClass }}">

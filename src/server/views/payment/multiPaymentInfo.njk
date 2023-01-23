@@ -49,15 +49,19 @@
             {% set statusClass = 'confirmed' if amountPaid else 'unconfirmed' %}
             {% set showPaymentButton = amount.status == 'UNPAID' %}
             <tr class='no-border'>
-              <td>
                 {% if amount.type == 'FPN' %}
-                  {{ t.penalty_details.type_fixed_penalty }}
+                  <td data-testid="type_fpn">
+                    {{ t.penalty_details.type_fixed_penalty }}
+                  </td>
                 {% elif amount.type == 'CDN' %}
-                  {{ t.penalty_details.type_court_deposit }}
+                  <td data-testid="type_cdn">
+                    {{ t.penalty_details.type_court_deposit }}
+                  <td>
                 {% elif amount.type == 'IM' %}
-                  {{ t.penalty_details.type_immobilisation }}
+                  <td data-testid="type_im">
+                    {{ t.penalty_details.type_immobilisation }}
+                  <td>
                 {% endif %}
-              </td>
               <td>
                 &pound;{{ amount.amount }}
               </td>

@@ -4,8 +4,6 @@ import { expect } from 'chai';
 import * as PendingPayments from '../../src/server/utils/pending-payments';
 import config from '../../src/server/config';
 
-sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000); // 15 minutes
-
 const mockDateNow = () => 1587025800; // 16th April 2020 08:30
 let originalDateNow;
 
@@ -20,17 +18,23 @@ const mockPenaltyGroup = {
     imPaymentStartTime: 7898372400,
     fpnPaymentStartTime: 7898372400,
     cdnPaymentStartTime: 7898372400,
-  }
+  },
 };
 
 describe('isPaymentPending', () => {
+  before(() => {
+    sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000); // 15 minutes
+  });
+  after(() => {
+    config.pendingPaymentTimeMilliseconds.restore();
+  });
 
   beforeEach(() => {
     originalDateNow = Date.now;
     Date.now = mockDateNow;
   });
 
-  afterEach(function () {
+  afterEach(() => {
     Date.now = originalDateNow;
   });
 
@@ -54,9 +58,7 @@ describe('isPaymentPending', () => {
       expect(result).to.equal(false);
     });
   });
-});
 
-describe('isGroupPaymentPending', () => {
   context('when a group payment is pending', () => {
     it('should return true', () => {
       const result = PendingPayments.isGroupPaymentPending(mockPenaltyGroup, 'FPN');

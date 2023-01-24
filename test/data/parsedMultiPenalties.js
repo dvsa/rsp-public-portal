@@ -21,9 +21,9 @@ export default [
           status: 'UNPAID',
         },
       ],
-      fpnPaymentStartTime: 7898372400,
-      imPaymentStartTime: 7898372400,
-      cdnPaymentStartTime: 7898372400
+      fpnPaymentStartTime: 1587022200,
+      imPaymentStartTime: 1587022200,
+      cdnPaymentStartTime: 1587022200,
     },
     penaltyDetails: [
       {

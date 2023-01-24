@@ -3,6 +3,7 @@ import {
   describe, it, after, before,
 } from 'mocha';
 import { expect } from 'chai';
+import config from '../../src/server/config';
 import * as PaymentCodeController from '../../src/server/controllers/paymentCode.controller';
 import * as logger from '../../src/server/utils/logger';
 import PenaltyService from '../../src/server/services/penalty.service';
@@ -15,7 +16,6 @@ import {
   normalizePaymentcode,
   validatePaymentCode,
   getPaymentDetails,
-  warnPendingPayment,
   getMultiPenaltyPaymentSummary,
 } from '../../src/server/controllers/paymentCode.controller';
 
@@ -30,6 +30,13 @@ describe('Payment Code Controller', () => {
     let renderSpy;
     before(() => {
       renderSpy = sinon.spy();
+      sinon.spy(logger, 'logError');
+      sinon.spy(logger, 'logInfo');
+    });
+    after(() => {
+      renderSpy.resetHistory();
+      logger.logError.restore();
+      logger.logInfo.restore();
     });
     it('should redirect to enter reference page with invalid payment code error type', async () => {
       const req = {
@@ -91,13 +98,6 @@ describe('Payment Code Controller', () => {
   let mockPenaltyGroupSvc;
   let mockIsGroupPaymentPending;
   let mockPenaltyGroupSvcPayments;
-  const validationErrors = [{
-    location: 'body',
-    param: 'payment_code',
-    value: 'scode',
-    msg: 'Invalid value',
-    isEmpty: false,
-  }];
 
   before(() => {
     // Express
@@ -127,6 +127,8 @@ describe('Payment Code Controller', () => {
     mockPenaltyGroupSvc.restore();
     mockIsGroupPaymentPending.restore();
     mockPenaltyGroupSvcPayments.restore();
+    logger.logError.restore();
+    logger.logInfo.restore();
   });
 
   afterEach(() => {
@@ -153,7 +155,7 @@ describe('Payment Code Controller', () => {
       it('should render the payment index page with invalid payment code message', () => {
         req = { query: { invalidPaymentCode: true } };
         index(req, res);
-        sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true });
+        sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true, type: 'invalid' });
       });
     });
   });
@@ -185,29 +187,17 @@ describe('Payment Code Controller', () => {
         sinon.assert.calledWith(redirectSpy, 'payment-code/abcd1234fghi5678');
       });
     });
-
-    context('when the payment code is invalid', () => {
-      it('should render the payment page with an invalid payment code message', () => {
-        req = { body: { payment_code: 'scode' } };
-        validatePaymentCode[2]({ ...req, _validationErrors: validationErrors }, res);
-        sinon.assert.calledWith(renderSpy, 'payment/index', { invalidPaymentCode: true });
-      });
-
-      it('should log the error', () => {
-        req = { body: { payment_code: 'scode' } };
-        validatePaymentCode[2]({ ...req, _validationErrors: validationErrors }, res);
-        sinon.assert.calledWith(logErrorSpy, 'ValidatePaymentCodeError', { payment_code: validationErrors[0] });
-      });
-    });
   });
 
   describe('Get payment details', () => {
     context('when the payment code is valid', () => {
       context('for a single penalty', () => {
         let clock;
+        let configMock;
 
         beforeEach(() => {
-          clock = sinon.useFakeTimers(new Date(2018, 2, 15));
+          configMock = sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000);
+          clock = sinon.useFakeTimers(new Date(2018, 2, 15, 9, 35));
 
           mockPenaltySvc
             .callsFake((paymentCode) => Promise.resolve(parsedSinglePenalties.find((p) => p.paymentCode === paymentCode)));
@@ -215,6 +205,8 @@ describe('Payment Code Controller', () => {
 
         afterEach(() => {
           clock.restore();
+          mockPenaltySvc.resetHistory();
+          configMock.restore();
         });
 
         it('should render the payment details page', async () => {
@@ -239,9 +231,10 @@ describe('Payment Code Controller', () => {
         context('older than 28 days', () => {
           it('should redirect to the invalid payment code page', async () => {
             clock.tick(5184000000); // advance 60 days
-            req = { params: { payment_code: '5e7a4c97c260e699' } };
+            const paymentCode = '5e7a4c97c260e699';
+            req = { params: { payment_code: paymentCode } };
             await getPaymentDetails[1](req, res);
-            sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
+            sinon.assert.calledWith(redirectSpy, `../payment-code?invalidPaymentCode&type=overdue&id=${paymentCode}`);
           });
 
           it('should log the info', async () => {
@@ -284,6 +277,7 @@ describe('Payment Code Controller', () => {
 
         afterEach(() => {
           clock.restore();
+          mockPenaltyGroupSvc.restore();
         });
 
         it('should render the multi payment info page', async () => {
@@ -293,118 +287,64 @@ describe('Payment Code Controller', () => {
         });
       });
     });
+  });
+});
 
-    context('when the payment code is invalid', () => {
-      it('should render the payment page with an invalid payment code message', async () => {
-        req = { body: { payment_code: 'scode' } };
-        await getPaymentDetails[1]({ ...req, _validationErrors: validationErrors }, res);
-        sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
-      });
+describe('getMultiPenaltyPaymentSummary', () => {
+  let mockIsGroupPaymentPending;
+  let mockPenaltyGroupSvc;
+  let mockPenaltyGroupSvcPayments;
+  let logInfoSpy;
+  let renderSpy;
+  let redirectSpy;
+  let res;
+  beforeEach(() => {
+    mockIsGroupPaymentPending = sinon.stub(pendingPayments, 'isGroupPaymentPending');
+    mockPenaltyGroupSvc = sinon.stub(PenaltyGroupService.prototype, 'getByPenaltyGroupPaymentCode');
+    mockPenaltyGroupSvcPayments = sinon.stub(PenaltyGroupService.prototype, 'getPaymentsByCodeAndType');
 
-      it('should log the error', async () => {
-        req = { body: { payment_code: 'scode' } };
-        await getPaymentDetails[1]({ ...req, _validationErrors: validationErrors }, res);
-        sinon.assert.calledWith(logErrorSpy, 'ValidatePaymentCodeError', { payment_code: validationErrors[0] });
-      });
-    });
+    mockPenaltyGroupSvc.callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
+    mockPenaltyGroupSvcPayments.callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
+
+    logInfoSpy = sinon.spy(logger, 'logInfo');
+    renderSpy = sinon.spy();
+    redirectSpy = sinon.spy();
+    res = {
+      render: renderSpy,
+      redirect: redirectSpy,
+    };
   });
 
-  describe('Warn pending payment', () => {
-    context('when the payment code is valid', () => {
-      context('for a single penalty', () => {
-        beforeEach(() => {
-          mockPenaltySvc
-            .callsFake((paymentCode) => Promise.resolve(parsedSinglePenalties.find((p) => p.paymentCode === paymentCode)));
-        });
-
-        it('should render the pending payment page', async () => {
-          req = { params: { payment_code: '5e7a4c97c260e699' } };
-          await warnPendingPayment[1](req, res);
-          sinon.assert.calledWith(renderSpy, 'payment/pendingPayment', {
-            ...parsedSinglePenalties[1],
-            location: 'Cuerden(M65 J1a - SE of Preston)',
-            cancelUrl: '/payment-code/5e7a4c97c260e699',
-          });
-        });
-
-        context('not enabled', () => {
-          it('should redirect to the invalid payment code page', async () => {
-            req = { params: { payment_code: '5ef305b89435c670' } };
-            await warnPendingPayment[1](req, res);
-            sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
-          });
-        });
-
-        context('when the penalty service fails', () => {
-          it('should redirect to the invalid payment code page', async () => {
-            mockPenaltySvc.rejects(new Error({ status: 500, message: 'Internal server error' }));
-            req = { params: { payment_code: '5e7a4c97c260e699' } };
-            await warnPendingPayment[1](req, res);
-            sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
-          });
-        });
-      });
-
-      context('for a group penalty', () => {
-        beforeEach(() => {
-          mockPenaltyGroupSvc
-            .callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
-        });
-
-        it('should render the pending payment page', async () => {
-          req = { params: { payment_code: '47hsqs103i0' } };
-          await warnPendingPayment[1](req, res);
-          sinon.assert.calledWith(renderSpy, 'payment/pendingPayment');
-        });
-      });
-    });
-
-    context('when the payment code is invalid', () => {
-      it('should redirect to the payment code page with invalid payment code message', () => {
-        req = { params: { payment_code: 'scode' } };
-        warnPendingPayment[1]({ ...req, _validationErrors: validationErrors }, res);
-        sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
-      });
-
-      it.only('should log the error', () => {
-        req = { params: { payment_code: 'code' } };
-        warnPendingPayment[1]({ ...req, _validationErrors: validationErrors, errors: validationErrors }, res);
-        sinon.assert.calledWith(logErrorSpy, 'ValidatePaymentCodeError', { payment_code: validationErrors[0] });
-      });
-    });
+  afterEach(() => {
+    mockIsGroupPaymentPending.restore();
+    mockPenaltyGroupSvc.restore();
+    mockPenaltyGroupSvcPayments.restore();
+    logInfoSpy.restore();
+    renderSpy.resetHistory();
+    redirectSpy.resetHistory();
   });
 
-  describe('getMultiPenaltyPaymentSummary', () => {
-    beforeEach(() => {
-      mockPenaltyGroupSvc
-        .callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
+  it('should render the multi payment summary page', async () => {
+    const req = { params: { payment_code: '47hsqs103i0' }, type: 'FPN' };
+    await getMultiPenaltyPaymentSummary[0](req, res);
+    sinon.assert.calledWith(renderSpy, 'payment/multiPaymentSummary');
+  });
 
-      mockPenaltyGroupSvcPayments
-        .callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
-    });
-
-    it('should render the multi payment summary page', async () => {
-      req = { params: { payment_code: '47hsqs103i0' }, type: 'FPN' };
+  context('when the payment is pending', () => {
+    it('should log the info', async () => {
+      mockIsGroupPaymentPending.returns(true);
+      const req = { params: { payment_code: '47hsqs103i0' }, type: 'FPN' };
       await getMultiPenaltyPaymentSummary[0](req, res);
-      sinon.assert.calledWith(renderSpy, 'payment/multiPaymentSummary');
+      sinon.assert.calledWith(logInfoSpy, 'PaymentPending');
     });
+  });
 
-    context('when the payment is pending', () => {
-      it('should log the info', async () => {
-        mockIsGroupPaymentPending.returns(true);
-        req = { params: { payment_code: '47hsqs103i0' }, type: 'FPN' };
-        await getMultiPenaltyPaymentSummary[0](req, res);
-        sinon.assert.calledWith(logInfoSpy, 'PaymentPending');
-      });
-    });
-
-    context('when the penalty service fails', () => {
-      it('should redirect to the invalid payment code page', async () => {
-        mockPenaltyGroupSvc.rejects(new Error({ status: 500, message: 'Internal server error' }));
-        req = { params: { payment_code: '47hsqs103i0' } };
-        await getMultiPenaltyPaymentSummary[0](req, res);
-        sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
-      });
+  context('when the penalty service fails', () => {
+    it('should redirect to the invalid payment code page', async () => {
+      mockPenaltyGroupSvc.rejects(new Error({ status: 500, message: 'Internal server error' }));
+      const req = { params: { payment_code: '47hsqs103i0' } };
+      await getMultiPenaltyPaymentSummary[0](req, res);
+      sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode');
     });
   });
 });

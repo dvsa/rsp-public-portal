@@ -31,6 +31,6 @@ export default [
     status: 'UNPAID',
     type: 'IM',
     typeDescription: 'immobilisation',
-    paymentStartTime: 7898372400
+    paymentStartTime: 1521105900,
   },
 ];

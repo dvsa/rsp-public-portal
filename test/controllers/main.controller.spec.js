@@ -22,7 +22,7 @@ describe('main', () => {
       render: renderSpy,
       redirect: redirectSpy,
       type: typeSpy,
-      send: sendSpy
+      send: sendSpy,
     };
   });
 
@@ -31,6 +31,7 @@ describe('main', () => {
     redirectSpy.resetHistory();
     typeSpy.resetHistory();
     sendSpy.resetHistory();
+    configStub.restore();
   });
 
   context('robots', () => {

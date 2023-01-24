@@ -11,6 +11,7 @@ import CpmsService from '../../src/server/services/cpms.service';
 import PaymentService from '../../src/server/services/payment.service';
 import parsedMultiPenalties from '../data/parsedMultiPenalties';
 import parsedSinglePenalties from '../data/parsedSinglePenalties';
+import * as logger from '../../src/server/utils/logger';
 
 function requestForPaymentCode(paymentCode) {
   return {
@@ -27,13 +28,22 @@ function requestForPaymentCode(paymentCode) {
   };
 }
 
-sinon.stub(config, 'redirectUrl').returns('https://localhost');
-
 describe('Payment Controller', () => {
+  before(() => {
+    sinon.spy(logger, 'logError');
+    sinon.spy(logger, 'logInfo');
+  });
+
+  after(() => {
+    logger.logError.restore();
+    logger.logInfo.restore();
+  });
+
   describe('redirects to payment page for penalty groups', () => {
     const mockDateNow = () => 1587025800; // 16th April 2020 08:30
     let mockPenaltySvc;
     let mockPenaltyGroupSvc;
+    let mockPenaltyGroupSvcUpdateStartTime;
     let mockCpmsSvcSingle;
     let mockCpmsSvcGroup;
     let redirectSpy;
@@ -41,8 +51,11 @@ describe('Payment Controller', () => {
     let originalDateNow;
 
     before(() => {
+      sinon.stub(config, 'redirectUrl').returns('https://localhost');
+      sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000);
       mockPenaltySvc = sinon.stub(PenaltyService.prototype, 'getByPaymentCode');
       mockPenaltyGroupSvc = sinon.stub(PenaltyGroupService.prototype, 'getByPenaltyGroupPaymentCode');
+      mockPenaltyGroupSvcUpdateStartTime = sinon.stub(PenaltyGroupService.prototype, 'updateWithPaymentStartTime');
       mockCpmsSvcSingle = sinon.stub(CpmsService.prototype, 'createCardPaymentTransaction');
       mockCpmsSvcGroup = sinon.stub(CpmsService.prototype, 'createGroupCardPaymentTransaction');
       redirectSpy = sinon.spy({ redirect: () => { } }, 'redirect');
@@ -52,13 +65,18 @@ describe('Payment Controller', () => {
     after(() => {
       PenaltyService.prototype.getByPaymentCode.restore();
       PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
+      PenaltyGroupService.prototype.updateWithPaymentStartTime();
       CpmsService.prototype.createCardPaymentTransaction.restore();
       CpmsService.prototype.createGroupCardPaymentTransaction.restore();
+      redirectSpy.restore();
+      config.redirectUrl.restore();
+      config.pendingPaymentTimeMilliseconds.restore();
     });
 
     afterEach(() => {
       mockPenaltySvc.resetHistory();
       mockPenaltyGroupSvc.resetHistory();
+      mockPenaltyGroupSvcUpdateStartTime.resetHistory();
       mockCpmsSvcSingle.resetHistory();
       mockCpmsSvcGroup.resetHistory();
       redirectSpy.resetHistory();
@@ -169,9 +187,15 @@ describe('Payment Controller', () => {
     });
 
     describe('for multiple penalty payment codes', () => {
+      let clock;
       beforeEach(() => {
+        clock = sinon.useFakeTimers(new Date(2020, 3, 16, 7, 35, 0));
         mockPenaltyGroupSvc
           .callsFake((paymentCode) => parsedMultiPenalties.find((p) => p.paymentCode === paymentCode));
+      });
+
+      afterEach(() => {
+        clock.restore();
       });
 
       it('should redirect to the CPMS gateway URL returned when CPMS Service creates a transaction', async () => {
@@ -208,11 +232,9 @@ describe('Payment Controller', () => {
         sinon.assert.calledWith(redirectSpy, '/payment-code/47hsqs103i0');
       });
 
-      context('when payment is pending', () => {
-        it('should redirect to the payment details page', async () => {
-          await PaymentController.redirectToPaymentPageUnlessPending(requestForPaymentCode('47hsqs103i0'), responseHandle);
-          sinon.assert.calledWith(redirectSpy, '/payment-code/47hsqs103i0/FPN/details');
-        });
+      it('should redirect to the payment details page when payment is pending', async () => {
+        await PaymentController.redirectToPaymentPageUnlessPending(requestForPaymentCode('47hsqs103i0'), responseHandle);
+        sinon.assert.calledWith(redirectSpy, '/payment-code/47hsqs103i0/FPN/details');
       });
     });
   });

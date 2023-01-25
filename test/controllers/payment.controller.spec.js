@@ -1,4 +1,6 @@
-import { describe, it, after, afterEach, before } from 'mocha';
+import {
+  describe, it, after, afterEach, before,
+} from 'mocha';
 import sinon from 'sinon';
 
 import config from '../../src/server/config';
@@ -9,6 +11,7 @@ import CpmsService from '../../src/server/services/cpms.service';
 import PaymentService from '../../src/server/services/payment.service';
 import parsedMultiPenalties from '../data/parsedMultiPenalties';
 import parsedSinglePenalties from '../data/parsedSinglePenalties';
+import * as logger from '../../src/server/utils/logger';
 
 function requestForPaymentCode(paymentCode) {
   return {
@@ -25,20 +28,34 @@ function requestForPaymentCode(paymentCode) {
   };
 }
 
-sinon.stub(config, 'redirectUrl').returns('https://localhost');
-
 describe('Payment Controller', () => {
+  before(() => {
+    sinon.spy(logger, 'logError');
+    sinon.spy(logger, 'logInfo');
+  });
+
+  after(() => {
+    logger.logError.restore();
+    logger.logInfo.restore();
+  });
+
   describe('redirects to payment page for penalty groups', () => {
+    const mockDateNow = () => 1587025800; // 16th April 2020 08:30
     let mockPenaltySvc;
     let mockPenaltyGroupSvc;
+    let mockPenaltyGroupSvcUpdateStartTime;
     let mockCpmsSvcSingle;
     let mockCpmsSvcGroup;
     let redirectSpy;
     let responseHandle;
+    let originalDateNow;
 
     before(() => {
+      sinon.stub(config, 'redirectUrl').returns('https://localhost');
+      sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000);
       mockPenaltySvc = sinon.stub(PenaltyService.prototype, 'getByPaymentCode');
       mockPenaltyGroupSvc = sinon.stub(PenaltyGroupService.prototype, 'getByPenaltyGroupPaymentCode');
+      mockPenaltyGroupSvcUpdateStartTime = sinon.stub(PenaltyGroupService.prototype, 'updateWithPaymentStartTime');
       mockCpmsSvcSingle = sinon.stub(CpmsService.prototype, 'createCardPaymentTransaction');
       mockCpmsSvcGroup = sinon.stub(CpmsService.prototype, 'createGroupCardPaymentTransaction');
       redirectSpy = sinon.spy({ redirect: () => { } }, 'redirect');
@@ -48,13 +65,18 @@ describe('Payment Controller', () => {
     after(() => {
       PenaltyService.prototype.getByPaymentCode.restore();
       PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
+      PenaltyGroupService.prototype.updateWithPaymentStartTime();
       CpmsService.prototype.createCardPaymentTransaction.restore();
       CpmsService.prototype.createGroupCardPaymentTransaction.restore();
+      redirectSpy.restore();
+      config.redirectUrl.restore();
+      config.pendingPaymentTimeMilliseconds.restore();
     });
 
     afterEach(() => {
       mockPenaltySvc.resetHistory();
       mockPenaltyGroupSvc.resetHistory();
+      mockPenaltyGroupSvcUpdateStartTime.resetHistory();
       mockCpmsSvcSingle.resetHistory();
       mockCpmsSvcGroup.resetHistory();
       redirectSpy.resetHistory();
@@ -62,9 +84,16 @@ describe('Payment Controller', () => {
 
     describe('for single penalty payment codes', () => {
       beforeEach(() => {
+        originalDateNow = Date.now;
+        Date.now = mockDateNow;
         mockPenaltySvc
-          .callsFake(paymentCode => parsedSinglePenalties.find(p => p.paymentCode === paymentCode));
+          .callsFake((paymentCode) => parsedSinglePenalties.find((p) => p.paymentCode === paymentCode));
       });
+
+      afterEach(() => {
+        Date.now = originalDateNow;
+      });
+
       it('should redirect to the payment code URL when status is paid', async () => {
         await PaymentController.redirectToPaymentPage({ params: { payment_code: '5ef305b89435c670' } }, responseHandle);
         sinon.assert.calledWith(redirectSpy, '/payment-code/5ef305b89435c670');
@@ -78,6 +107,33 @@ describe('Payment Controller', () => {
         await PaymentController.redirectToPaymentPage(requestForPaymentCode('5e7a4c97c260e699'), responseHandle);
 
         sinon.assert.calledWith(redirectSpy, 'http://cpms.gateway');
+      });
+
+      it('should redirect to the payment page when CPMS Service transaction fails', async () => {
+        mockCpmsSvcSingle
+          .withArgs('5e7a4c97c260e699', 'GHIYIN', '425782-0-253535-IM', 'IM', 50, 'https://localhost/payment-code/5e7a4c97c260e699/confirmPayment', '4257820253535')
+          .rejects();
+
+        await PaymentController.redirectToPaymentPage(requestForPaymentCode('5e7a4c97c260e699'), responseHandle);
+
+        sinon.assert.calledWith(redirectSpy, '/payment-code/5e7a4c97c260e699');
+      });
+
+      it('should redirect to the invalid payment code page for invalid codes', async () => {
+        await PaymentController.redirectToPaymentPage(requestForPaymentCode('invalidcode'), responseHandle);
+        sinon.assert.calledWith(redirectSpy, '/?invalidPaymentCode');
+      });
+
+      context('when payment is pending', () => {
+        it('should redirect to the payment code page', async () => {
+          await PaymentController.redirectToPaymentPageUnlessPending({ params: { payment_code: '5e7a4c97c260e699' } }, responseHandle);
+          sinon.assert.calledWith(redirectSpy, '/payment-code/5e7a4c97c260e699');
+        });
+
+        it('should redirect to the invalid payment code page', async () => {
+          await PaymentController.redirectToPaymentPageUnlessPending({ params: { payment_code: 'invalidcode' } }, responseHandle);
+          sinon.assert.calledWith(redirectSpy, '/?invalidPaymentCode');
+        });
       });
 
       context('when CPMS confirms single payment', () => {
@@ -131,10 +187,17 @@ describe('Payment Controller', () => {
     });
 
     describe('for multiple penalty payment codes', () => {
+      let clock;
       beforeEach(() => {
+        clock = sinon.useFakeTimers(new Date(2020, 3, 16, 7, 35, 0));
         mockPenaltyGroupSvc
-          .callsFake(paymentCode => parsedMultiPenalties.find(p => p.paymentCode === paymentCode));
+          .callsFake((paymentCode) => parsedMultiPenalties.find((p) => p.paymentCode === paymentCode));
       });
+
+      afterEach(() => {
+        clock.restore();
+      });
+
       it('should redirect to the CPMS gateway URL returned when CPMS Service creates a transaction', async () => {
         mockCpmsSvcGroup
           .withArgs(
@@ -150,6 +213,28 @@ describe('Payment Controller', () => {
         await PaymentController.redirectToPaymentPage(requestForPaymentCode('47hsqs103i0'), responseHandle);
 
         sinon.assert.calledWith(redirectSpy, 'http://cpms.gateway');
+      });
+
+      it('should redirect to the payment page when CPMS Service transaction fails', async () => {
+        mockCpmsSvcGroup
+          .withArgs(
+            '47hsqs103i0',
+            290,
+            '17FFA,17FFB,17FFC',
+            'FPN',
+            parsedMultiPenalties[0].penaltyDetails[1].penalties,
+            'https://localhost/payment-code/47hsqs103i0/FPN/confirmGroupPayment',
+          )
+          .rejects();
+
+        await PaymentController.redirectToPaymentPage(requestForPaymentCode('47hsqs103i0'), responseHandle);
+
+        sinon.assert.calledWith(redirectSpy, '/payment-code/47hsqs103i0');
+      });
+
+      it('should redirect to the payment details page when payment is pending', async () => {
+        await PaymentController.redirectToPaymentPageUnlessPending(requestForPaymentCode('47hsqs103i0'), responseHandle);
+        sinon.assert.calledWith(redirectSpy, '/payment-code/47hsqs103i0/FPN/details');
       });
     });
   });

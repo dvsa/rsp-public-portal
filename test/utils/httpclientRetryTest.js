@@ -1,9 +1,18 @@
+import sinon from 'sinon';
 import { expect, fail } from 'chai';
 import nock from 'nock';
 import HttpClient from '../../src/server/utils/httpclient';
 
 describe('httpclient', () => {
   let httpClient;
+
+  before(() => {
+    sinon.stub(console, 'error');
+  });
+
+  after(() => {
+    sinon.reset();
+  });
 
   beforeEach(() => {
     httpClient = new HttpClient('http://localhost');

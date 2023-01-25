@@ -5,19 +5,37 @@ import SignedHttpClient from '../../src/server/utils/httpclient';
 import parsedMultiPenalties from '../data/parsedMultiPenalties';
 
 describe('Payment Service', () => {
+
+  let mockHttpClient;
+  let cpmsService;
+
+  beforeEach(() => {
+    mockHttpClient = sinon.stub(SignedHttpClient.prototype, 'post');
+    cpmsService = new CpmsService('testurl');
+  });
+
+  afterEach(() => {
+    mockHttpClient.restore();
+  });
+
+  describe('createCardPaymentTransaction', () => {
+    const mockTransactionData = {
+      payment_code: '5ef305b89435c670',
+      penalty_reference: '123456',
+      penalty_id: 'ID',
+      penalty_type: 'FPN',
+      penalty_amount: 80,
+      redirect_url: 'https://test',
+      vehicle_reg: 'TESTREG',
+    };
+
+    it('should POST the card payment transaction request with the correct parameters', () => {
+      cpmsService.createCardPaymentTransaction('5ef305b89435c670', 'TESTREG', '123456', 'FPN', 80, 'https://test', 'ID');
+      sinon.assert.calledWith(mockHttpClient, 'cardPayment/', mockTransactionData, 3, 'CardPayment');
+    });
+  });
+
   describe('groupCardPaymentTransaction', () => {
-    let mockHttpClient;
-    let cpmsService;
-
-    beforeEach(() => {
-      mockHttpClient = sinon.stub(SignedHttpClient.prototype, 'post');
-      cpmsService = new CpmsService('testurl');
-    });
-
-    afterEach(() => {
-      SignedHttpClient.prototype.post.restore();
-    });
-
     it('returns a promise from POSTing payment details to the cardPaymentGroup endpoint', () => {
       const httpPromise = Promise.resolve('resp');
       mockHttpClient
@@ -76,6 +94,25 @@ describe('Payment Service', () => {
         ],
       });
       expect(returned).to.be.equal(httpPromise);
+    });
+  });
+
+  describe('confirmPayment', () => {
+    const mockConfirmData = {
+      receipt_reference: '12345',
+      penalty_type: 'FPN',
+    };
+
+    it('should POST the confirm payment request with the correct parameters', () => {
+      cpmsService.confirmPayment('12345', 'FPN');
+      sinon.assert.calledWith(mockHttpClient, 'confirm/', mockConfirmData, 3, 'ConfirmPayment');
+    });
+  });
+
+  describe('makePayment', () => {
+    it('should POST the make payment request with the correct parameters', () => {
+      cpmsService.makePayment('details');
+      sinon.assert.calledWith(mockHttpClient, 'payments/', 'details', 0, 'MakePayment');
     });
   });
 });

@@ -11,16 +11,41 @@ import penaltyGroups from '../data/penaltyGroups';
 use(chaiAsPromised);
 
 const httpClient = new SignedHttpClient('');
+const penaltyService = new PenaltyService();
 
 describe('Penalty Service', () => {
   const mockedBackendAPI = new MockedBackendAPI(penalties, penaltyGroups);
 
   let mockedHttpClient;
-  let penaltyService;
+
+  beforeEach(() => {
+    mockedHttpClient = sinon.stub(httpClient, 'get');
+  });
 
   afterEach(() => {
     mockedHttpClient.restore();
-    penaltyService = undefined;
+  });
+
+  describe('Get the penalty type description', () => {
+    it('Should return the correct description for CDN', () => {
+      const result = PenaltyService.getPenaltyTypeDescription('CDN');
+      expect(result).to.equal('Court Deposit Notice');
+    });
+
+    it('Should return the correct description for FPN', () => {
+      const result = PenaltyService.getPenaltyTypeDescription('FPN');
+      expect(result).to.equal('Fixed Penalty Notice');
+    });
+
+    it('Should return the correct description for IM', () => {
+      const result = PenaltyService.getPenaltyTypeDescription('IM');
+      expect(result).to.equal('Immobilisation');
+    });
+
+    it('Should return the correct description for an invalid type', () => {
+      const result = PenaltyService.getPenaltyTypeDescription('ABC');
+      expect(result).to.equal('Unknown');
+    });
   });
 
   describe('Retrieves a penalty by payment code', () => {
@@ -28,8 +53,7 @@ describe('Penalty Service', () => {
       // Arrange
       const singlePenaltyPaymentCode = '1111111111111111';
 
-      mockedHttpClient = sinon.stub(httpClient, 'get').callsFake(code => mockedBackendAPI.getPenaltyByPaymentCode(code));
-      penaltyService = new PenaltyService();
+      mockedHttpClient.callsFake(code => mockedBackendAPI.getPenaltyByPaymentCode(code));
       penaltyService.httpClient = mockedHttpClient.rootObj;
 
       // Act
@@ -44,8 +68,7 @@ describe('Penalty Service', () => {
       // Arrange
       const invalidPaymentCode = 'zzxzxzxasdqawsdaszxcwqesd$"£%$£$"%';
 
-      mockedHttpClient = sinon.stub(httpClient, 'get').callsFake(code => mockedBackendAPI.getPenaltyByPaymentCode(code));
-      penaltyService = new PenaltyService();
+      mockedHttpClient.callsFake(code => mockedBackendAPI.getPenaltyByPaymentCode(code));
       penaltyService.httpClient = mockedHttpClient.rootObj;
 
       // Act
@@ -53,6 +76,12 @@ describe('Penalty Service', () => {
 
       // Assert
       return expect(result).to.be.rejected;
+    });
+
+    it('Should throw an error when it fails to retrieve the payment code', async () => {
+      mockedHttpClient.resolves({ data: '' });
+      penaltyService.httpClient = mockedHttpClient.rootObj;
+      await expect(penaltyService.getByPaymentCode('1111111111111111')).rejectedWith(Error, 'Payment code not found');
     });
   });
 });

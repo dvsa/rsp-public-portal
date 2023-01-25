@@ -15,7 +15,7 @@ import cookieParser from 'cookie-parser';
 import nocache from 'nocache';
 import i18n from 'i18n-express';
 import config from './config';
-import { whitelist } from './utils/language-whitelist';
+import { allowList } from './utils/language-allowlist';
 
 const SIXTY_DAYS_IN_SECONDS = 5184000;
 
@@ -135,7 +135,7 @@ export default async () => {
     let language;
     const isLangPresent = typeof req.query.clang !== 'undefined';
     const isLanguageSet = typeof req.cookies.locale !== 'undefined';
-    const isLangValid = isLangPresent && whitelist.includes(req.query.clang);
+    const isLangValid = isLangPresent && allowList.includes(req.query.clang);
 
     const setLanguage = () => {
       res.cookie('locale', req.query.clang);

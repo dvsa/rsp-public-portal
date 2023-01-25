@@ -56,11 +56,11 @@
                 {% elif amount.type == 'CDN' %}
                   <td data-testid="type_cdn">
                     {{ t.penalty_details.type_court_deposit }}
-                  <td>
+                  </td>
                 {% elif amount.type == 'IM' %}
                   <td data-testid="type_im">
                     {{ t.penalty_details.type_immobilisation }}
-                  <td>
+                  </td>
                 {% endif %}
               <td>
                 &pound;{{ amount.amount }}

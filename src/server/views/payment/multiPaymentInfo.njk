@@ -49,15 +49,19 @@
             {% set statusClass = 'confirmed' if amountPaid else 'unconfirmed' %}
             {% set showPaymentButton = amount.status == 'UNPAID' %}
             <tr class='no-border'>
-              <td>
                 {% if amount.type == 'FPN' %}
-                  {{ t.penalty_details.type_fixed_penalty }}
+                  <td data-testid="type_fpn">
+                    {{ t.penalty_details.type_fixed_penalty }}
+                  </td>
                 {% elif amount.type == 'CDN' %}
-                  {{ t.penalty_details.type_court_deposit }}
+                  <td data-testid="type_cdn">
+                    {{ t.penalty_details.type_court_deposit }}
+                  </td>
                 {% elif amount.type == 'IM' %}
-                  {{ t.penalty_details.type_immobilisation }}
+                  <td data-testid="type_im">
+                    {{ t.penalty_details.type_immobilisation }}
+                  </td>
                 {% endif %}
-              </td>
               <td>
                 &pound;{{ amount.amount }}
               </td>
@@ -171,30 +175,7 @@
     <aside class="govuk-related-items" role="complementary">
         {{ components.heading(text=t.home.language_guidance_header + ':', tag='h3', size='small', id='language-links-header' )}}
         <nav role="navigation" aria-labelledby="language-links-header">
-          <ul class="font-xsmall">
-            <li>{{ components.link(text='български', url='?clang=bg') if clang != 'bg' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Čeština', url='?clang=cs') if clang != 'cs' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Српски језик', url='?clang=sr') if clang != 'sr' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Cymraeg', url='?clang=cy') if clang != 'cy' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Deutsch', url='?clang=de') if clang != 'de' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Ελληνικά', url='?clang=el') if clang != 'el' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Eesti keel', url='?clang=et') if clang != 'et' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Español', url='?clang=es') if clang != 'es' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Français', url='?clang=fr') if clang != 'fr' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Hrvatski', url='?clang=hr') if clang != 'hr' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Italiano', url='?clang=it') if clang != 'it' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Latviešu', url='?clang=lv') if clang != 'lv' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Lietuvių', url='?clang=lt') if clang != 'lt' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Magyar', url='?clang=hu') if clang != 'hu' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Nederlands', url='?clang=nl') if clang != 'nl' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Polski', url='?clang=pl') if clang != 'pl' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Português', url='?clang=pt') if clang != 'pt' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Ру́сский', url='?clang=ru') if clang != 'ru' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Română', url='?clang=ro') if clang != 'ro' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Slovenčina', url='?clang=sk') if clang != 'sk' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Slovenščina', url='?clang=sl') if clang != 'sl' else components.link(text='English', url='?clang=en') }}</li>
-            <li>{{ components.link(text='Türkçe', url='?clang=tr') if clang != 'tr' else components.link(text='English', url='?clang=en') }}</li>
-          </ul>
+          {{ components.translations("translations_side", "font-xsmall") }}
         </nav>
       </aside>
     {%- endcall %}

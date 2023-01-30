@@ -1,4 +1,4 @@
-export const whitelist = [
+export const allowList = [
   'en',
   'fr',
   'de',

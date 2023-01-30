@@ -6,13 +6,11 @@ const paymentStartTimeField = {
   CDN: 'cdnPaymentStartTime',
 };
 
-export function isPaymentPending(lastPaymentAttemptTime) {
+export const isPaymentPending = (lastPaymentAttemptTime) => {
   if (!lastPaymentAttemptTime) {
     return false;
   }
   return (new Date() - (lastPaymentAttemptTime * 1000)) < config.pendingPaymentTimeMilliseconds();
-}
+};
 
-export function isGroupPaymentPending(penaltyGroup, penaltyType) {
-  return isPaymentPending(penaltyGroup.penaltyGroupDetails[paymentStartTimeField[penaltyType]]);
-}
+export const isGroupPaymentPending = (penaltyGroup, penaltyType) => isPaymentPending(penaltyGroup.penaltyGroupDetails[paymentStartTimeField[penaltyType]]);

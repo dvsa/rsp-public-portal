@@ -78,8 +78,8 @@ export const getPaymentDetails = [
         if (entityData.issueDate) {
           const issueDate = moment((entityData.dateTime || entityData.penaltyGroupDetails.dateTime) * 1000);
           const now = moment(new Date());
-          const ageDays = moment.duration(now.diff(issueDate)).asDays();
-          if (Math.floor(ageDays) > 28) {
+          const ageDays = Math.floor(moment.duration(now.diff(issueDate)).asDays());
+          if (ageDays > 28) {
             // Penalties older than 28 days should not be accessible by the public portal
             logInfo('OldPenaltyAccessAttempt', {
               paymentCode,
@@ -114,50 +114,6 @@ export const getPaymentDetails = [
   },
 ];
 
-export const warnPendingPayment = [
-  paymentCodeValidation,
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logError('ValidatePaymentCodeError', errors.mapped());
-      res.redirect('../payment-code?invalidPaymentCode');
-      return;
-    }
-    const paymentCode = req.params.payment_code;
-    const isSinglePenalty = paymentCode.length === 16;
-    const cancelUrl = `/payment-code/${paymentCode}`;
-
-    const { service, getMethod, template } = isSinglePenalty ? {
-      service: penaltyService,
-      getMethod: 'getByPaymentCode',
-      template: 'pendingPayment',
-    } : {
-      service: penaltyGroupService,
-      getMethod: 'getByPenaltyGroupPaymentCode',
-      template: 'pendingPayment',
-    };
-
-    try {
-      const entityData = await service[getMethod](paymentCode);
-      const { enabled, location } = entityData;
-      if (enabled || typeof enabled === 'undefined') {
-        // Detailed location stored in single penalty for multi-penalties
-        const locationText = isSinglePenalty
-          ? location : entityData.penaltyDetails[0].penalties[0].location;
-        res.render(`payment/${template}`, {
-          ...entityData,
-          location: locationText,
-          cancelUrl,
-        });
-      } else {
-        res.redirect('../payment-code?invalidPaymentCode');
-      }
-    } catch (err) {
-      res.redirect('../payment-code?invalidPaymentCode');
-    }
-  },
-];
-
 export const getMultiPenaltyPaymentSummary = [
   async (req, res) => {
     const paymentCode = req.params.payment_code;
@@ -169,9 +125,7 @@ export const getMultiPenaltyPaymentSummary = [
       const paymentPending = isGroupPaymentPending(penaltyGroup, type);
       const pendingMinutes = Math.round(config.pendingPaymentTimeMilliseconds() / 60000);
       if (paymentPending) {
-        logInfo('PaymentPending', {
-          penaltyGroup,
-        });
+        logInfo('PaymentPending');
       }
       res.render('payment/multiPaymentSummary', {
         paymentCode, paymentStatus, ...penaltiesForType, paymentPending, pendingMinutes,

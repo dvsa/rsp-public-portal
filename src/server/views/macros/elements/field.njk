@@ -23,7 +23,7 @@
     {{ formLabel(label=label, visuallyHidden=labelVisuallyHidden, id=id, bold=labelBold, hint=hint, error=error) }}
     <input 
     {{ 'class="form-control' + ( ' form-control-error' if error ) + ( ' ' + widthClass if widthClass ) + '"' if type !== 'file' }}
-    {{ 'id="' + id + '"' if id }}
+    {{ 'id="' + id + '"' if id }} {{ 'data-testid="' + id + '"' if id }}
     type="{{ type }}"
     name="{{ name if name else id }}"
     value="{{ value }}"

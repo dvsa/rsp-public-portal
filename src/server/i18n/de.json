@@ -88,23 +88,23 @@
     "hidden_panel_text": "Ein DVSA-Prüfer sollte Ihnen einen Zahlungscode per Textnachricht oder E-Mail übermittelt haben. <br /><br /> Rufen Sie den Kundendienst der DVSA an unter <a href='tel:+44 (0)300 123 9000'>+44 (0)300 123 9000</a> an - Montag bis Freitag, 7:30 bis 18:00 Uhr. <br /><br /> Sie brauchen Ihren Zahlungscode, das Aktenzeichen Ihres Bußgeldbescheids oder das Kraftfahrzeugkennzeichen (Nummernschild).",
     "call_charges_link": "Informieren Sie sich über die Telefongebühren",
     "continue_button": "Fahren Sie fort",
-    "contact_title": "DVSA customer support",
+    "contact_title": "DVSA Kundenbetreuung",
     "contact_email": "enquiries@dvsa.gov.uk",
-    "contact_phone": "Telephone: 0300 123 9000",
-    "contact_opening_hours": "Monday to Friday, 7:30am to 6pm",
+    "contact_phone": "Telefon: 0300 123 9000",
+    "contact_opening_hours": "Montag bis Freitag, 7:30 bis 18 Uhr",
     "error": {
       "title": "Es hat ein Problem gegeben",
-      "description": "Der von Ihnen eingegebene Zahlungscode wurde vom System nicht erkannt. ",
+      "description": "Der von Ihnen eingegebene Zahlungscode wurde vom System nicht erkannt.",
       "invalid_code": "Geben Sie einen gültigen Zahlungscode ein"
     },
     "overdue_error": {
-      "payment_code_colon": "Payment code:",
+      "payment_code_colon": "Zahlungscode:",
       "title": "Es hat ein Problem gegeben",
-      "description": "Der von Ihnen eingegebene Zahlungscode wurde vom System nicht erkannt. ",
-      "invalid_code": "Geben Sie einen gültigen Zahlungscode ein",
-      "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
-      "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
-      "contact": "Contact DVSA if it has not arrived within 3 weeks."
+      "description": "Der eingegebene Zahlungscode ist abgelaufen.",
+      "invalid_code": "Geben Sie einen gültigen Zahlungscode ein oder rufen Sie unsere Helpline an, um weitere Unterstützung zu erhalten.",
+      "assistance_intro": "Sie können diese Geldstrafe nicht online bezahlen, da das Datum, bis zu dem Sie sie bezahlen mussten, abgelaufen ist.",
+      "assistance_instructions": "DVSA sendet Ihnen einen Brief an die Adresse Ihrer Betreiberlizenz mit Anweisungen zur Zahlung dieser Geldbuße. Es sollte innerhalb von 3 Wochen nach Fälligkeit Ihrer Zahlung eintreffen.",
+      "contact": "Wenden Sie sich an DVSA, wenn es nicht innerhalb von 3 Wochen angekommen ist."
     }
   },
   "penalty_details_page": {

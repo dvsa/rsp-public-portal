@@ -98,13 +98,13 @@
       "invalid_code": "Veuillez entrer un code de paiement valide"
     },
     "overdue_error": {
-      "payment_code_colon": "Payment code:",
-      "title": "Il y problème",
-      "description": "Le code de paiement que vous avez entré n'a pas été reconnu par le système.",
-      "invalid_code": "Veuillez entrer un code de paiement valide",
-      "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
-      "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
-      "contact": "Contact DVSA if it has not arrived within 3 weeks."
+      "payment_code_colon": "Code de paiement:",
+      "title": "Il y avait un problème",
+      "description": "Le code de paiement que vous avez saisi a expiré.",
+      "invalid_code": "Entrez un code de paiement valide ou appelez notre ligne d’assistance pour obtenir de l’aide.",
+      "assistance_intro": "Vous ne pouvez pas payer cette amende en ligne parce que la date à laquelle vous deviez la payer est passée.",
+      "assistance_instructions": "DVSA vous enverra une lettre à l’adresse indiquée sur votre licence d’exploitation avec des instructions sur la façon de payer cette amende. Il devrait arriver dans les 3 semaines suivant la date d’échéance de votre paiement.",
+      "contact": "Contactez DVSA s’il n’est pas arrivé dans les 3 semaines."
     }
   },
   "penalty_details_page": {

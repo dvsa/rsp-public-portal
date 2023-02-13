@@ -98,13 +98,13 @@
       "invalid_code": "Wpisz ważny kod płatności"
     },
     "overdue_error": {
-      "payment_code_colon": "Payment code:",
-      "title": "Pojawił się problem",
-      "description": "Wpisany kod płatności nie został rozpoznany przez system.",
-      "invalid_code": "Wpisz ważny kod płatności",
-      "assistance_intro": "You cannot pay this fine online because the date you had to pay it by has passed.",
-      "assistance_instructions": "DVSA will send you a letter to the address on your Operator Licence with instructions on how to pay this fine. It should arrive within 3 weeks of your payment due date.",
-      "contact": "Contact DVSA if it has not arrived within 3 weeks."
+      "payment_code_colon": "Kod płatności:",
+      "title": "Wystąpił problem",
+      "description": "Wprowadzony kod płatności wygasł.",
+      "invalid_code": "Wprowadź prawidłowy kod płatności lub zadzwoń na naszą infolinię, aby uzyskać dalszą pomoc.",
+      "assistance_intro": "Nie możesz zapłacić tej grzywny online, ponieważ minął termin, w którym musiałeś ją zapłacić.",
+      "assistance_instructions": "DVSA wyśle Ci list na adres podany na Twojej licencji operatora z instrukcjami, jak zapłacić tę grzywnę. Powinien dotrzeć w ciągu 3 tygodni od terminu płatności.",
+      "contact": "Skontaktuj się z DVSA, jeśli nie dotarł w ciągu 3 tygodni."
     }
   },
   "penalty_details_page": {

@@ -25,6 +25,9 @@ export const cookieManagerConfig = {
       'cookies': [
         'cm-user-preferences',
         'locale',
+        'incap_ses_',
+        'nlbi_',
+        'visid_incap_',
       ],
     },
     {

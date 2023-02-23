@@ -60,9 +60,9 @@ export default async () => {
 
   app.use(helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'", assetsUrl],
+      defaultSrc: ['*'],
       formAction: ['*'],
-      scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
+      scriptSrc: ['*', assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
       fontSrc: ['data:'],
       imgSrc: [
         assetsUrl,

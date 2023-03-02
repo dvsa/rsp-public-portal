@@ -100,6 +100,37 @@
           </tbody>
         </table>
 
+        {{ components.heading(text=t.cookie_details_page.third_party_cookies_title, tag='h3', size='medium') }}
+        {{ components.heading(text=t.cookie_details_page.imperva_incapsula_cookies_title, tag='h3', size='small') }}
+        <p>{{ t.cookie_details_page.imperva_incapsula_cookies_text }}</p>
+
+         <table>
+          <thead>
+            <tr>
+              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
+              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
+              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_one }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_one }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_one }}</td>
+            </tr>
+            <tr>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_two }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_two }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_two }}</td>
+            </tr>
+            <tr>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_three }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_three }}</td>
+              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_three }}</td>
+            </tr>
+          </tbody>
+        </table>
+
         {{ components.heading(text=t.cookie_details_page.change_preferences_title, tag='h2', size='medium') }}
         <p>{{ t.cookie_details_page.change_preferences_text }}</p>
 

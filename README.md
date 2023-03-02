@@ -15,7 +15,7 @@ More information about this available on [github](https://github.com/dvsa/front-
 To run this project locally, clone the repository and the instructions below:
 
 1. `nvm use 16.16`
-Set Node to the required versionß
+Set Node to the required version
 
 2. `npm install` 
 Installs all project dependencies

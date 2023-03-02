@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.2.0](https://github.com/dvsa/rsp-public-portal/compare/v3.1.0...v3.2.0) (2023-03-02)
+
+
+### Features
+
+* added in missing cookies ([#174](https://github.com/dvsa/rsp-public-portal/issues/174)) ([567b8f9](https://github.com/dvsa/rsp-public-portal/commit/567b8f957380c0a04a7f5d31ec5dd0177bf2a1d0))
+
 ## [3.1.0](https://github.com/dvsa/rsp-public-portal/compare/v3.0.0...v3.1.0) (2023-02-22)
 
 

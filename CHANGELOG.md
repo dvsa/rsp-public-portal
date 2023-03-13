@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.3.0](https://github.com/dvsa/rsp-public-portal/compare/v3.2.0...v3.3.0) (2023-03-08)
+
+
+### Features
+
+* remove the cypress test  ([#176](https://github.com/dvsa/rsp-public-portal/issues/176)) ([fa51b10](https://github.com/dvsa/rsp-public-portal/commit/fa51b101c2d9154e75dcda945854c41dce0bcf3f))
+* remove the cypress test from the frontend repo as they are now covered in the full E2E test pack ([fa51b10](https://github.com/dvsa/rsp-public-portal/commit/fa51b101c2d9154e75dcda945854c41dce0bcf3f))
+
 ## [3.2.0](https://github.com/dvsa/rsp-public-portal/compare/v3.1.0...v3.2.0) (2023-03-02)
 
 

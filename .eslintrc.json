@@ -1,7 +1,7 @@
 {
     "parser": "babel-eslint",
     "extends": ["airbnb-base"],
-    "env": { "mocha": true, "cypress/globals": true },
+    "env": { "mocha": true, "browser": true },
     "rules": {
         "linebreak-style":"off",
         "no-unused-expressions": 0,
@@ -13,7 +13,5 @@
         "max-len": "off"
     },
     "plugins": [
-        "chai-friendly",
-        "cypress"
-    ]
+        "chai-friendly"    ]
 }

@@ -109,7 +109,7 @@
     "moment-timezone": "^0.5.34",
     "nocache": "^3.0.4",
     "node-dir": "^0.1.17",
-    "nunjucks": "^3.2.3",
+    "nunjucks": "^3.2.4",
     "resolve-path": "^1.4.0",
     "sass": "^1.54.4",
     "url-parse": "^1.5.10",

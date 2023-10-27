@@ -22,5 +22,5 @@ export const allowList = [
   'sk',
   'sl',
   'tr',
-  'uk',
+  'ua',
 ];

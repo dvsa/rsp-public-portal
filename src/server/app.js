@@ -125,7 +125,7 @@ export default async () => {
       'sk',
       'sl',
       'tr',
-      'uk',
+      'ua',
     ],
     textsVarName: 't',
     cookieLangName: 'locale',

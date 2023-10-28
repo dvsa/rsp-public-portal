@@ -1,25 +1,20 @@
 # The AWSTemplateFormatVersion identifies the capabilities of the template
 AWSTemplateFormatVersion: 2010-09-09
-Description: >-
-  dvsa-rsp-public-portal
-
+Description: dvsa-rsp-public-portal
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
-Transform:
-- AWS::Serverless-2016-10-31
+Transform: AWS::Serverless-2016-10-31
 Resources:
-  public-portal:
+  PublicPortalApi:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handler
+      Handler: ./src/handler
       Runtime: nodejs16.x
-      Architectures:
-        - x86_64
+      Architectures: x86_64
       MemorySize: 128
       Timeout: 100
       Description: The public portal to pay RSP
       Environment:
         Variables:
-          REGION: ${AWS::Region}
           USE_SECRETS_MANAGER: false
       Events:
         ProxyApiRoot:
@@ -41,9 +36,17 @@ Resources:
       DefinitionUri: ./simple-proxy-api.yml
       StageName: dev
       Variables:
-        ServerlessExpressLambdaFunctionName: !Ref NearestAtfFunction
+        ServerlessExpressLambdaFunctionName: !Ref PublicPortalApi
 
-  Outputs:
-    WebEndpoint:
-      Description: "API Gateway endpoint URL for Prod stage"
-      Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+
+Outputs:
+  WebEndpoint:
+    Description: "API Gateway endpoint URL for Prod stage"
+    Value: !Join
+      - ''
+      - - https://
+        - !Ref ApiGatewayApi
+        - ".execute-api."
+        - !Ref AWS::Region
+        - ".amazonaws.com/nonprod/"
+#    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/NonProd/"

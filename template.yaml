@@ -1,15 +1,24 @@
 # The AWSTemplateFormatVersion identifies the capabilities of the template
-AWSTemplateFormatVersion: 2010-09-09
-Description: dvsa-rsp-public-portal
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+Description: RSP Public portal
 # Transform section specifies one or more macros that AWS CloudFormation uses to process your template
-Transform: AWS::Serverless-2016-10-31
+
 Resources:
-  PublicPortalApi:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      DefinitionUri: ./simple-proxy-api.yml
+      StageName: dev
+      Variables:
+        ServerlessExpressLambdaFunctionName: !Ref PublicPortalApiFunction
+
+  PublicPortalApiFunction:
     Type: AWS::Serverless::Function
     Properties:
       Handler: ./src/handler
       Runtime: nodejs16.x
-      Architectures: x86_64
+      Architectures: [x86_64]
       MemorySize: 128
       Timeout: 100
       Description: The public portal to pay RSP
@@ -29,15 +38,6 @@ Resources:
             RestApiId: !Ref ApiGatewayApi
             Path: /{proxy+}
             Method: ANY
-
-  ApiGatewayApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      DefinitionUri: ./simple-proxy-api.yml
-      StageName: dev
-      Variables:
-        ServerlessExpressLambdaFunctionName: !Ref PublicPortalApi
-
 
 Outputs:
   WebEndpoint:

@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.0](https://github.com/dvsa/rsp-public-portal/compare/v3.3.0...v3.4.0) (2023-11-01)
+
+
+### Features
+
+* add Ukrainian translation to public portal 1st page ([#182](https://github.com/dvsa/rsp-public-portal/issues/182)) ([6e104fc](https://github.com/dvsa/rsp-public-portal/commit/6e104fc2735199056a5c72c0c92c0bc699c9f8bc))
+
 ## [3.3.0](https://github.com/dvsa/rsp-public-portal/compare/v3.2.0...v3.3.0) (2023-03-08)
 
 

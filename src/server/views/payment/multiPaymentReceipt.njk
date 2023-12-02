@@ -149,6 +149,9 @@
           <a href='{{ urlroot }}/payment-code/{{ paymentCode }}'>{{ t.penalty_details_page.return_to_summary }}</a>
         {% endif %}
       </p>
+      <p class="govuk-body">
+        <a class="govuk-link" href="{{ t.penalty_details_page.feedback_link_url }}" >{{ t.penalty_details_page.feedback_link_text }}</a>
+      </p>
     {%- endcall %}
   {%- endcall %}
   

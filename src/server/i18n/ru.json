@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Перейти к оплате",
     "continue_immobilisation_fee": "Перейти к оплате",
     "continue_court_deposits": "Перейти к оплате",
-    "continue_to_payment_button": "Перейти к оплате"
+    "continue_to_payment_button": "Перейти к оплате",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Статус",

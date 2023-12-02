@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Tovább a fizetésre",
     "continue_immobilisation_fee": "Tovább a fizetésre",
     "continue_court_deposits": "Tovább a fizetésre",
-    "continue_to_payment_button": "Tovább a fizetésre"
+    "continue_to_payment_button": "Tovább a fizetésre",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Státusz",

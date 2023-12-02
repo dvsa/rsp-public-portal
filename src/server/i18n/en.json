@@ -134,7 +134,9 @@
     "continue_fixed_penalties": "Continue to pay fixed penalties",
     "continue_immobilisation_fee": "Continue to pay immobilisation fee",
     "continue_court_deposits": "Continue to pay court deposits",
-    "continue_to_payment_button": "Make a payment"
+    "continue_to_payment_button": "Make a payment",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
   },
   "penalty_details": {
     "status": "Status",

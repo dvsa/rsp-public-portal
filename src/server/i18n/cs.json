@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Pokračovat k platbě",
     "continue_immobilisation_fee": "Pokračovat k platbě",
     "continue_court_deposits": "Pokračovat k platbě",
-    "continue_to_payment_button": "Pokračovat k platbě"
+    "continue_to_payment_button": "Pokračovat k platbě",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Stav",

@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Ödemeye devam edin",
     "continue_immobilisation_fee": "Ödemeye devam edin",
     "continue_court_deposits": "Ödemeye devam edin",
-    "continue_to_payment_button": "Ödemeye devam edin"
+    "continue_to_payment_button": "Ödemeye devam edin",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Durum",

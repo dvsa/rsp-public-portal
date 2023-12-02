@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Doorgaan met betalen",
     "continue_immobilisation_fee": "Doorgaan met betalen",
     "continue_court_deposits": "Doorgaan met betalens",
-    "continue_to_payment_button": "Doorgaan met betalen"
+    "continue_to_payment_button": "Doorgaan met betalen",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Status",

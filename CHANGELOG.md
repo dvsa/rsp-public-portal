@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.1](https://github.com/dvsa/rsp-public-portal/compare/v3.4.0...v3.4.1) (2023-12-12)
+
+
+### Bug Fixes
+
+* added .snyk ignore ([#187](https://github.com/dvsa/rsp-public-portal/issues/187)) ([68bca01](https://github.com/dvsa/rsp-public-portal/commit/68bca017babe7b90652686b8185524d179544a42))
+
 ## [3.4.0](https://github.com/dvsa/rsp-public-portal/compare/v3.3.0...v3.4.0) (2023-11-01)
 
 

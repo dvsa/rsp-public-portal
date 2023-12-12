@@ -134,7 +134,10 @@
     "continue_fixed_penalties": "Parhau i gosbau penodedig",
     "continue_immobilisation_fee": "Parhau i cosb atal cerbydau rhag symud",
     "continue_court_deposits": "Parhau i flaendaliadau'r llys",
-    "continue_to_payment_button": "Gwneud taliad"
+    "continue_to_payment_button": "Gwneud taliad",
+    "feedback_link_url": "https://www.gov.uk/done/pay-dvsa-roadside-fine",
+    "feedback_link_text": "If you've finished, tell us what you thought of this service (takes 30 seconds)"
+
   },
   "penalty_details": {
     "status": "Statws",

@@ -75,11 +75,9 @@
     text-decoration: none;
     text-rendering: optimizeLegibility;
     border-bottom: 1px solid transparent;
-    background-size: 36px 32px;
-    background-position: 0 0;
 
     @include ie-lte(8) {
-      background-image: url('#{$path}gov.uk_logotype_crown-1x.png');
+      background-image: url('#{$path}govuk-logotype-tudor-crown.png');
     }
 
     img {

@@ -86,7 +86,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@dvsa/cookie-manager": "^1.1.2",
-    "archiver": "^5.3.1",
+    "archiver": "^7.0.0",
     "aws-sdk": "^2.1354.0",
     "aws-serverless-express": "^3.4.0",
     "aws4": "^1.11.0",

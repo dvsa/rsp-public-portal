@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.4.2](https://github.com/dvsa/rsp-public-portal/compare/v3.4.1...v3.4.2) (2024-03-05)
+
+
+### Features
+
+* vol 4992 amend govuk logo ([#193](https://github.com/dvsa/rsp-public-portal/issues/193)) ([8a4b4fa](https://github.com/dvsa/rsp-public-portal/commit/8a4b4fa43385338e7a0dd0812128aa91767f81c7))
+
 ## [3.4.1](https://github.com/dvsa/rsp-public-portal/compare/v3.4.0...v3.4.1) (2023-12-12)
 
 

@@ -3,7 +3,7 @@
   "version": "3.4.1",
   "description": "DVSA Public Payment Portal For RSP",
   "engines": {
-    "node": "16.16"
+    "node": "18.19"
   },
   "main": "handler.js",
   "scripts": {
@@ -86,11 +86,11 @@
   "dependencies": {
     "@babel/polyfill": "^7.12.1",
     "@dvsa/cookie-manager": "^1.1.2",
-    "archiver": "^5.3.1",
+    "archiver": "^7.0.0",
     "aws-sdk": "^2.1354.0",
     "aws-serverless-express": "^3.4.0",
     "aws4": "^1.11.0",
-    "axios": "^1.6.0",
+    "axios": "^1.6.4",
     "axios-retry": "^3.3.1",
     "body-parser": "^1.20.0",
     "compression": "^1.7.4",

@@ -100,7 +100,6 @@
     "event-stream": "4.0.1",
     "express": "^4.18.1",
     "express-validator": "^6.14.2",
-    "govuk_template_jinja": "^0.26.0",
     "govuk-frontend": "^4.8.0",
     "helmet": "^5.1.1",
     "i18n-express": "^1.1.3",

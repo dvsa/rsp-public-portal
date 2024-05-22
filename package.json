@@ -3,7 +3,7 @@
   "version": "3.4.2",
   "description": "DVSA Public Payment Portal For RSP",
   "engines": {
-    "node": "18.19"
+    "node": "20.x"
   },
   "main": "handler.js",
   "scripts": {

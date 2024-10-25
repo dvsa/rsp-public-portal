@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://github.com/dvsa/rsp-public-portal/compare/v4.0.0...v4.0.1) (2024-10-25)
+
+
+### Miscellaneous Chores
+
+* **master:** release 4.0.1 ([#207](https://github.com/dvsa/rsp-public-portal/issues/207)) ([dad81f0](https://github.com/dvsa/rsp-public-portal/commit/dad81f014d94588dacd4e738b206862de7cbe4a4))
+
 ## [4.0.0](https://github.com/dvsa/rsp-public-portal/compare/v3.4.2...v4.0.0) (2024-08-19)
 
 

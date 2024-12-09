@@ -88,6 +88,14 @@ export const getPaymentDetails = [
             res.redirect(`../payment-code?invalidPaymentCode&type=overdue&id=${paymentCode}`);
             return;
           }
+          // return bad payment code if penalty has not got vehicle details
+          if (!entityData.vehicleReg || entityData.vehicleReg === '') {
+            logInfo('NoVehicleDetails', {
+              paymentCode,
+            });
+            res.redirect('../payment-code?invalidPaymentCode&vrm=false');
+            return;
+          }
         }
 
         if (enabled || typeof enabled === 'undefined') {

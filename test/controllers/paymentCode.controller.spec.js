@@ -252,6 +252,14 @@ describe('Payment Code Controller', () => {
           });
         });
 
+        context('no vehicle details', () => {
+          it('should redirect to the invalid payment code page', async () => {
+            req = { params: { payment_code: '5e7a4c97c260e688' } };
+            await getPaymentDetails[1](req, res);
+            sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode&vrm=false');
+          });
+        });
+
         context('when the penalty service fails', () => {
           it('should redirect to the invalid payment code page', async () => {
             mockPenaltySvc.rejects(new Error({ status: 500, message: 'Internal server error' }));

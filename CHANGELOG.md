@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.3](https://github.com/dvsa/rsp-public-portal/compare/v4.0.2...v4.0.3) (2024-12-09)
+
+
+### Bug Fixes
+
+* missing vehicle data captured and set to invalid paymentcode ([#211](https://github.com/dvsa/rsp-public-portal/issues/211)) ([405b97b](https://github.com/dvsa/rsp-public-portal/commit/405b97b4e37878d1592b78215de4e746247be366))
+
 ## [4.0.2](https://github.com/dvsa/rsp-public-portal/compare/v4.0.1...v4.0.2) (2024-11-26)
 
 

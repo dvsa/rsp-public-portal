@@ -49,56 +49,51 @@ function addFormattedPaymentDateTimes(paymentDetails) {
   return newPaymentDetails;
 }
 
+// DEV OVERRIDE: Render receipt page with mock data for UI testing
 export const singlePaymentReceipt = async (req, res) => {
   const paymentCode = req.params.payment_code;
-  try {
-    const penalty = await penaltyService.getByPaymentCode(paymentCode);
-    const paymentId = `${penalty.reference}_${penalty.type}`;
-    const { payment } = (await paymentService.getPayment(paymentId)).data;
-    const paymentDetails = paymentDetailsFromPenalty(penalty, payment);
-
-    const resp = {
-      paymentType: penalty.type,
-      paymentStatus: penalty.status,
-      paymentDetails,
-      registrationNumber: penalty.vehicleReg,
-      location: penalty.location,
-      date: penalty.issueDate,
-      penaltyDetails: [{ type: penalty.type, penalties: [penalty] }],
-      paymentCode,
-    };
-    return res.render('payment/multiPaymentReceipt', resp);
-  } catch (error) {
-    return res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
-  }
+  const resp = {
+    paymentType: 'FPN',
+    paymentStatus: 'PAID',
+    paymentDetails: {
+      Payments: {
+        FPN: {
+          PaymentAmount: 100,
+          PaymentStatus: 'PAID',
+          FormattedDate: '25/09/2025',
+          FormattedTime: '10:00am',
+        }
+      }
+    },
+    registrationNumber: 'TEST123',
+    location: 'Test Location',
+    date: '25/09/2025',
+    penaltyDetails: [{ type: 'FPN', penalties: [{ reference: 'REF123', type: 'FPN', amount: 100 }] }],
+    paymentCode,
+  };
+  return res.render('payment/multiPaymentReceipt', resp);
 };
 
+// DEV OVERRIDE: Render multi-payment receipt page with mock data for UI testing
 export const multiPaymentReceipt = async (req, res) => {
-  try {
-    const paymentCode = req.params.payment_code;
-    const { type } = req.params;
-
-    if (!isValidPaymentPaymentType(type)) {
-      return res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
-    }
-
-    const penaltyGroup = await penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
-    const { location } = penaltyGroup.penaltyDetails[0].penalties[0];
-    const paymentDetails = (await paymentService.getGroupPayment(paymentCode)).data;
-    const enrichedPaymentDetails = addFormattedPaymentDateTimes(paymentDetails);
-
-    const { penaltyGroupDetails, ...penaltyGroupData } = penaltyGroup;
-
-    const resp = {
-      paymentType: req.params.type,
-      paymentDetails: enrichedPaymentDetails,
-      ...penaltyGroupData,
-      ...penaltyGroupDetails,
-      location,
-    };
-
-    return res.render('payment/multiPaymentReceipt', resp);
-  } catch (error) {
-    return res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
-  }
+  const paymentCode = req.params.payment_code;
+  const resp = {
+    paymentType: req.params.type || 'FPN',
+    paymentDetails: {
+      Payments: {
+        FPN: {
+          PaymentAmount: 200,
+          PaymentStatus: 'PAID',
+          FormattedDate: '25/09/2025',
+          FormattedTime: '10:00am',
+        }
+      }
+    },
+    registrationNumber: 'TESTGROUP',
+    location: 'Test Group Location',
+    date: '25/09/2025',
+    penaltyDetails: [{ type: 'FPN', penalties: [{ reference: 'GROUPREF', type: 'FPN', amount: 200 }] }],
+    paymentCode,
+  };
+  return res.render('payment/multiPaymentReceipt', resp);
 };

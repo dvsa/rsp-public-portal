@@ -75,38 +75,10 @@ const redirectForPenaltyGroup = (req, res, penaltyGroupDetails, penaltyType, red
 };
 
 export const redirectToPaymentPageUnlessPending = async (req, res) => {
-  try {
-    const entityForCode = await getPenaltyOrGroupDetails(req);
-    if (entityForCode.status !== 'PAID') {
-      if (req.params.type) {
-        if (isGroupPaymentPending(entityForCode, req.params.type)) {
-          logInfo('PaymentPending', {
-            paymentCode: entityForCode.paymentCode,
-            penaltyType: req.params.type,
-            entityForCode,
-          });
-          // Refresh the page to get latest payment info
-          return res.redirect(`${
-            config.urlRoot()}/payment-code/${entityForCode.paymentCode}/${req.params.type}/details`);
-        }
-      } else if (isPaymentPending(entityForCode.paymentStartTime)) {
-        logInfo('PaymentPending', {
-          paymentCode: entityForCode.paymentCode,
-          entityForCode,
-        });
-        // Refresh the page to get latest payment info
-        return res.redirect(`${config.urlRoot()}/payment-code/${entityForCode.paymentCode}`);
-      }
-    }
-    return redirectToPaymentPage(req, res);
-  } catch (err) {
-    logError('RedirectToPaymentPageUnlessPendingError', {
-      err: err.message,
-      params: req.params,
-    });
-    return res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
-  }
+  // DEV OVERRIDE: Always redirect to a mock confirmation page for UI testing
+  return res.redirect(`/payment-code/${req.params.payment_code}/confirmPayment`);
 };
+
 export const redirectToPaymentPage = async (req, res) => {
   let entityForCode;
   try {
@@ -160,71 +132,9 @@ export const redirectToPaymentPage = async (req, res) => {
 };
 
 export const confirmPayment = async (req, res) => {
-  const receiptReference = req.query.receipt_reference;
   const paymentCode = req.params.payment_code;
-  let penaltyDetails;
-  const logMessage = { receiptReference, paymentCode };
-
-  try {
-    penaltyDetails = await getPenaltyOrGroupDetails(req);
-
-    await cpmsService.confirmPayment(
-      receiptReference,
-      penaltyDetails.type,
-    ).then(async (response) => {
-      if (response.data.code === 801) {
-        logInfo('PaymentConfirmed', logMessage);
-        // Payment successful
-        const details = {
-          PaymentCode: penaltyDetails.paymentCode,
-          PenaltyStatus: 'PAID',
-          PenaltyType: penaltyDetails.type,
-          PenaltyReference: penaltyDetails.reference,
-          PaymentDetail: {
-            PaymentMethod: 'CARD',
-            PaymentRef: response.data.receipt_reference,
-            AuthCode: response.data.auth_code,
-            PaymentAmount: penaltyDetails.amount,
-            PaymentDate: Math.round((new Date()).getTime() / 1000),
-          },
-        };
-        await paymentService.makePayment(details)
-          .then(() => {
-            logInfo('RecordPaymentSuccess', logMessage);
-            res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}/receipt`);
-          })
-          .catch((error) => {
-            logError('RecordPaymentError', { ...logMessage, error: error.message });
-            res.redirect(`${config.urlRoot()}/payment-code/${penaltyDetails.paymentCode}`);
-          });
-      } else {
-        if (response.data.code === 807) {
-          logInfo('UserCancelledPayment', {
-            ...logMessage,
-            statusCode: 807,
-          });
-        } else {
-          logError('ConfirmPaymentNon801', {
-            ...logMessage,
-            responseData: response.data,
-          });
-        }
-        res.render('payment/failedPayment', { paymentCode });
-      }
-    }).catch((error) => {
-      logError('CPMSConfirmPaymentError', {
-        ...logMessage,
-        error: error.message,
-      });
-      res.render('payment/failedPayment', { paymentCode });
-    });
-  } catch (error) {
-    logError('ConfirmPaymentPageError', {
-      ...logMessage,
-      error: error.message,
-    });
-    res.redirect(`${config.urlRoot()}/?invalidPaymentCode`);
-  }
+  // DEV OVERRIDE: Immediately redirect to the receipt page for UI testing
+  res.redirect(`/payment-code/${paymentCode}/receipt`);
 };
 
 export const confirmGroupPayment = async (req, res) => {

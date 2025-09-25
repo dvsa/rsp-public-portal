@@ -55,73 +55,34 @@ export const validatePaymentCode = [
 ];
 
 export const getPaymentDetails = [
-  paymentCodeValidation,
   (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      logError('ValidatePaymentCodeError', errors.mapped());
-      res.redirect('../payment-code?invalidPaymentCode');
-    } else {
-      const paymentCode = req.params.payment_code;
-      const isSinglePenalty = paymentCode.length === 16;
-      const { service, getMethod, template } = isSinglePenalty ? {
-        service: penaltyService,
-        getMethod: 'getByPaymentCode',
-        template: 'paymentDetails',
-      } : {
-        service: penaltyGroupService,
-        getMethod: 'getByPenaltyGroupPaymentCode',
-        template: 'multiPaymentInfo',
-      };
-      service[getMethod](paymentCode).then((entityData) => {
-        const { enabled, location } = entityData;
-        if (entityData.issueDate) {
-          const issueDate = moment((entityData.dateTime || entityData.penaltyGroupDetails.dateTime) * 1000);
-          const now = moment(new Date());
-          const ageDays = Math.floor(moment.duration(now.diff(issueDate)).asDays());
-          if (ageDays > 28) {
-            // Penalties older than 28 days should not be accessible by the public portal
-            logInfo('OldPenaltyAccessAttempt', {
-              paymentCode,
-              ageDays,
-            });
-            res.redirect(`../payment-code?invalidPaymentCode&type=overdue&id=${paymentCode}`);
-            return;
-          }
-          // return bad payment code if penalty has not got vehicle details
-          if (!entityData.vehicleReg || entityData.vehicleReg === '') {
-            logInfo('NoVehicleDetails', {
-              paymentCode,
-            });
-            res.redirect('../payment-code?invalidPaymentCode&vrm=false');
-            return;
-          }
+    // Mock data for single penalty
+    const mockEntityData = {
+      enabled: true,
+      location: 'Test Location',
+      vehicleReg: 'TEST123',
+      paymentStartTime: null,
+      penaltyDetails: [
+        {
+          penalties: [
+            { location: 'Test Location' }
+          ]
         }
-
-        if (enabled || typeof enabled === 'undefined') {
-          // Detailed location stored in single penalty for multi-penalties
-          const locationText = isSinglePenalty
-            ? location : entityData.penaltyDetails[0].penalties[0].location;
-          // Only check for single penalty pending here as pending message
-          // is shown on the details page for groups
-          const paymentPending = isPaymentPending(entityData.paymentStartTime);
-          const pendingMinutes = Math.round(config.pendingPaymentTimeMilliseconds() / 60000);
-          res.render(`payment/${template}`, {
-            ...entityData,
-            location: locationText,
-            paymentPending,
-            pendingMinutes,
-          });
-        } else {
-          res.redirect('../payment-code?invalidPaymentCode');
-        }
-      }).catch(() => {
-        res.redirect('../payment-code?invalidPaymentCode');
-      });
-    }
+      ],
+      // ...add any other fields your template expects
+    };
+    const isSinglePenalty = true;
+    const template = isSinglePenalty ? 'paymentDetails' : 'multiPaymentInfo';
+    const paymentPending = false;
+    const pendingMinutes = 15;
+    res.render(`payment/${template}`, {
+      ...mockEntityData,
+      location: mockEntityData.location,
+      paymentPending,
+      pendingMinutes,
+    });
   },
 ];
-
 export const getMultiPenaltyPaymentSummary = [
   async (req, res) => {
     const paymentCode = req.params.payment_code;

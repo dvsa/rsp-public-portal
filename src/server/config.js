@@ -60,7 +60,7 @@ function ensureRelativeUrl(url) {
 }
 
 function assets() {
-  return configuration[configMetadata.publicAssets] ||  path.resolve(__dirname, '..', 'public');
+  return configuration[configMetadata.publicAssets] ||  path.resolve(__dirname, '..', 'dist', 'public');
 }
 
 function clientId() {

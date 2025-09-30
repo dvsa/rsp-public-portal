@@ -41,8 +41,9 @@ export default async () => {
     .map((file) => resolvePath(marcosPath, file));
 
   env.addGlobal('macroFilePaths', macros);
-  env.addGlobal('assets', config.isDevelopment() ? '' : config.assets());
+  env.addGlobal('assets', '');
   env.addGlobal('urlroot', config.urlRoot());
+  env.addGlobal('govukRebrand', true);
 
   // Add lodash as a global for view templates
   env.addGlobal('_', _);
@@ -57,13 +58,15 @@ export default async () => {
   app.use(helmet.crossOriginEmbedderPolicy({ policy: 'credentialless' }));
 
   const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
+  app.use('/', express.static(path.join(__dirname, '..', '..', 'dist', 'public')));
+  app.set('views', path.join(__dirname, '..', '..', 'dist', 'views'));
 
   app.use(helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'", assetsUrl],
       formAction: ['*'],
       scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
-      fontSrc: ['data:'],
+      fontSrc: ["'self'", 'data:', assetsUrl],
       imgSrc: [
         assetsUrl,
         'https://www.google-analytics.com/',

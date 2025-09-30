@@ -12,11 +12,17 @@ module.exports = {
     dvsa: path.resolve(publicJsDir, 'dvsa', 'index.js'),
     cookieManager: path.resolve(publicJsDir, 'cookie-manager.js'),
     goBack: path.resolve(publicJsDir, 'go-back.js'),
+    'google-tag-manager': path.resolve(publicJsDir, 'google-tag-manager.js'),
   },
   output: {
-    filename: '[name].js',
-    libraryTarget: 'commonjs2', // Lambda needs this
-    path: path.resolve(__dirname, 'dist'), // single dist folder
+    filename: (chunkData) => {
+      if (chunkData.chunk.name === 'lambda') {
+        return 'lambda.js'; // keep lambda in dist root (needed by Lambda)
+      }
+      return 'public/[name].js'; // all other JS into dist/public so easier to link in view pages
+    },
+    libraryTarget: 'commonjs2',
+    path: path.resolve(__dirname, 'dist'),
   },
   target: 'node16',
   node: {
@@ -55,9 +61,7 @@ module.exports = {
           to: 'public/all.css',
           transform: (content) => {
             const result = sass.compileString(content.toString(), {
-              loadPaths: ['src/public/scss/',
-                'node_modules',
-              ],
+              loadPaths: ['src/public/scss/', 'node_modules'],
               style: 'compressed',
             });
             return result.css.toString();

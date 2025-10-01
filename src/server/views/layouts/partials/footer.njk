@@ -1,33 +1,32 @@
-<!-- footer -->
-<footer class="group js-footer" id="footer">
-  <div class="footer-wrapper">
-    <div class="footer-meta">
-      <div class="footer-meta-inner">
-        <h5 class="visuallyhidden">Support links</h5>
-        <ul>
-          <li><a href="/cookie-preferences" id="cookies-link">{{ t.footer.cookies }}</a></li>
-          <li><a href="https://www.gov.uk/help/terms-conditions">{{ t.footer.terms_conditions }}</a></li>
-          <li><a href="/accessibility-statement">{{ t.footer.accessibility_statement }}</a></li>
-          <li><a href="/privacy-statement">{{ t.footer.privacy_statement }}</a></li>
-          <li>{{ t.footer.built_by }}</li>
-        </ul>
-        <h5 class="visuallyhidden">Languages</h5>
-          {{ components.translations("translations_footer") }}
-        <div class="open-government-licence">
-            <p class="logo">
-              <a href="https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/" rel="license">Open Government Licence</a>
-            </p>
-            <p>{{ t.footer.licence }}</p>
-        </div>
-        <div class="version-number">Version 3.1.4</div>
-      </div>
+{% from "govuk/components/footer/macro.njk" import govukFooter %}
 
-      <div class="copyright" id="copyright-id" data-testid="copyright">
-          <a href="https://www.nationalarchives.gov.uk/information-management/re-using-public-sector-information/copyright-and-re-use/crown-copyright/">&copy; Crown copyright</a>
-      </div>
-    </div>
-  </div>
-</footer>
-<!-- /footer -->
+{{ govukFooter({
+  meta: {
+    items: [
+      {
+        href: "/cookie-preferences",
+        text: t.footer.cookies,
+        attributes: {
+          id: "cookies-link"
+        }
+      },
+      {
+        href: "https://www.gov.uk/help/terms-conditions",
+        text: t.footer.terms_conditions
+      },
+      {
+        href: "/accessibility-statement",
+        text: t.footer.accessibility_statement
+      },
+      {
+        href: "/privacy-statement",
+        text: t.footer.privacy_statement
+      }
+    ],
+    html: '<p class="govuk-footer__meta-custom">' + t.footer.built_by + '</p>
+           <p class="govuk-footer__meta-custom">' + t.footer.licence + '</p>
+           <p class="govuk-footer__meta-custom">Version 3.1.4</p>'
+  }
+}) }}
 
 <div id="global-app-error" class="app-error hidden"></div>

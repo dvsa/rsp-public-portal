@@ -1,30 +1,40 @@
-{# Import macros for global use in all views #}
-{% set components = {} %}
-{% for component in macroFilePaths %}
-  {% import component as temp %}{% set macro = _.assign(components, temp) %}
-{% endfor %}
-{# end #}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
 <!DOCTYPE html>
-<!--[if lte IE 8 ]><html class="lte-ie8" lang={{ clang|default('en') }}><![endif]-->
-<!--[if IE 9 ]><html class="ie9" lang={{ clang|default('en') }}><![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--><html class="" lang={{ clang|default('en') }}><!--<![endif]-->
+<html lang="{{ clang|default('en') }}" class="govuk-template govuk-template--rebranded">
   <head>
+    <meta charset="utf-8">
+    <title>{{ pageTitle }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0c0c">
 
-    {% include './partials/head.njk' %}
-    {% block header %}{% endblock %}
-
+    <link rel="shortcut icon" href="{{ assets }}/assets/images/favicon.svg" type="image/x-icon">
+    <link rel="stylesheet" href="{{ assets }}/all.css">
   </head>
-  <body class="">
 
-    {% include './partials/no-js-fallback.njk' %}
+  <body class="govuk-template__body">
+    <script>document.body.className += ' js-enabled';</script>
+
     {% include './partials/cookie-banner.njk' %}
     {% include './partials/header.njk' %}
 
-    {% block bodyContentWrapper %}{% endblock %}
+    <div class="govuk-width-container">
+      {% if pageBreadcrumbItems %}
+        {{ govukBreadcrumbs({
+          items: pageBreadcrumbItems
+        }) }}
+      {% endif %}
+
+      <main class="govuk-main-wrapper" id="main-content" role="main">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
 
     {% include './partials/footer.njk' %}
-    {% include './partials/body-scripts.njk' %}
 
+    <script src="{{ assets }}/all.js"></script>
   </body>
 </html>

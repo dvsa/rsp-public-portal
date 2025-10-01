@@ -1,60 +1,16 @@
-{% extends 'layouts/default.layout.njk' %}
+{% block head %}
+  <link rel="stylesheet" href="/stylesheets/govuk-frontend.min.css">
+{% endblock %}
 
-{% set pageTitle = t.site_title %}
-{% set pageBreadcrumbItems = [ 
-    { text: t.breadcrumbs.home } 
-  ]   
-%} 
 {% block content %}
-  {% call components.gridRow() %}
+  <h1 class="govuk-heading-xl">Default page template</h1>
+{% endblock %}
 
-    {% call components.columnTwoThirds() %}
-      {{ components.heading(text=t.home.title, tag='h1', size='xlarge') }}
-      {{ components.paragraph(text=t.home.description) }}
-      {{ components.list(items=[
-        { text: t.home.fixed_penalty },
-        { text: t.home.immobilisation },
-        { text: t.home.court_deposit }
-      ], type='bullet') }}
-      
-      <p>
-        {{ components.notice(text=t.home.info_text) }}
-      </p>
-
-      <div class="panel panel-border-wide">
-        {{ t.home.language_guidance }}
-      </div>
-
-      <p>
-        {{ components.button(text=t.home.start_button, start='true', url='/payment-code') }}
-      </p>
-
-      {{ components.heading(text=t.home.before_start, tag='h3', size='medium') }}
-      <p>{{ t.home.before_start_text }}</p>
-      <ul class="visible-bullets">
-        <li>{{ t.home.payment_code_details }}</li>
-        <li>{{ t.home.payment_method_details }}</li>
-      </ul>
-
-      {{ components.heading(text=t.home.other_ways, tag='h3', size='medium') }}
-      {{ components.heading(text=t.home.phone_heading, tag='h4', size='small') }}
-      <p>{{ t.home.phone_contact_details }}</p>
-      {{ components.link(text=t.home.phone_charges_link, url='https://www.gov.uk/call-charges') }}
-      <p>{{ t.home.phone_info_needed }}</p>
-      <ul class="visible-bullets">
-        <li>{{ t.home.phone_bullet1 }}</li>
-        <li>{{ t.home.phone_bullet2 }}</li>
-        <li>{{ t.home.phone_bullet3 }}</li>
-      </ul>
-      {{ components.heading(text=t.home.post_heading, tag='h4', size='small') }}
-      <p>{{ t.home.post_text }}</p>
-      {{ components.heading(text=t.home.cash_heading, tag='h4', size='small') }}
-      <p>{{ t.home.cash_text }}</p>
-    {%- endcall %}
-
-    {% call components.columnOneThird() %}
-    {%- endcall %}
-
-  {%- endcall %}
-  
+{% block bodyEnd %}
+  {# Run JavaScript at end of the <body>, to avoid blocking the initial render. #}
+  <script type="module" src="/javascripts/govuk-frontend.min.js"></script>
+  <script type="module">
+    import { initAll } from '/javascripts/govuk-frontend.min.js'
+    initAll()
+  </script>
 {% endblock %}

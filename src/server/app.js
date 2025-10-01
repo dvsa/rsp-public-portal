@@ -22,8 +22,11 @@ const SIXTY_DAYS_IN_SECONDS = 5184000;
 export default async () => {
   await config.bootstrap();
 
-  // Create nunjucks fileloader instance for the views folder
-  const nunjucksFileLoader = new nunjucks.FileSystemLoader(config.views(), {
+  // Create nunjucks fileloader instance for the views folder -- edited to use govuk templates
+  const nunjucksFileLoader = new nunjucks.FileSystemLoader([
+    config.views(),
+    path.join(__dirname, '..', '..', 'node_modules', 'govuk-frontend', 'dist'),
+  ], {
     noCache: true,
   });
 

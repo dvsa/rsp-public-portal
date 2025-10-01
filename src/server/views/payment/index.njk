@@ -1,95 +1,69 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
 
-{% set pageTitle = t.site_title %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% set pageTitle = t.payment_code_page.title %}
 {% set pageBreadcrumbItems = [
-    { text: t.breadcrumbs.home, url: '/' },
+    { text: t.breadcrumbs.home, href: '/' },
     { text: t.breadcrumbs.payment_code }
-  ] 
-%}
+] %}
 
 {% block content %}
-  
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
-      {% call components.form(action='/payment-code', method='post') %}
-        {% if invalidPaymentCode %}
-          {% if type === 'overdue' %}
-            {{ components.validation(title=t.payment_code_page.overdue_error.title, description=t.payment_code_page.overdue_error.description) }}
-          {% else %}
-            {{ components.validation(title=t.payment_code_page.error.title, description=t.payment_code_page.error.description) }}
-          {% endif %}
+      {% if invalidPaymentCode %}
+        {{ govukErrorSummary({
+          titleText: t.payment_code_page.error.title if type !== 'overdue' else t.payment_code_page.overdue_error.title,
+          errorList: [
+            {
+              text: t.payment_code_page.error.invalid_code,
+              href: "#payment_code"
+            }
+          ]
+        }) }}
+      {% endif %}
+
+      <h1 class="govuk-heading-xl">{{ t.payment_code_page.title }}</h1>
+
+      <form method="post" action="/payment-code" novalidate>
+
+        {{ govukInput({
+          id: "payment_code",
+          name: "payment_code",
+          label: {
+            text: t.payment_code_page.payment_code
+          },
+          hint: {
+            text: t.payment_code_page.hint
+          },
+          errorMessage: {
+            text: t.payment_code_page.error.invalid_code
+          } if invalidPaymentCode,
+          attributes: {
+            maxlength: 19
+          }
+        }) }}
+
+        {% if type !== 'overdue' %}
+          {{ govukDetails({
+            summaryText: t.payment_code_page.hidden_panel_title,
+            html: '<p>' + t.penalty_details_page.details_assistance_panel_paragraph_1 + '</p>
+                   <ul class="govuk-list govuk-list--bullet">
+                     <li>' + t.penalty_details_page.tell_examiner + '</li>
+                     <li>' + t.penalty_details_page.call_dvsa + '</li>
+                   </ul>'
+          }) }}
         {% endif %}
 
-        {{ components.heading(text=t.payment_code_page.title, tag='h1', size='xlarge') }}
-        {{ components.field(id='payment_code', label=t.payment_code_page.payment_code, hint=t.payment_code_page.hint, error=t.payment_code_page.error.invalid_code if invalidPaymentCode, maxlength=19) }}
-        {% if type === 'overdue' %}
-          <ul>
-            {% if id %}
-              <p>
-                {{ components.heading(text=t.payment_code_page.overdue_error.payment_code_colon, tag='b', size='normal') }}
-                {{ id }}
-              </p>
-            {% endif %}
-            <li>
-              {{ t.payment_code_page.overdue_error.assistance_intro }}
-            </li>
-            <br />
-            <li>
-              {{ t.payment_code_page.overdue_error.assistance_instructions }}
-            </li>
-            <br />
-            <li>
-              {{ t.payment_code_page.overdue_error.contact }}
-            </li>
-            <br />
-            <div class="panel panel-border-narrow">
-              <ul>
-                <li>
-                  {{ t.payment_code_page.contact_title }}
-                </li>
-                <li>
-                  {{ components.link(url="mailto:"+t.payment_code_page.contact_email, text=t.payment_code_page.contact_email) }}
-                </li>
-                <li>
-                  {{ t.payment_code_page.contact_phone }}
-                </li>
-                <li>
-                  {{ t.payment_code_page.contact_opening_hours }}
-                </li>
-                <li>
-                  {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
-                </li>
-              </ul>
-            </div>
-          </ul>
-        {% else %}
-          <p>
-            <details>
-              <summary><span class="summary">{{ t.payment_code_page.hidden_panel_title }}</span></summary>
-              <div class="panel panel-border-narrow">
-                <p>
-                  {{ t.penalty_details_page.details_assistance_panel_paragraph_1 }}
-                </p>
-                <ul>
-                  <li>
-                    {{ t.penalty_details_page.tell_examiner }}
-                  </li>
-                  <li>
-                    {{ t.penalty_details_page.call_dvsa }}
-                    <br />
-                    {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
-                    <br />
-                    {{ t.penalty_details_page.info_needed }}
-                  </li>
-                </ul>
-              </div>
-            </details>    
-          </p>
-        {% endif %}
-        {{ components.button(text=t.payment_code_page.continue_button, type='submit') }}
-      {%- endcall %}
-    {%- endcall %}
-  {%- endcall %}
-  
+        {{ govukButton({
+          text: t.payment_code_page.continue_button
+        }) }}
+      </form>
+
+    </div>
+  </div>
 {% endblock %}

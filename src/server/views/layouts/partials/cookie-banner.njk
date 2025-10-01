@@ -1,24 +1,24 @@
-<!-- cookie-banner -->
-{% block content %}
-  <div id="global-cookie-banner" role="region" aria-label="cookie banner" class="hidden">
-    <div class="cookie-banner">
-      {% call components.gridRow() %}
-        {% call components.columnTwoThirds() %}
-          <div class="cookie-banner__message">
-            <span class="cookie-banner__heading">{{ t.cookie_banner.title }}</span>
-            {{ components.paragraph(text=t.cookie_banner.message) }}
-          </div>
-          <div class="cookie-banner__buttons">
-            {% call components.columnHalf() %}
-              <button type="submit" class="button button--submit">{{ t.cookie_banner.button_accept }}</button>
-            {%- endcall %}
-            {% call components.columnHalf() %}
-              {{ components.button(text=t.cookie_banner.button_preferences, url="/cookie-preferences") }}
-            {%- endcall %}
-          </div>
-        {%- endcall %}
-      {%- endcall %}
-    </div>
-  </div>
-{% endblock %}
-<!-- /cookie-banner -->
+{% from "govuk/components/cookie-banner/macro.njk" import govukCookieBanner %}
+
+<div id="global-cookie-banner" class="hidden">
+  {{ govukCookieBanner({
+    ariaLabel: "Cookies on DVSA roadside fines portal",
+    messages: [
+      {
+        headingText: t.cookie_banner.title,
+        html: '<p class="govuk-body">' + t.cookie_banner.message + '</p>',
+        actions: [
+          {
+            text: t.cookie_banner.button_accept,
+            type: "button",
+            classes: "button--submit"
+          },
+          {
+            text: t.cookie_banner.button_preferences,
+            href: "/cookie-preferences"
+          }
+        ]
+      }
+    ]
+  }) }}
+</div>

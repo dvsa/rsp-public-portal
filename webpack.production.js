@@ -54,7 +54,7 @@ module.exports = merge(common, {
     new BundlePlugin({
       archives: [
         {
-          inputPath: `.webpack/${LAMBDA_NAME}`,
+          inputPath: OUTPUT_FOLDER,
           outputPath: OUTPUT_FOLDER,
           outputName: `${REPO_NAME}-${BRANCH_NAME}-lambda`,
           ignore: ['public'], // public assets are copied separately
@@ -62,7 +62,7 @@ module.exports = merge(common, {
       ],
       assets: [
         {
-          inputPath: `.webpack/${LAMBDA_NAME}/public`,
+          inputPath: `${OUTPUT_FOLDER}/public`,
           outputPath: `${OUTPUT_FOLDER}/${REPO_NAME}-cloudfront-assets-${BRANCH_NAME}`,
         },
       ],

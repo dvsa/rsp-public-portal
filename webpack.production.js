@@ -4,13 +4,17 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const archiver = require('archiver');
 const fs = require('fs-extra');
-const branchName = require('current-git-branch');
+const { execSync } = require('child_process');
 
 const LAMBDA_NAME = 'serveExpressApp';
 const OUTPUT_FOLDER = './dist';
 const REPO_NAME = 'rsp-public';
-const BRANCH_NAME = branchName().replace(/\//g, '-');
-
+let BRANCH_NAME;
+try {
+  BRANCH_NAME = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim().replace(/\//g, '-');
+} catch (error) {
+  BRANCH_NAME = 'main';
+}
 class BundlePlugin {
   constructor({ archives = [], assets = [] }) {
     this.archives = archives;

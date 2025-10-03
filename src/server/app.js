@@ -37,13 +37,6 @@ export default async () => {
     },
   });
 
-  const marcosPath = path.resolve(config.views(), 'macros');
-
-  // Gets absolute path of each macro file
-  const macros = walkSync(marcosPath, { directories: false })
-    .map((file) => resolvePath(marcosPath, file));
-
-  env.addGlobal('macroFilePaths', macros);
   env.addGlobal('assets', '');
   env.addGlobal('urlroot', config.urlRoot());
   env.addGlobal('govukRebrand', true);

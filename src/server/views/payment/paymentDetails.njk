@@ -1,9 +1,14 @@
 {% extends 'layouts/default.layout.njk' %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
-    { text: t.breadcrumbs.home, url: '/' },
-    { text: t.breadcrumbs.payment_code, url: '/payment-code' },
+    { text: t.breadcrumbs.home, href: '/' },
+    { text: t.breadcrumbs.payment_code, href: '/payment-code' },
     { text: t.breadcrumbs.penalty_details }
   ]
 %}
@@ -13,153 +18,181 @@
 
 {% block content %}
 
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-          {% call components.form(action='/payment-code/'+paymentCode+'/payment', method='POST')  %}
-      {{ components.heading(text=t.penalty_details_page.penalty_details_title, tag='h1', size='xlarge') }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ t.penalty_details_page.penalty_details_title }}</h1>
+
       {% if paid == false %}
-        {{ components.heading(text=t.penalty_details_page.intro_part_paid, tag='h2', size='medium') }}
+        <h2 class="govuk-heading-m">{{ t.penalty_details_page.intro_part_paid }}</h2>
       {% else %}
-        {{ components.heading(text=t.penalty_details_page.intro_paid, tag='h2', size='medium') }}
-        <p>
+        <h2 class="govuk-heading-m">{{ t.penalty_details_page.intro_paid }}</h2>
+        <p class="govuk-body">
           {{ t.feedback_prompt.easy_to_use }}
-          <a href="{{ t.feedback_prompt.link }}" target="_blank">
+          <a href="{{ t.feedback_prompt.link }}" class="govuk-link" target="_blank">
             {{ t.feedback_prompt.tell_us }}</a>
           {{ t.feedback_prompt.improve_service }}
         </p>
       {% endif %}
-        <table class="details single-penalty-summary">
-          <tbody>
-            <tr>
-              <td>{{ t.penalty_details.payment_code }}</td>
-              <td colspan=4>{{ paymentCode }}</td>
-            </tr>
-            <tr>
-              <td>{{ t.penalty_details.vehicle_reg }}</td>
-              <td colspan=4>{{ vehicleReg if complete else t.penalty_details.not_available }}</td>
-            </tr>
-            <tr>
-              <td>{{ t.penalty_details.penalty_date }}</td>
-              <td colspan=4>{{ issueDate if complete else 'Not available' }}</td>
-            </tr>
-            <tr>
-              <td>{{ t.penalty_details.location }}</td>
-              <td colspan=4>{{ location | escape if complete else 'Not available' }}</td>
-            </tr>
-            <tr>
-              {% if type == 'FPN' %}
-                <td data-testid="type_fpn">{{ t.penalty_details.type_fixed_penalty }}</td>
-              {% elif type == 'CDN' %}
-                <td data-testid="type_cdn">{{ t.penalty_details.type_court_deposit }}</td>
-              {% elif type == 'IM' %}
-                <td data-testid="type_im">{{ t.penalty_details.type_immobilisation }}</td>
-              {% endif %}
-              <td>&pound;{{ amount }}</td>
-              <td class="{{ statusClass }}">
-                <strong>
-                  {% if paid %}
-                    {{ t.penalty_details.status_paid }}
-                    &nbsp;&nbsp;
-                    <img src="{{ assets }}/images/icon-check.png" alt="" />
-                  {% else %}
-                    {{ t.penalty_details.status_unpaid }}
-                  {% endif %}
-                </strong>
-              </td>
-              <td>
-                {% if paid %}
-                  <a href="{{paymentCode}}/receipt">{{ t.penalty_details.receipt_link }}</a>
-                {% endif %}
-              </td>
-            </tr>
-            <tr>
-              <td>{{ t.penalty_details.reference}}</td>
-              <td colspan=4>{{ formattedReference }}</td>
-            </tr>
-            {% if paymentAuthCode %}
-              <tr>
-                <td>{{t.payment_details.authorisation_code}}</td>
-                <td colspan=4>{{ paymentAuthCode }}</td>
-              </tr>
-            {% endif %}
-            {% if paid %}
-              <tr>
-                <td>{{t.payment_details.paid_on}}</td>
-                <td colspan=4>{{ paymentDate }}</td>
-              </tr>
-            {% endif %}
-          </tbody>
-        </table>
-        <p>
-        {% if paid == false %}
-          {% if paymentPending %}
-            <p>
-              {{ components.notice(text=t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes)) }}
-            </p>
-          {% else %}
-            <p>
-              {{ components.notice(text=t.home.info_text) }}
-            </p>
-          {% endif %}
 
+      {% set typeLabel = t.penalty_details.type_fixed_penalty if type == 'FPN' else (t.penalty_details.type_court_deposit if type == 'CDN' else t.penalty_details.type_immobilisation) %}
+      {% set typeTestId = 'type_fpn' if type == 'FPN' else ('type_cdn' if type == 'CDN' else 'type_im') %}
+
+      {% set statusCell %}
+        <strong>
+          {% if paid %}
+            {{ t.penalty_details.status_paid }}
+            &nbsp;&nbsp;
+            <img src="{{ assets }}/images/icon-check.png" alt="" />
+          {% else %}
+            {{ t.penalty_details.status_unpaid }}
+          {% endif %}
+        </strong>
+      {% endset %}
+
+      {% set tableRows = [
+        [
+          { text: t.penalty_details.payment_code, classes: 'govuk-!-font-weight-bold' },
+          { text: paymentCode, colspan: 4 }
+        ],
+        [
+          { text: t.penalty_details.vehicle_reg, classes: 'govuk-!-font-weight-bold' },
+          { text: (vehicleReg if complete else t.penalty_details.not_available), colspan: 4 }
+        ],
+        [
+          { text: t.penalty_details.penalty_date, classes: 'govuk-!-font-weight-bold' },
+          { text: (issueDate if complete else 'Not available'), colspan: 4 }
+        ],
+        [
+          { text: t.penalty_details.location, classes: 'govuk-!-font-weight-bold' },
+          { text: (location | escape if complete else 'Not available'), colspan: 4 }
+        ],
+        [
+          { text: typeLabel, classes: 'govuk-!-font-weight-bold', attributes: { 'data-testid': typeTestId } },
+          { text: '£' + amount|string },
+          { html: statusCell, classes: statusClass },
+          { html: ('<a href="' + paymentCode + '/receipt" class="govuk-link">' + t.penalty_details.receipt_link + '</a>') if paid else '' }
+        ],
+        [
+          { text: t.penalty_details.reference, classes: 'govuk-!-font-weight-bold' },
+          { text: formattedReference, colspan: 4 }
+        ]
+      ] %}
+
+      {% if paymentAuthCode %}
+        {% set _ = tableRows.push([
+          { text: t.payment_details.authorisation_code, classes: 'govuk-!-font-weight-bold' },
+          { text: paymentAuthCode, colspan: 4 }
+        ]) %}
+      {% endif %}
+
+      {% if paid %}
+        {% set _ = tableRows.push([
+          { text: t.payment_details.paid_on, classes: 'govuk-!-font-weight-bold' },
+          { text: paymentDate, colspan: 4 }
+        ]) %}
+      {% endif %}
+
+      {{ govukTable({
+        rows: tableRows
+      }) }}
+
+      {% if paid == false %}
+        {% if paymentPending %}
+          {{ govukWarningText({
+            text: t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes),
+            iconFallbackText: "Warning"
+          }) }}
+        {% else %}
+          {{ govukWarningText({
+            text: t.home.info_text,
+            iconFallbackText: "Warning"
+          }) }}
+        {% endif %}
+
+        <form method="post" action="/payment-code/{{ paymentCode }}/payment">
           <input type="hidden" name="reference" value="{{ reference }}">
           <input type="hidden" name="type" value="{{ type }}">
           <input type="hidden" name="amount" value="{{ amount }}">
           <input type="hidden" name="paymentCode" value="{{ paymentCode }}">
-          {{ components.button(text=t.penalty_details_page.continue_to_payment_button, type="submit", disabled=paymentPending) }}
-          <p>
-            <details>
-              <summary><span class="summary">{{ t.penalty_details_page.details_assistance_panel_title }}</span></summary>
-              <div class="panel panel-border-narrow">
-                <p>
-                  {{ t.penalty_details_page.details_assistance_panel_paragraph_1 }}
-                </p>
-                <ul>
-                  <li>
-                    {{ t.penalty_details_page.tell_examiner }}
-                  </li>
-                  <li>
-                    {{ t.penalty_details_page.call_dvsa }}
-                    <br />
-                    {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
-                    <br />
-                    {{ t.penalty_details_page.info_needed }}
-                  </li>
-                </ul>
-              </div>
-            </details>
-          </p>
-          {{ components.heading(text=t.home.other_ways, tag='h2', size='medium') }}
-          {{ components.heading(text=t.home.phone_heading, tag='h3', size='small') }}
-          <p>{{ t.home.phone_contact_details }}</p>
-          {{ components.link(text=t.home.phone_charges_link, url='https://www.gov.uk/call-charges') }}
-          <p>{{ t.home.phone_info_needed }}</p>
-          <ul class="visible-bullets">
-            <li>{{ t.home.phone_bullet1 }}</li>
-            <li>{{ t.home.phone_bullet2 }}</li>
-            <li>{{ t.home.phone_bullet3 }}</li>
-          </ul>
-          {{ components.heading(text=t.home.post_heading, tag='h3', size='small') }}
-          <p>{{ t.home.post_text }}</p>
-          {{ components.heading(text=t.home.cash_heading, tag='h3', size='small') }}
-          <p>{{ t.home.cash_text }}</p>
-        {% else %}
-          <h3 class="heading-medium">{{ t.payment_details.payment_receipt_print_header  }}</h3>
-          <div class="panel panel-border-wide">
-            {{ t.payment_details.payment_receipt_print_info }}
-          </div>
-          <br />
-        {% endif %}
-      {%- endcall %}
-    {%- endcall %}
-    {% call components.columnOneThird() %}
+
+          {{ govukButton({
+            text: t.penalty_details_page.continue_to_payment_button,
+            disabled: paymentPending
+          }) }}
+        </form>
+
+        {{ govukDetails({
+          summaryText: t.penalty_details_page.details_assistance_panel_title,
+          html: '<p class="govuk-body">' + t.penalty_details_page.details_assistance_panel_paragraph_1 + '</p>
+                 <ul class="govuk-list govuk-list--bullet">
+                   <li>' + t.penalty_details_page.tell_examiner + '</li>
+                   <li>' + t.penalty_details_page.call_dvsa + '<br>
+                     <a href="https://www.gov.uk/call-charges" class="govuk-link">' + t.penalty_details_page.call_charges_link + '</a><br>
+                     ' + t.penalty_details_page.info_needed + '
+                   </li>
+                 </ul>'
+        }) }}
+
+        <h2 class="govuk-heading-m">{{ t.home.other_ways }}</h2>
+
+        <h3 class="govuk-heading-s">{{ t.home.phone_heading }}</h3>
+        <p class="govuk-body">{{ t.home.phone_contact_details }}</p>
+        <p class="govuk-body">
+          <a href="https://www.gov.uk/call-charges" class="govuk-link">{{ t.home.phone_charges_link }}</a>
+        </p>
+        <p class="govuk-body">{{ t.home.phone_info_needed }}</p>
+        <ul class="govuk-list govuk-list--bullet">
+          <li>{{ t.home.phone_bullet1 }}</li>
+          <li>{{ t.home.phone_bullet2 }}</li>
+          <li>{{ t.home.phone_bullet3 }}</li>
+        </ul>
+
+        <h3 class="govuk-heading-s">{{ t.home.post_heading }}</h3>
+        <p class="govuk-body">{{ t.home.post_text }}</p>
+
+        <h3 class="govuk-heading-s">{{ t.home.cash_heading }}</h3>
+        <p class="govuk-body">{{ t.home.cash_text }}</p>
+      {% else %}
+        <h3 class="govuk-heading-m">{{ t.payment_details.payment_receipt_print_header }}</h3>
+        <div class="govuk-inset-text">
+          {{ t.payment_details.payment_receipt_print_info }}
+        </div>
+      {% endif %}
+    </div>
+
+    <div class="govuk-grid-column-one-third">
       <aside class="govuk-related-items" role="complementary">
-        {{ components.heading(text=t.home.language_guidance_header + ':', tag='h3', size='small', id='language-links-header' )}}
+        <h3 class="govuk-heading-s" id="language-links-header">{{ t.home.language_guidance_header }}:</h3>
         <nav role="navigation" aria-labelledby="language-links-header">
-          {{ components.translations("translations_side", "font-xsmall") }}
+          <ul class="govuk-list govuk-!-font-size-14" id="language-links" data-testid="language-links">
+            <li><a href="?clang=bg" class="govuk-link">български</a></li>
+            <li><a href="?clang=cs" class="govuk-link">Čeština</a></li>
+            <li><a href="?clang=sr" class="govuk-link">Српски језик</a></li>
+            <li><a href="?clang=cy" class="govuk-link">Cymraeg</a></li>
+            <li><a href="?clang=de" class="govuk-link">Deutsch</a></li>
+            <li><a href="?clang=el" class="govuk-link">Ελληνικά</a></li>
+            <li><a href="?clang=et" class="govuk-link">Eesti keel</a></li>
+            <li><a href="?clang=es" class="govuk-link">Español</a></li>
+            <li><a href="?clang=fr" class="govuk-link">Français</a></li>
+            <li><a href="?clang=hr" class="govuk-link">Hrvatski</a></li>
+            <li><a href="?clang=it" class="govuk-link">Italiano</a></li>
+            <li><a href="?clang=lv" class="govuk-link">Latviešu</a></li>
+            <li><a href="?clang=lt" class="govuk-link">Lietuvių</a></li>
+            <li><a href="?clang=hu" class="govuk-link">Magyar</a></li>
+            <li><a href="?clang=nl" class="govuk-link">Nederlands</a></li>
+            <li><a href="?clang=pl" class="govuk-link">Polski</a></li>
+            <li><a href="?clang=pt" class="govuk-link">Português</a></li>
+            <li><a href="?clang=ru" class="govuk-link">Ру́сский</a></li>
+            <li><a href="?clang=ro" class="govuk-link">Română</a></li>
+            <li><a href="?clang=sk" class="govuk-link">Slovenčina</a></li>
+            <li><a href="?clang=sl" class="govuk-link">Slovenščina</a></li>
+            <li><a href="?clang=tr" class="govuk-link">Türkçe</a></li>
+            <li><a href="?clang=ua" class="govuk-link">Українська</a></li>
+            <li><a href="?clang=en" class="govuk-link">English</a></li>
+          </ul>
         </nav>
       </aside>
-    {%- endcall %}
-  {%- endcall %}
+    </div>
+  </div>
 
 {% endblock %}

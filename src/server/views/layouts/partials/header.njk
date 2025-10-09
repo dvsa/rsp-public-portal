@@ -13,13 +13,4 @@
   containerClasses: "govuk-width-container"
 }) }}
 
-{% if not hideLayoutPhaseBanner %}
-  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
-  {{ govukPhaseBanner({
-    tag: {
-      text: "beta"
-    },
-    html: t.phase_banner.new_service + ' <a class="govuk-link" href="' + t.phase_banner.feedback_link + '">' + t.phase_banner.feedback + '</a> ' + t.phase_banner.help_improve
-  }) }}
-{% endif %}

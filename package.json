@@ -7,7 +7,7 @@
   },
   "main": "handler.js",
   "scripts": {
-    "bundle": "npm run clean && npm run build-prod && webpack",
+    "bundle": "npm run clean && npm run build-prod",
     "build": "npm run build-server && npm run build-frontend",
     "build-server": "babel ./src/server --out-dir ./build/server --ignore ./src/server/public/ --copy-files --source-maps",
     "build-frontend": "webpack --config webpack.common.js",

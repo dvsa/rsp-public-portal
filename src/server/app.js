@@ -8,8 +8,6 @@ import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import nunjucks from 'nunjucks';
 import path from 'path';
 import _ from 'lodash';
-import walkSync from 'walk-sync';
-import resolvePath from 'resolve-path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import nocache from 'nocache';

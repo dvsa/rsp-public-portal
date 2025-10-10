@@ -57,7 +57,7 @@ module.exports = merge(common, {
           inputPath: OUTPUT_FOLDER,
           outputPath: OUTPUT_FOLDER,
           outputName: `${REPO_NAME}-${BRANCH_NAME}-lambda`,
-          ignore: ['public'], // public assets are copied separately
+          ignore: ['public', '*.zip', '**/*.zip', `${REPO_NAME}-cloudfront-assets-*`], // public assets are copied separately
         },
       ],
       assets: [

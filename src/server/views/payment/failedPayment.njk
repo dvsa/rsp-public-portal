@@ -1,20 +1,23 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
-    { text: t.breadcrumbs.home, url: '/' },
-    { text: t.breadcrumbs.payment_code, url: '/payment-code' },
+    { text: t.breadcrumbs.home, href: '/' },
+    { text: t.breadcrumbs.payment_code, href: '/payment-code' },
     { text: t.breadcrumbs.payment }
-  ] 
-%}
+] %}
 
 {% block content %}
-  
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-        {{ components.heading(text=t.failed_payment_page.title, tag='h1', size='xlarge') }}
-        <p>{{ t.failed_payment_page.info }}</p>
-        {{ components.button(text=t.failed_payment_page.start_again_button, url='/payment-code/' + paymentCode) }}
-    {%- endcall %}
-  {%- endcall %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ t.failed_payment_page.title }}</h1>
+      <p class="govuk-body">{{ t.failed_payment_page.info }}</p>
+      {{ govukButton({
+        text: t.failed_payment_page.start_again_button,
+        href: '/payment-code/' + paymentCode
+      }) }}
+    </div>
+  </div>
 {% endblock %}

@@ -1,141 +1,136 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
   {
     text: t.breadcrumbs.home,
-    url: '/'
+    href: '/'
   }, {
     text: t.breadcrumbs.cookie_details
   }
 ] %}
 
 {% block content %}
-
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       <div class="cookie-details">
-        {{ components.heading(text=t.cookie_details_page.title, tag='h1', size='xlarge') }}
-        <p>{{ t.cookie_details_page.cookies_text_definition }}</p>
+        <h1 class="govuk-heading-xl">{{ t.cookie_details_page.title }}</h1>
+        <p class="govuk-body">{{ t.cookie_details_page.cookies_text_definition }}</p>
 
-        {{ components.heading(text=t.cookie_details_page.analytics_title, tag='h2', size='medium') }}
-        <p>{{ t.cookie_details_page.analytics_text }}</p>
+        <h2 class="govuk-heading-m">{{ t.cookie_details_page.analytics_title }}</h2>
+        <p class="govuk-body">{{ t.cookie_details_page.analytics_text }}</p>
 
-        <div role="note" aria-label="information" class="inset-text">{{ t.cookie_details_page.analytics_privacy }}</div>
+        {{ govukInsetText({
+          text: t.cookie_details_page.analytics_privacy
+        }) }}
 
-        <p>{{ t.cookie_details_page.analytics_info }}</p>
+        <p class="govuk-body">{{ t.cookie_details_page.analytics_info }}</p>
 
-        <ul class="list-bullet">
+        <ul class="govuk-list govuk-list--bullet">
           <li>{{ t.cookie_preferences_page.analytics_text_list_one }}</li>
           <li>{{ t.cookie_preferences_page.analytics_text_list_two }}</li>
           <li>{{ t.cookie_preferences_page.analytics_text_list_three }}</li>
         </ul>
 
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ t.cookie_details_page.analytics_cookie_name_one }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_purpose_one }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_expires_one }}</td>
-            </tr>
-              <td>{{ t.cookie_details_page.analytics_cookie_name_two }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_purpose_two }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_expires_two }}</td>
-            </tr>
-            </tr>
-              <td>{{ t.cookie_details_page.analytics_cookie_name_three }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_purpose_three }}</td>
-              <td>{{ t.cookie_details_page.analytics_cookie_expires_three }}</td>
-            </tr>
-          </tbody>
-        </table>
+        {{ govukTable({
+          head: [
+            { text: t.cookie_details_page.table_header_name },
+            { text: t.cookie_details_page.table_header_purpose },
+            { text: t.cookie_details_page.table_header_expires }
+          ],
+          rows: [
+            [
+              { text: t.cookie_details_page.analytics_cookie_name_one },
+              { text: t.cookie_details_page.analytics_cookie_purpose_one },
+              { text: t.cookie_details_page.analytics_cookie_expires_one }
+            ],
+            [
+              { text: t.cookie_details_page.analytics_cookie_name_two },
+              { text: t.cookie_details_page.analytics_cookie_purpose_two },
+              { text: t.cookie_details_page.analytics_cookie_expires_two }
+            ],
+            [
+              { text: t.cookie_details_page.analytics_cookie_name_three },
+              { text: t.cookie_details_page.analytics_cookie_purpose_three },
+              { text: t.cookie_details_page.analytics_cookie_expires_three }
+            ]
+          ]
+        }) }}
 
-        {{ components.heading(text=t.cookie_details_page.essential_cookies_title, tag='h2', size='medium') }}
+        <h2 class="govuk-heading-m">{{ t.cookie_details_page.essential_cookies_title }}</h2>
 
-        {{ components.heading(text=t.cookie_details_page.essential_cookies_language_title, tag='h3', size='small') }}
-        <p>{{ t.cookie_details_page.essential_cookies_language_text }}</p>
+        <h3 class="govuk-heading-s">{{ t.cookie_details_page.essential_cookies_language_title }}</h3>
+        <p class="govuk-body">{{ t.cookie_details_page.essential_cookies_language_text }}</p>
 
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ t.cookie_details_page.language_cookie_name_one }}</td>
-              <td>{{ t.cookie_details_page.language_cookie_purpose_one }}</td>
-              <td>{{ t.cookie_details_page.language_cookie_expires_one }}</td>
-            </tr>
-          </tbody>
-        </table>
+        {{ govukTable({
+          head: [
+            { text: t.cookie_details_page.table_header_name },
+            { text: t.cookie_details_page.table_header_purpose },
+            { text: t.cookie_details_page.table_header_expires }
+          ],
+          rows: [
+            [
+              { text: t.cookie_details_page.language_cookie_name_one },
+              { text: t.cookie_details_page.language_cookie_purpose_one },
+              { text: t.cookie_details_page.language_cookie_expires_one }
+            ]
+          ]
+        }) }}
 
-        {{ components.heading(text=t.cookie_details_page.essential_cookies_banner_title, tag='h3', size='small') }}
-        <p>{{ t.cookie_details_page.essential_cookies_banner_text }}</p>
+        <h3 class="govuk-heading-s">{{ t.cookie_details_page.essential_cookies_banner_title }}</h3>
+        <p class="govuk-body">{{ t.cookie_details_page.essential_cookies_banner_text }}</p>
 
-        <table>
-          <thead>
-            <tr>
-              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ t.cookie_details_page.cookie_preferences_cookie_name_one }}</td>
-              <td>{{ t.cookie_details_page.cookie_preferences_cookie_purpose_one }}</td>
-              <td>{{ t.cookie_details_page.cookie_preferences_cookie_expires_one }}</td>
-            </tr>
-          </tbody>
-        </table>
+        {{ govukTable({
+          head: [
+            { text: t.cookie_details_page.table_header_name },
+            { text: t.cookie_details_page.table_header_purpose },
+            { text: t.cookie_details_page.table_header_expires }
+          ],
+          rows: [
+            [
+              { text: t.cookie_details_page.cookie_preferences_cookie_name_one },
+              { text: t.cookie_details_page.cookie_preferences_cookie_purpose_one },
+              { text: t.cookie_details_page.cookie_preferences_cookie_expires_one }
+            ]
+          ]
+        }) }}
 
-        {{ components.heading(text=t.cookie_details_page.third_party_cookies_title, tag='h3', size='medium') }}
-        {{ components.heading(text=t.cookie_details_page.imperva_incapsula_cookies_title, tag='h3', size='small') }}
-        <p>{{ t.cookie_details_page.imperva_incapsula_cookies_text }}</p>
+        <h3 class="govuk-heading-m">{{ t.cookie_details_page.third_party_cookies_title }}</h3>
+        <h3 class="govuk-heading-s">{{ t.cookie_details_page.imperva_incapsula_cookies_title }}</h3>
+        <p class="govuk-body">{{ t.cookie_details_page.imperva_incapsula_cookies_text }}</p>
 
-         <table>
-          <thead>
-            <tr>
-              <th scope="col">{{ t.cookie_details_page.table_header_name }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_purpose }}</th>
-              <th scope="col">{{ t.cookie_details_page.table_header_expires }}</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_one }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_one }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_one }}</td>
-            </tr>
-            <tr>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_two }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_two }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_two }}</td>
-            </tr>
-            <tr>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookies_name_three }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_purpose_three }}</td>
-              <td>{{ t.cookie_details_page.imperva_incapsula_cookie_expires_three }}</td>
-            </tr>
-          </tbody>
-        </table>
+        {{ govukTable({
+          head: [
+            { text: t.cookie_details_page.table_header_name },
+            { text: t.cookie_details_page.table_header_purpose },
+            { text: t.cookie_details_page.table_header_expires }
+          ],
+          rows: [
+            [
+              { text: t.cookie_details_page.imperva_incapsula_cookies_name_one },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_purpose_one },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_expires_one }
+            ],
+            [
+              { text: t.cookie_details_page.imperva_incapsula_cookies_name_two },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_purpose_two },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_expires_two }
+            ],
+            [
+              { text: t.cookie_details_page.imperva_incapsula_cookies_name_three },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_purpose_three },
+              { text: t.cookie_details_page.imperva_incapsula_cookie_expires_three }
+            ]
+          ]
+        }) }}
 
-        {{ components.heading(text=t.cookie_details_page.change_preferences_title, tag='h2', size='medium') }}
-        <p>{{ t.cookie_details_page.change_preferences_text }}</p>
+        <h2 class="govuk-heading-m">{{ t.cookie_details_page.change_preferences_title }}</h2>
+        <p class="govuk-body">{{ t.cookie_details_page.change_preferences_text }}</p>
 
       </div>
-
-    {%- endcall %}
-  {%- endcall %}
+    </div>
+  </div>
 {% endblock %}

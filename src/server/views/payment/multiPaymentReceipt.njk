@@ -1,4 +1,9 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = t.site_title %}
 
@@ -19,47 +24,43 @@
     {% set nextPaymentButtonText = t.penalty_details_page.continue_immobilisation_fee %}
   {% endif %}
 {% endif %}
-  
+
 {% block content %}
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       {% for type, payment in paymentDetails.Payments %}
         {% if type == paymentType  %}
           {% if payment.PaymentStatus == 'PAID' %}
-            <div class="govuk-box-highlight">
-              <h1 class="heading-large">
-                {{ t.payment_details.payment_success }}
-              </h1>
-              <p class="font-medium">
-                {{ paymentBannerTitle }}
-              </p>
-            </div>
+            {{ govukPanel({
+              titleText: t.payment_details.payment_success,
+              html: '<p class="govuk-body govuk-!-font-size-24">' + paymentBannerTitle + '</p>',
+              classes: "govuk-!-margin-bottom-7"
+            }) }}
           {% endif %}
         {% endif %}
       {% endfor %}
 
       {% if nextPayment %}
         {% set nextUrl = "/payment-code/" + paymentCode + "/" + nextPayment.PaymentCategory + "/details" %}
-        {% if nextPayment.PaymentCategory == 'FPN' %}
-          {% set nextPaymentButtonText = t.penalty_details_page.continue_fixed_penalties %}
-        {% elif nextPayment.PaymentCategory == 'CDN' %}
-          {% set nextPaymentButtonText = t.penalty_details_page.continue_court_deposits %}
-        {% endif %}
-        {{ components.button(text=nextPaymentButtonText, type="submit", url=nextUrl) }}
+        {{ govukButton({
+          text: nextPaymentButtonText,
+          href: nextUrl,
+          classes: "govuk-!-margin-bottom-7"
+        }) }}
       {% endif %}
 
-      <h3 class="heading-medium">{{ t.payment_details.transaction_receipt }}</h3>
-      <table class='receipt-details'>
-        <tbody>
-          <tr>
-            <td>{{ t.penalty_details.amount }}</td>
-              <td>
-                <strong>&pound;{{ paymentDetails.Payments[paymentType].PaymentAmount }}</strong>
-              </td>
+      <h3 class="govuk-heading-m">{{ t.payment_details.transaction_receipt }}</h3>
+      <table class="govuk-table receipt-details">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ t.penalty_details.amount }}</td>
+            <td class="govuk-table__cell">
+              <strong>&pound;{{ paymentDetails.Payments[paymentType].PaymentAmount }}</strong>
+            </td>
           </tr>
-          <tr>
-            <td>{{ t.payment_details.paid_on }}</td>
-            <td>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ t.payment_details.paid_on }}</td>
+            <td class="govuk-table__cell">
               <strong>
                 {{ paymentDetails.Payments[paymentType].FormattedDate }}
                 &nbsp;&nbsp;
@@ -68,9 +69,9 @@
             </td>
           </tr>
           {% if paymentDetails.Payments[paymentType].PaymentMethod == 'CARD' or paymentDetails.Payments[paymentType].PaymentMethod == 'CNP' %}
-            <tr>
-              <td>{{ t.payment_details.authorisation_code }}</td>
-              <td>
+            <tr class="govuk-table__row">
+              <td class="govuk-table__cell">{{ t.payment_details.authorisation_code }}</td>
+              <td class="govuk-table__cell">
                 <strong>{{ paymentDetails.Payments[paymentType].AuthCode }}</strong>
               </td>
             </tr>
@@ -78,34 +79,33 @@
         </tbody>
       </table>
 
-
-      <table id='receipt-breakdown' class='receipt-payment-type-{{ paymentType }}'>
+      <table id="receipt-breakdown" class="govuk-table receipt-payment-type-{{ paymentType }}">
         {% if paymentType != 'IM' %}
-          <thead>
-            <tr>
-              <td>{{ t.penalty_details.reference }}</td>
-              <td>{{ t.penalty_details.amount }}</td>
-              <td>{{ t.penalty_details.status }}</td>
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">{{ t.penalty_details.reference }}</th>
+              <th scope="col" class="govuk-table__header">{{ t.penalty_details.amount }}</th>
+              <th scope="col" class="govuk-table__header">{{ t.penalty_details.status }}</th>
             </tr>
           </thead>
         {% endif %}
 
-        <tbody>
+        <tbody class="govuk-table__body">
           {% for payment in penaltyDetails %}
             {% if payment.type == paymentType %}
               {% for penalty in payment.penalties %}
                 {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
-                <tr>
+                <tr class="govuk-table__row">
                   {% if paymentType == 'IM' %}
-                    <td> {{ t.penalty_details.reference }} </td>
+                    <td class="govuk-table__cell">{{ t.penalty_details.reference }}</td>
                   {% endif %}
-                  <td><strong>{{ penalty.formattedReference }}</strong></td>
+                  <td class="govuk-table__cell"><strong>{{ penalty.formattedReference }}</strong></td>
                   {% if paymentType != 'IM' %}
-                    <td><strong>&pound;{{ penalty.amount }}</strong></td>
+                    <td class="govuk-table__cell"><strong>&pound;{{ penalty.amount }}</strong></td>
                   {% endif %}
-                  <td>
+                  <td class="govuk-table__cell">
                     <strong>
-                      <span class='{{ statusClass }}'>
+                      <span class="{{ statusClass }}">
                         {% if penalty.status == 'PAID' %}
                           {{ t.penalty_details.status_paid }}
                           &nbsp;&nbsp;
@@ -123,36 +123,41 @@
         </tbody>
       </table>
 
-      <table id='receipt-penalty-details'>
-        <tr>
-          <td>{{ t.penalty_details.vehicle_reg }}</td>
-          <td><strong>{{ registrationNumber }}</strong></td>
-        </tr>
-        <tr>
-          <td>{{ t.penalty_details.penalty_date }}</td>
-          <td><strong>{{ date }}</strong></td>
-        </tr>
-        <tr>
-          <td>{{ t.penalty_details.location }}</td>
-          <td><strong>{{ location | escape }}</strong></td>
-        </tr>
+      <table id="receipt-penalty-details" class="govuk-table">
+        <tbody class="govuk-table__body">
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ t.penalty_details.vehicle_reg }}</td>
+            <td class="govuk-table__cell"><strong>{{ registrationNumber }}</strong></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ t.penalty_details.penalty_date }}</td>
+            <td class="govuk-table__cell"><strong>{{ date }}</strong></td>
+          </tr>
+          <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ t.penalty_details.location }}</td>
+            <td class="govuk-table__cell"><strong>{{ location | escape }}</strong></td>
+          </tr>
+        </tbody>
       </table>
-      <h3 class="heading-medium">{{ t.payment_details.payment_receipt_print_header  }}</h3>
-      <div class="panel panel-border-wide">
-        {{ t.payment_details.payment_receipt_print_info }}
-      </div>
-      <br />
-      <p>
+
+      <h3 class="govuk-heading-m">{{ t.payment_details.payment_receipt_print_header }}</h3>
+      {{ govukInsetText({
+        text: t.payment_details.payment_receipt_print_info
+      }) }}
+
+      <p class="govuk-body">
         {% if paymentStatus == 'PAID' %}
-          {{ components.button(text=t.penalty_details_page.return_to_summary, url='/payment-code/' + paymentCode) }}
+          {{ govukButton({
+            text: t.penalty_details_page.return_to_summary,
+            href: '/payment-code/' + paymentCode
+          }) }}
         {% else %}
-          <a href='{{ urlroot }}/payment-code/{{ paymentCode }}'>{{ t.penalty_details_page.return_to_summary }}</a>
+          <a href="{{ urlroot }}/payment-code/{{ paymentCode }}" class="govuk-link">{{ t.penalty_details_page.return_to_summary }}</a>
         {% endif %}
       </p>
       <p class="govuk-body">
-        <a class="govuk-link" href="{{ t.penalty_details_page.feedback_link_url }}" >{{ t.penalty_details_page.feedback_link_text }}</a>
+        <a class="govuk-link" href="{{ t.penalty_details_page.feedback_link_url }}">{{ t.penalty_details_page.feedback_link_text }}</a>
       </p>
-    {%- endcall %}
-  {%- endcall %}
-  
+    </div>
+  </div>
 {% endblock %}

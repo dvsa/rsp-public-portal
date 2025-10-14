@@ -1,71 +1,85 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
   {
     text: t.breadcrumbs.home,
-    url: '/'
+    href: '/'
   }, {
     text: t.breadcrumbs.cookie_preferences
   }
 ] %}
 
 {% block content %}
-
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
 
       <div id="cookie-preferences-confirmation" class="cookie-preferences-confirmation hidden">
         <section aria-label="Notice" aria-live="polite" role="region">
-          {{ components.heading(text=t.cookie_preferences_page.confirmation_title, tag='h2') }}
-          <p>{{ t.cookie_preferences_page.confirmation_text }}</p>
-          <a id="confirmation-go-back" href="/">
+          <h2 class="govuk-heading-l">{{ t.cookie_preferences_page.confirmation_title }}</h2>
+          <p class="govuk-body">{{ t.cookie_preferences_page.confirmation_text }}</p>
+          <a id="confirmation-go-back" href="/" class="govuk-link">
             {{ t.cookie_preferences_page.confirmation_link }}
           </a>
         </section>
       </div>
 
       <div class="cookie-preferences">
-        {{ components.heading(text=t.cookie_preferences_page.title, tag='h1', size='xlarge') }}
-        <p>{{ t.cookie_preferences_page.cookies_text_definition }}</p>
-        <p>{{ t.cookie_preferences_page.cookies_text_use }}</p>
+        <h1 class="govuk-heading-xl">{{ t.cookie_preferences_page.title }}</h1>
+        <p class="govuk-body">{{ t.cookie_preferences_page.cookies_text_definition }}</p>
+        <p class="govuk-body">{{ t.cookie_preferences_page.cookies_text_use }}</p>
 
-        {{ components.heading(text=t.cookie_preferences_page.cookie_settings_title, tag='h2', size='large') }}
-        <p>{{ t.cookie_preferences_page.cookie_settings_text }}</p>
+        <h2 class="govuk-heading-l">{{ t.cookie_preferences_page.cookie_settings_title }}</h2>
+        <p class="govuk-body">{{ t.cookie_preferences_page.cookie_settings_text }}</p>
 
         <form id="cookie-preferences-form">
-          {% call components.formGroup(label=t.cookie_preferences_page.analytics_title) %}
+          {{ govukRadios({
+            name: "analytics",
+            fieldset: {
+              legend: {
+                text: t.cookie_preferences_page.analytics_title,
+                classes: "govuk-fieldset__legend--m"
+              }
+            },
+            hint: {
+              html: '<p class="govuk-body">' + t.cookie_preferences_page.analytics_text + '</p>
+                     <ul class="govuk-list govuk-list--bullet">
+                       <li>' + t.cookie_preferences_page.analytics_text_list_one + '</li>
+                       <li>' + t.cookie_preferences_page.analytics_text_list_two + '</li>
+                       <li>' + t.cookie_preferences_page.analytics_text_list_three + '</li>
+                     </ul>
+                     <p class="govuk-body">' + t.cookie_preferences_page.analytics_privacy + '</p>'
+            },
+            items: [
+              {
+                value: "on",
+                text: t.cookie_preferences_page.cookie_radio_on,
+                id: "analytics-on"
+              },
+              {
+                value: "off",
+                text: t.cookie_preferences_page.cookie_radio_off,
+                id: "analytics-off",
+                checked: true
+              }
+            ]
+          }) }}
 
-            <p>{{ t.cookie_preferences_page.analytics_text }}</p>
+          <h2 class="govuk-heading-l">{{ t.cookie_preferences_page.essential_cookies_title }}</h2>
+          <p class="govuk-body">{{ t.cookie_preferences_page.essential_cookies_text }}</p>
+          <p class="govuk-body">{{ t.cookie_preferences_page.essential_cookies_info }}</p>
+          <p class="govuk-body"><a href="/cookie-details" class="govuk-link">{{ t.cookie_preferences_page.essential_find_out_more }}</a></p>
 
-            <ul class="list-bullet">
-              <li>{{ t.cookie_preferences_page.analytics_text_list_one }}</li>
-              <li>{{ t.cookie_preferences_page.analytics_text_list_two }}</li>
-              <li>{{ t.cookie_preferences_page.analytics_text_list_three }}</li>
-            </ul>
-
-            <br />
-
-            <p>{{ t.cookie_preferences_page.analytics_privacy }}</p>
-
-            <div class="radio-item">
-              {{ components.radio(text=t.cookie_preferences_page.cookie_radio_on, value='on', id='analytics-on', name='analytics') }}
-            </div>
-            <div class="radio-item">
-              {{ components.radio(text=t.cookie_preferences_page.cookie_radio_off, value='off', id='analytics-off', name='analytics', checked='true') }}
-            </div>
-
-          {%- endcall %}
-
-          {{ components.heading(text=t.cookie_preferences_page.essential_cookies_title, tag='h2', size='large') }}
-          <p>{{ t.cookie_preferences_page.essential_cookies_text }}</p>
-          <p>{{ t.cookie_preferences_page.essential_cookies_info }}</p>
-          <p><a href="/cookie-details">{{ t.cookie_preferences_page.essential_find_out_more }}</a></p>
-          <button type="submit" class="button button--submit">{{ t.cookie_preferences_page.submit }}</button>
+          {{ govukButton({
+            text: t.cookie_preferences_page.submit
+          }) }}
 
         </form>
       </div>
 
-    {%- endcall %}
-  {%- endcall %}
+    </div>
+  </div>
 {% endblock %}

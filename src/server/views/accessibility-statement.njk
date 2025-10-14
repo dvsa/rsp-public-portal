@@ -1,65 +1,85 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
   {
     text: t.breadcrumbs.home,
-    url: '/'
+    href: '/'
   }, {
     text: t.breadcrumbs.accessibility_statement
   }
 ] %}
 
 {% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ t.accessibility_statement.title }}</h1>
 
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-        {{ components.heading(text=t.accessibility_statement.title, tag='h1', size='xlarge') }}
-        {{ components.paragraph(text=t.accessibility_statement.introduction.applies_to) }}
-        {{ components.paragraph(text=t.accessibility_statement.introduction.ownership) }}
-        {{ components.list(items=t.accessibility_statement.introduction.should_be_able_to, type='bullet') }}
-        {{ components.paragraph(text=t.accessibility_statement.introduction.text_simple) }}
-        {{ components.paragraph(text=t.accessibility_statement.introduction.further_advice) }}
+      <p class="govuk-body">{{ t.accessibility_statement.introduction.applies_to }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.introduction.ownership }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.accessibility.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.accessibility.statement) }}
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.accessibility_statement.introduction.should_be_able_to %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
 
-        {{ components.heading(text=t.accessibility_statement.feedback.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.feedback.statement) }}
-        {{ components.list(items=t.accessibility_statement.feedback.contact_information, type='bullet') }}
-        {{ components.paragraph(text=t.accessibility_statement.feedback.timeframe) }}
+      <p class="govuk-body">{{ t.accessibility_statement.introduction.text_simple }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.introduction.further_advice }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.reporting.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.reporting.statement) }}
-        {{ components.paragraph(text=t.accessibility_statement.reporting.contact_url) }}
-        {{ components.paragraph(text=t.accessibility_statement.reporting.report_instruction.statement) }}
-        {{ components.list(items=t.accessibility_statement.reporting.report_instruction.details, type='bullet') }}
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.accessibility.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.accessibility.statement }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.enforcement_procedure.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.enforcement_procedure.statement) }}
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.feedback.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.feedback.statement }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.contact_by_phone.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.contact_by_phone.statement) }}
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.accessibility_statement.feedback.contact_information %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
 
-        {{ components.heading(text=t.accessibility_statement.technical_info.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.technical_info.statement) }}
-        {{ components.heading(text=t.accessibility_statement.technical_info.compliance_status.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.technical_info.compliance_status.statement) }}
-        {{ components.heading(text=t.accessibility_statement.technical_info.content_not_in_scope.heading, tag='h2') }}
-        {{ components.heading(text=t.accessibility_statement.technical_info.content_not_in_scope.documents.heading, tag='h3', size='medium') }}
-        {{ components.paragraph(text=t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_one) }}
-        {{ components.paragraph(text=t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_two) }}
-        {{ components.paragraph(text=t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_three) }}
+      <p class="govuk-body">{{ t.accessibility_statement.feedback.timeframe }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.improving_accessibility.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.improving_accessibility.statement) }}
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.reporting.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.reporting.statement }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.reporting.contact_url }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.reporting.report_instruction.statement }}</p>
 
-        {{ components.heading(text=t.accessibility_statement.statement_preparation.heading, tag='h2') }}
-        {{ components.paragraph(text=t.accessibility_statement.statement_preparation.statement_one) }}
-        {{ components.paragraph(text=t.accessibility_statement.statement_preparation.statement_two) }}
-        {{ components.paragraph(text=t.accessibility_statement.statement_preparation.statement_three) }}
-        {{ components.paragraph(text=t.accessibility_statement.statement_preparation.statement_four) }}
-        {{ components.paragraph(text=t.accessibility_statement.statement_preparation.statement_five) }}
-    {%- endcall %}
-  {%- endcall %}
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.accessibility_statement.reporting.report_instruction.details %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.enforcement_procedure.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.enforcement_procedure.statement }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.contact_by_phone.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.contact_by_phone.statement }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.technical_info.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.technical_info.statement }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.technical_info.compliance_status.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.technical_info.compliance_status.statement }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.technical_info.content_not_in_scope.heading }}</h2>
+
+      <h3 class="govuk-heading-m">{{ t.accessibility_statement.technical_info.content_not_in_scope.documents.heading }}</h3>
+      <p class="govuk-body">{{ t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_one }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_two }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.technical_info.content_not_in_scope.documents.statement_three }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.improving_accessibility.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.improving_accessibility.statement }}</p>
+
+      <h2 class="govuk-heading-l">{{ t.accessibility_statement.statement_preparation.heading }}</h2>
+      <p class="govuk-body">{{ t.accessibility_statement.statement_preparation.statement_one }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.statement_preparation.statement_two }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.statement_preparation.statement_three }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.statement_preparation.statement_four }}</p>
+      <p class="govuk-body">{{ t.accessibility_statement.statement_preparation.statement_five }}</p>
+    </div>
+  </div>
 {% endblock %}

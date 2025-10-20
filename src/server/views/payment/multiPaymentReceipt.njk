@@ -50,95 +50,106 @@
       {% endif %}
 
       <h3 class="govuk-heading-m">{{ t.payment_details.transaction_receipt }}</h3>
-      <table class="govuk-table receipt-details">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ t.penalty_details.amount }}</td>
-            <td class="govuk-table__cell">
-              <strong>&pound;{{ paymentDetails.Payments[paymentType].PaymentAmount }}</strong>
-            </td>
-          </tr>
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ t.payment_details.paid_on }}</td>
-            <td class="govuk-table__cell">
-              <strong>
-                {{ paymentDetails.Payments[paymentType].FormattedDate }}
-                &nbsp;&nbsp;
-                {{ paymentDetails.Payments[paymentType].FormattedTime }}
-              </strong>
-            </td>
-          </tr>
-          {% if paymentDetails.Payments[paymentType].PaymentMethod == 'CARD' or paymentDetails.Payments[paymentType].PaymentMethod == 'CNP' %}
-            <tr class="govuk-table__row">
-              <td class="govuk-table__cell">{{ t.payment_details.authorisation_code }}</td>
-              <td class="govuk-table__cell">
-                <strong>{{ paymentDetails.Payments[paymentType].AuthCode }}</strong>
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
 
-      <table id="receipt-breakdown" class="govuk-table receipt-payment-type-{{ paymentType }}">
-        {% if paymentType != 'IM' %}
-          <thead class="govuk-table__head">
-            <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header">{{ t.penalty_details.reference }}</th>
-              <th scope="col" class="govuk-table__header">{{ t.penalty_details.amount }}</th>
-              <th scope="col" class="govuk-table__header">{{ t.penalty_details.status }}</th>
-            </tr>
-          </thead>
-        {% endif %}
+      {# Transaction Receipt Table #}
+      {% set transactionRows = [
+        [
+          { text: t.penalty_details.amount },
+          { text: '£' + paymentDetails.Payments[paymentType].PaymentAmount|string, classes: 'govuk-!-font-weight-bold' }
+        ],
+        [
+          { text: t.payment_details.paid_on },
+          { text: paymentDetails.Payments[paymentType].FormattedDate + ' ' + paymentDetails.Payments[paymentType].FormattedTime, classes: 'govuk-!-font-weight-bold' }
+        ]
+      ] %}
 
-        <tbody class="govuk-table__body">
-          {% for payment in penaltyDetails %}
-            {% if payment.type == paymentType %}
-              {% for penalty in payment.penalties %}
-                {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
-                <tr class="govuk-table__row">
-                  {% if paymentType == 'IM' %}
-                    <td class="govuk-table__cell">{{ t.penalty_details.reference }}</td>
-                  {% endif %}
-                  <td class="govuk-table__cell"><strong>{{ penalty.formattedReference }}</strong></td>
-                  {% if paymentType != 'IM' %}
-                    <td class="govuk-table__cell"><strong>&pound;{{ penalty.amount }}</strong></td>
-                  {% endif %}
-                  <td class="govuk-table__cell">
-                    <strong>
-                      <span class="{{ statusClass }}">
-                        {% if penalty.status == 'PAID' %}
-                          {{ t.penalty_details.status_paid }}
-                          &nbsp;&nbsp;
-                          <img src="{{ assets }}/images/icon-check.png" alt="" />
-                        {% else %}
-                          {{ t.penalty_details.status_unpaid }}
-                        {% endif %}
-                      </span>
-                    </strong>
-                  </td>
-                </tr>
-              {% endfor %}
+      {% if paymentDetails.Payments[paymentType].PaymentMethod == 'CARD' or paymentDetails.Payments[paymentType].PaymentMethod == 'CNP' %}
+        {% set _ = transactionRows.push([
+          { text: t.payment_details.authorisation_code },
+          { text: paymentDetails.Payments[paymentType].AuthCode, classes: 'govuk-!-font-weight-bold' }
+        ]) %}
+      {% endif %}
+
+      {{ govukTable({
+        rows: transactionRows,
+        classes: "receipt-details"
+      }) }}
+
+      {# Receipt Breakdown Table #}
+      {% set breakdownRows = [] %}
+      {% for payment in penaltyDetails %}
+        {% if payment.type == paymentType %}
+          {% for penalty in payment.penalties %}
+            {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
+
+            {% if penalty.status == 'PAID' %}
+              {% set statusText = t.penalty_details.status_paid + ' ✓' %}
+            {% else %}
+              {% set statusText = t.penalty_details.status_unpaid %}
+            {% endif %}
+
+            {% if paymentType == 'IM' %}
+              {# IM type has different column structure #}
+              {% set _ = breakdownRows.push([
+                { text: t.penalty_details.reference },
+                { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+              ]) %}
+            {% else %}
+              {# FPN and CDN types #}
+              {% set _ = breakdownRows.push([
+                { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                { text: '£' + penalty.amount|string, classes: 'govuk-!-font-weight-bold' },
+                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+              ]) %}
             {% endif %}
           {% endfor %}
-        </tbody>
-      </table>
+        {% endif %}
+      {% endfor %}
 
-      <table id="receipt-penalty-details" class="govuk-table">
-        <tbody class="govuk-table__body">
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ t.penalty_details.vehicle_reg }}</td>
-            <td class="govuk-table__cell"><strong>{{ registrationNumber }}</strong></td>
-          </tr>
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ t.penalty_details.penalty_date }}</td>
-            <td class="govuk-table__cell"><strong>{{ date }}</strong></td>
-          </tr>
-          <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ t.penalty_details.location }}</td>
-            <td class="govuk-table__cell"><strong>{{ location | escape }}</strong></td>
-          </tr>
-        </tbody>
-      </table>
+      {% if paymentType != 'IM' %}
+        {{ govukTable({
+          head: [
+            { text: t.penalty_details.reference },
+            { text: t.penalty_details.amount },
+            { text: t.penalty_details.status }
+          ],
+          rows: breakdownRows,
+          attributes: {
+            id: "receipt-breakdown"
+          },
+          classes: "receipt-payment-type-" + paymentType
+        }) }}
+      {% else %}
+        {{ govukTable({
+          rows: breakdownRows,
+          attributes: {
+            id: "receipt-breakdown"
+          },
+          classes: "receipt-payment-type-" + paymentType
+        }) }}
+      {% endif %}
+
+      {# Penalty Details Table #}
+      {{ govukTable({
+        rows: [
+          [
+            { text: t.penalty_details.vehicle_reg },
+            { text: registrationNumber, classes: 'govuk-!-font-weight-bold' }
+          ],
+          [
+            { text: t.penalty_details.penalty_date },
+            { text: date, classes: 'govuk-!-font-weight-bold' }
+          ],
+          [
+            { text: t.penalty_details.location },
+            { text: location | escape, classes: 'govuk-!-font-weight-bold' }
+          ]
+        ],
+        attributes: {
+          id: "receipt-penalty-details"
+        }
+      }) }}
 
       <h3 class="govuk-heading-m">{{ t.payment_details.payment_receipt_print_header }}</h3>
       {{ govukInsetText({

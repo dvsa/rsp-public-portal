@@ -54,6 +54,8 @@ module.exports = {
       patterns: [
         { from: serverViews, to: 'views' },
         { from: 'node_modules/govuk-frontend/dist/govuk/assets', to: 'public/assets' },
+        { from: 'node_modules/govuk-frontend/dist/govuk/template.njk', to: 'views/template.njk' },
+        { from: 'node_modules/govuk-frontend/dist/govuk', to: 'views/govuk' },
         { from: 'node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js', to: 'public/all.js' },
         { from: 'node_modules/@dvsa/cookie-manager/cookie-manager.js', to: 'public/cookie-manager.js' },
         {

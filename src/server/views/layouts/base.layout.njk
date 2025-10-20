@@ -1,55 +1,56 @@
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
+{% extends "govuk/template.njk" %}
+
 {% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
 {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
-<!DOCTYPE html>
-<html lang="{{ clang|default('en') }}" class="govuk-template govuk-template--rebranded">
-  <head>
-    <meta charset="utf-8">
-    <title>{{ pageTitle }}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <meta name="theme-color" content="#0b0c0c">
+{# Set variables that template.njk uses #}
+{% set htmlLang = clang|default('en') %}
+{% set assetPath = assets %}
 
-    <link rel="shortcut icon" href="{{ assets }}/assets/images/favicon.svg" type="image/x-icon">
-    <link rel="stylesheet" href="{{ assets }}/all.css">
-  </head>
+{% block pageTitle %}{{ pageTitle }}{% endblock %}
 
-  <body class="govuk-template__body">
-    <script>document.body.className += ' js-enabled';</script>
+{% block head %}
+  <link rel="stylesheet" href="{{ assets }}/all.css">
+{% endblock %}
 
-    {% include './partials/cookie-banner.njk' %}
-    {% include './partials/header.njk' %}
+{% block bodyStart %}
+  {% include './partials/cookie-banner.njk' %}
+{% endblock %}
 
-    <div class="govuk-width-container">
-    {% if not hideLayoutPhaseBanner %}
-      {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% block header %}
+  {% include './partials/header.njk' %}
+{% endblock %}
 
-      {{ govukPhaseBanner({
-        tag: {
-          text: "beta"
-        },
-        html: t.phase_banner.new_service + ' <a class="govuk-link" href="' + t.phase_banner.feedback_link + '">' + t.phase_banner.feedback + '</a> ' + t.phase_banner.help_improve
-      }) }}
-    {% endif %}
-      {% if pageBreadcrumbItems %}
-        {{ govukBreadcrumbs({
-          items: pageBreadcrumbItems
-        }) }}
-      {% endif %}
+{% block beforeContent %}
+  {% if not hideLayoutPhaseBanner %}
+    {{ govukPhaseBanner({
+      tag: {
+        text: "beta"
+      },
+      html: t.phase_banner.new_service + ' <a class="govuk-link" href="' + t.phase_banner.feedback_link + '">' + t.phase_banner.feedback + '</a> ' + t.phase_banner.help_improve
+    }) }}
+  {% endif %}
 
-      <main class="govuk-main-wrapper" id="main-content" role="main">
-        {% block content %}{% endblock %}
-      </main>
-    </div>
+  {% if pageBreadcrumbItems %}
+    {{ govukBreadcrumbs({
+      items: pageBreadcrumbItems
+    }) }}
+  {% endif %}
+{% endblock %}
 
-    {% include './partials/footer.njk' %}
+{# The content block is already defined in template.njk, child pages will fill it #}
 
-    <script src="{{ assets }}/all.js"></script>
-    <script type="module">
-      import { initAll } from '{{ assets }}/all.js'
-      initAll()
-    </script>
-    <script src="{{ assets }}/cookieManager.js"></script>
-  </body>
-</html>
+{# Override footer to use your custom footer #}
+{% block footer %}
+  {% include './partials/footer.njk' %}
+{% endblock %}
+
+{# Add your JavaScript at the end #}
+{% block bodyEnd %}
+  <script src="{{ assets }}/all.js"></script>
+  <script type="module">
+    import { initAll } from '{{ assets }}/all.js'
+    initAll()
+  </script>
+  <script src="{{ assets }}/cookieManager.js"></script>
+{% endblock %}

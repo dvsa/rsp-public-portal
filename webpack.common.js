@@ -9,10 +9,15 @@ const publicJsDir = path.resolve(__dirname, 'src', 'public', 'js');
 module.exports = {
   entry: {
     lambda: lambdaSrc,
-    dvsa: path.resolve(publicJsDir, 'dvsa', 'index.js'),
-    cookieManager: path.resolve(publicJsDir, 'cookie-manager.js'),
-    goBack: path.resolve(publicJsDir, 'go-back.js'),
-    'google-tag-manager': path.resolve(publicJsDir, 'google-tag-manager.js'),
+    client: {
+      import: [
+        path.resolve(publicJsDir, 'dvsa', 'index.js'),
+        path.resolve(publicJsDir, 'cookie-manager.js'),
+        path.resolve(publicJsDir, 'go-back.js'),
+        path.resolve(publicJsDir, 'google-tag-manager.js'),
+      ],
+      filename: 'public/client.js',
+    },
   },
   output: {
     filename: (chunkData) => {

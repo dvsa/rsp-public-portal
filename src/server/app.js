@@ -38,6 +38,7 @@ export default async () => {
   env.addGlobal('assets', '');
   env.addGlobal('urlroot', config.urlRoot());
   env.addGlobal('govukRebrand', true);
+  env.addGlobal('appVersion', process.env.APP_VERSION || '1.0.0');
 
   // Add lodash as a global for view templates
   env.addGlobal('_', _);

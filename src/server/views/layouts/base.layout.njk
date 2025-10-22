@@ -10,7 +10,7 @@
 {% block pageTitle %}{{ pageTitle }}{% endblock %}
 
 {% block head %}
-  <link rel="stylesheet" href="{{ assets }}/all.css">
+  <link rel="stylesheet" href="{{ assets }}/all.css?v={{ appVersion }}">
 {% endblock %}
 
 {% block bodyStart %}
@@ -52,5 +52,5 @@
     import { initAll } from '{{ assets }}/all.js'
     initAll()
   </script>
-    <script src="{{ assets }}/client.js" defer></script>
+    <script src="{{ assets }}/client.js?={{ appVersion }}" defer></script>
 {% endblock %}

@@ -5,6 +5,8 @@ const TerserPlugin = require('terser-webpack-plugin');
 const archiver = require('archiver');
 const fs = require('fs-extra');
 const { execSync } = require('child_process');
+const webpack = require('webpack');
+const packageJson = require('./package.json');
 
 const LAMBDA_NAME = 'serveExpressApp';
 const OUTPUT_FOLDER = './dist';
@@ -51,13 +53,17 @@ module.exports = merge(common, {
     minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
   },
   plugins: [
+    // Make app version available to the application
+    new webpack.DefinePlugin({
+      'process.env.APP_VERSION': JSON.stringify(packageJson.version),
+    }),
     new BundlePlugin({
       archives: [
         {
           inputPath: OUTPUT_FOLDER,
           outputPath: OUTPUT_FOLDER,
           outputName: `${REPO_NAME}-${BRANCH_NAME}-lambda`,
-          ignore: ['public', '*.zip', '**/*.zip', `${REPO_NAME}-cloudfront-assets-*`], // public assets are copied separately
+          ignore: ['public', '*.zip', `${REPO_NAME}-cloudfront-assets-*`],
         },
       ],
       assets: [

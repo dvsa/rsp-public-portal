@@ -62,7 +62,11 @@ export default async () => {
     directives: {
       defaultSrc: ["'self'", assetsUrl],
       formAction: ['*'],
-      scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
+      scriptSrc: [
+        "'unsafe-eval'",
+        assetsUrl, 
+        'https://www.googletagmanager.com/', 
+        'https://www.google-analytics.com/'],
       fontSrc: ['data:'],
       imgSrc: [
         assetsUrl,

@@ -71,6 +71,13 @@ export default async () => {
         'https://www.google.co.uk/ads/',
         'https://www.google.com/ads/',
       ],
+      connectSrc: [
+        "'self'",
+        assetsUrl,
+        'https://www.google-analytics.com',
+        'https://stats.g.doubleclick.net',
+        'https://region1.analytics.google.com'
+        ],
     },
   }));
 

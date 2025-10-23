@@ -76,8 +76,8 @@ export default async () => {
         assetsUrl,
         'https://www.google-analytics.com',
         'https://stats.g.doubleclick.net',
-        'https://region1.analytics.google.com'
-        ],
+        'https://region1.analytics.google.com',
+      ],
     },
   }));
 

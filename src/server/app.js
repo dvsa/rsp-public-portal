@@ -63,7 +63,6 @@ export default async () => {
       defaultSrc: ["'self'", assetsUrl],
       formAction: ['*'],
       scriptSrc: [
-        // "'unsafe-eval'",
         assetsUrl, 
         'https://www.googletagmanager.com/', 
         'https://www.google-analytics.com/'],

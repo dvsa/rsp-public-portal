@@ -58,6 +58,7 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         { from: serverViews, to: 'views' },
+        { from: 'src/server/i18n', to: 'i18n' },
         { from: 'node_modules/govuk-frontend/dist/govuk/assets', to: 'public/assets' },
         { from: 'node_modules/govuk-frontend/dist/govuk/template.njk', to: 'views/template.njk' },
         { from: 'node_modules/govuk-frontend/dist/govuk', to: 'views/govuk' },

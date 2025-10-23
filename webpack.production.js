@@ -49,6 +49,7 @@ class BundlePlugin {
 
 module.exports = merge(common, {
   mode: 'production',
+  devtool: false,
   optimization: {
     minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
   },

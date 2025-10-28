@@ -6,7 +6,7 @@ import merge from 'webpack-merge';
 
 module.exports = merge(common, {
   mode: "development",
-  devtool: "source-map", 
+  devtool: false, 
   output: {
     filename: '[name].bundle.js',
     path: path.resolve('build', 'public', 'javascripts'),

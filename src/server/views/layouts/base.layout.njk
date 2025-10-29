@@ -48,7 +48,7 @@
 {# Add your JavaScript at the end #}
 {% block bodyEnd %}
   <script src="{{ assets }}/all.js"></script>
-  <script type="module">
+  <script type="module" {%- if cspNonce %} nonce="{{ cspNonce }}"{% endif %}>
     import { initAll } from '{{ assets }}/all.js'
     initAll()
   </script>

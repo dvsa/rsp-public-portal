@@ -12,6 +12,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import nocache from 'nocache';
 import i18n from 'i18n-express';
+import crypto from 'crypto';
 import config from './config';
 import { allowList } from './utils/language-allowlist';
 
@@ -52,25 +53,38 @@ export default async () => {
   app.use(helmet.xssFilter({ setOnOldIE: true }));
   app.use(helmet.crossOriginEmbedderPolicy({ policy: 'credentialless' }));
 
+  app.use((req, res, next) => {
+    const nonce = crypto.randomBytes(16).toString('base64');
+    res.locals.cspNonce = nonce;
+    next();
+  });
+
   const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
   app.use('/', express.static(path.join(__dirname, '..', '..', 'dist', 'public')));
   app.set('views', path.join(__dirname, '..', '..', 'dist', 'views'));
 
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", assetsUrl],
-      formAction: ['*'],
-      scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
-      fontSrc: ["'self'", 'data:', assetsUrl],
-      imgSrc: [
-        assetsUrl,
-        'https://www.google-analytics.com/',
-        'https://stats.g.doubleclick.net/',
-        'https://www.google.co.uk/ads/',
-        'https://www.google.com/ads/',
-      ],
-    },
-  }));
+  app.use((req, res, next) => {
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", assetsUrl],
+        formAction: ['*'],
+        scriptSrc: [
+          (req, res) => `'nonce-${res.locals.cspNonce}'`, // Add nonce dynamically
+          assetsUrl,
+          'https://www.googletagmanager.com/',
+          'https://www.google-analytics.com/'
+        ],
+        fontSrc: ["'self'", 'data:', assetsUrl],
+        imgSrc: [
+          assetsUrl,
+          'https://www.google-analytics.com/',
+          'https://stats.g.doubleclick.net/',
+          'https://www.google.co.uk/ads/',
+          'https://www.google.com/ads/',
+        ],
+      },
+    })(req, res, next);
+  });
 
   app.use(helmet.hsts({
     maxAge: SIXTY_DAYS_IN_SECONDS,

@@ -69,10 +69,10 @@ export default async () => {
         defaultSrc: ["'self'", assetsUrl],
         formAction: ['*'],
         scriptSrc: [
-          (req, res) => `'nonce-${res.locals.cspNonce}'`, // Add nonce dynamically
+          `'nonce-${res.locals.cspNonce}'`,
           assetsUrl,
           'https://www.googletagmanager.com/',
-          'https://www.google-analytics.com/'
+          'https://www.google-analytics.com/',
         ],
         fontSrc: ["'self'", 'data:', assetsUrl],
         imgSrc: [

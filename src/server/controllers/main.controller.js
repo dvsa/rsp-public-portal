@@ -19,5 +19,5 @@ export const index = (req, res) => {
     return res.redirect('https://www.gov.uk/talu-dirwy-ymylffordd-dvsa');
   }
 
-  return res.render('main/index');
+  return res.render('payment/index');
 };

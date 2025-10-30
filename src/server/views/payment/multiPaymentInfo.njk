@@ -106,15 +106,20 @@
                 { text: penaltyType.penalties[0].formattedReference, colspan: 3, classes: 'govuk-!-font-weight-bold' }
               ]) %}
             {% else %}
-              {# Multiple penalties - show in expandable details #}
+              {# miltiple penalties so we build table rows using a for loop as nunjucks map is limited #}
+              {% set penaltyTableRows = [] %}
+              {% for penalty in penaltyType.penalties %}
+                {% set _ = penaltyTableRows.push([
+                  { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                  { text: '£' + penalty.amount|string, format: 'numeric', classes: 'govuk-!-font-weight-bold' }
+                ]) %}
+              {% endfor %}
+
               {% set detailsHtml %}
                 {{ govukDetails({
                   summaryText: t.penalty_details_page.penalty_details_panel_title,
                   html: govukTable({
-                    rows: penaltyType.penalties | map(penalty => [
-                      { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
-                      { text: '£' + penalty.amount|string, format: 'numeric', classes: 'govuk-!-font-weight-bold' }
-                    ]),
+                    rows: penaltyTableRows,
                     head: [
                       { text: t.penalty_details.reference },
                       { text: t.penalty_details.amount, format: 'numeric' }

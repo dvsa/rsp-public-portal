@@ -68,11 +68,11 @@ describe('main', () => {
       sinon.assert.calledWith(redirectSpy, 'https://www.gov.uk/talu-dirwy-ymylffordd-dvsa');
     });
 
-    it('should render the index page if no language is set', () => {
+    it('should redirect to the English page in prod if no language is set', () => {
       configStub.returns(false);
       req = { i18n_lang: '' };
       index(req, res);
-      sinon.assert.calledWith(renderSpy, 'main/index');
+      sinon.assert.calledWith(redirectSpy, 'https://www.gov.uk/pay-dvsa-roadside-fine');
     });
   });
 });

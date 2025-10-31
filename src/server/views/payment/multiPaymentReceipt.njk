@@ -1,4 +1,9 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = t.site_title %}
 
@@ -19,140 +24,151 @@
     {% set nextPaymentButtonText = t.penalty_details_page.continue_immobilisation_fee %}
   {% endif %}
 {% endif %}
-  
+
 {% block content %}
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
       {% for type, payment in paymentDetails.Payments %}
         {% if type == paymentType  %}
           {% if payment.PaymentStatus == 'PAID' %}
-            <div class="govuk-box-highlight">
-              <h1 class="heading-large">
-                {{ t.payment_details.payment_success }}
-              </h1>
-              <p class="font-medium">
-                {{ paymentBannerTitle }}
-              </p>
-            </div>
+            {{ govukPanel({
+              titleText: t.payment_details.payment_success,
+              html: '<p class="govuk-body govuk-!-font-size-24">' + paymentBannerTitle + '</p>',
+              classes: "govuk-!-margin-bottom-7"
+            }) }}
           {% endif %}
         {% endif %}
       {% endfor %}
 
       {% if nextPayment %}
         {% set nextUrl = "/payment-code/" + paymentCode + "/" + nextPayment.PaymentCategory + "/details" %}
-        {% if nextPayment.PaymentCategory == 'FPN' %}
-          {% set nextPaymentButtonText = t.penalty_details_page.continue_fixed_penalties %}
-        {% elif nextPayment.PaymentCategory == 'CDN' %}
-          {% set nextPaymentButtonText = t.penalty_details_page.continue_court_deposits %}
-        {% endif %}
-        {{ components.button(text=nextPaymentButtonText, type="submit", url=nextUrl) }}
+        {{ govukButton({
+          text: nextPaymentButtonText,
+          href: nextUrl,
+          classes: "govuk-!-margin-bottom-7"
+        }) }}
       {% endif %}
 
-      <h3 class="heading-medium">{{ t.payment_details.transaction_receipt }}</h3>
-      <table class='receipt-details'>
-        <tbody>
-          <tr>
-            <td>{{ t.penalty_details.amount }}</td>
-              <td>
-                <strong>&pound;{{ paymentDetails.Payments[paymentType].PaymentAmount }}</strong>
-              </td>
-          </tr>
-          <tr>
-            <td>{{ t.payment_details.paid_on }}</td>
-            <td>
-              <strong>
-                {{ paymentDetails.Payments[paymentType].FormattedDate }}
-                &nbsp;&nbsp;
-                {{ paymentDetails.Payments[paymentType].FormattedTime }}
-              </strong>
-            </td>
-          </tr>
-          {% if paymentDetails.Payments[paymentType].PaymentMethod == 'CARD' or paymentDetails.Payments[paymentType].PaymentMethod == 'CNP' %}
-            <tr>
-              <td>{{ t.payment_details.authorisation_code }}</td>
-              <td>
-                <strong>{{ paymentDetails.Payments[paymentType].AuthCode }}</strong>
-              </td>
-            </tr>
-          {% endif %}
-        </tbody>
-      </table>
+      <h3 class="govuk-heading-m">{{ t.payment_details.transaction_receipt }}</h3>
 
+      {# Transaction Receipt Table #}
+      {% set transactionRows = [
+        [
+          { text: t.penalty_details.amount },
+          { text: '£' + paymentDetails.Payments[paymentType].PaymentAmount|string, classes: 'govuk-!-font-weight-bold' }
+        ],
+        [
+          { text: t.payment_details.paid_on },
+          { text: paymentDetails.Payments[paymentType].FormattedDate + ' ' + paymentDetails.Payments[paymentType].FormattedTime, classes: 'govuk-!-font-weight-bold' }
+        ]
+      ] %}
 
-      <table id='receipt-breakdown' class='receipt-payment-type-{{ paymentType }}'>
-        {% if paymentType != 'IM' %}
-          <thead>
-            <tr>
-              <td>{{ t.penalty_details.reference }}</td>
-              <td>{{ t.penalty_details.amount }}</td>
-              <td>{{ t.penalty_details.status }}</td>
-            </tr>
-          </thead>
-        {% endif %}
+      {% if paymentDetails.Payments[paymentType].PaymentMethod == 'CARD' or paymentDetails.Payments[paymentType].PaymentMethod == 'CNP' %}
+        {% set _ = transactionRows.push([
+          { text: t.payment_details.authorisation_code },
+          { text: paymentDetails.Payments[paymentType].AuthCode, classes: 'govuk-!-font-weight-bold' }
+        ]) %}
+      {% endif %}
 
-        <tbody>
-          {% for payment in penaltyDetails %}
-            {% if payment.type == paymentType %}
-              {% for penalty in payment.penalties %}
-                {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
-                <tr>
-                  {% if paymentType == 'IM' %}
-                    <td> {{ t.penalty_details.reference }} </td>
-                  {% endif %}
-                  <td><strong>{{ penalty.formattedReference }}</strong></td>
-                  {% if paymentType != 'IM' %}
-                    <td><strong>&pound;{{ penalty.amount }}</strong></td>
-                  {% endif %}
-                  <td>
-                    <strong>
-                      <span class='{{ statusClass }}'>
-                        {% if penalty.status == 'PAID' %}
-                          {{ t.penalty_details.status_paid }}
-                          &nbsp;&nbsp;
-                          <img src="{{ assets }}/images/icon-check.png" alt="" />
-                        {% else %}
-                          {{ t.penalty_details.status_unpaid }}
-                        {% endif %}
-                      </span>
-                    </strong>
-                  </td>
-                </tr>
-              {% endfor %}
+      {{ govukTable({
+        rows: transactionRows,
+        classes: "receipt-details"
+      }) }}
+
+      {# Receipt Breakdown Table #}
+      {% set breakdownRows = [] %}
+      {% for payment in penaltyDetails %}
+        {% if payment.type == paymentType %}
+          {% for penalty in payment.penalties %}
+            {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
+
+            {% if penalty.status == 'PAID' %}
+              {% set statusText = t.penalty_details.status_paid + ' ✓' %}
+            {% else %}
+              {% set statusText = t.penalty_details.status_unpaid %}
+            {% endif %}
+
+            {% if paymentType == 'IM' %}
+              {# IM type has different column structure #}
+              {% set _ = breakdownRows.push([
+                { text: t.penalty_details.reference },
+                { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+              ]) %}
+            {% else %}
+              {# FPN and CDN types #}
+              {% set _ = breakdownRows.push([
+                { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                { text: '£' + penalty.amount|string, classes: 'govuk-!-font-weight-bold' },
+                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+              ]) %}
             {% endif %}
           {% endfor %}
-        </tbody>
-      </table>
+        {% endif %}
+      {% endfor %}
 
-      <table id='receipt-penalty-details'>
-        <tr>
-          <td>{{ t.penalty_details.vehicle_reg }}</td>
-          <td><strong>{{ registrationNumber }}</strong></td>
-        </tr>
-        <tr>
-          <td>{{ t.penalty_details.penalty_date }}</td>
-          <td><strong>{{ date }}</strong></td>
-        </tr>
-        <tr>
-          <td>{{ t.penalty_details.location }}</td>
-          <td><strong>{{ location | escape }}</strong></td>
-        </tr>
-      </table>
-      <h3 class="heading-medium">{{ t.payment_details.payment_receipt_print_header  }}</h3>
-      <div class="panel panel-border-wide">
-        {{ t.payment_details.payment_receipt_print_info }}
-      </div>
-      <br />
-      <p>
+      {% if paymentType != 'IM' %}
+        {{ govukTable({
+          head: [
+            { text: t.penalty_details.reference },
+            { text: t.penalty_details.amount },
+            { text: t.penalty_details.status }
+          ],
+          rows: breakdownRows,
+          attributes: {
+            id: "receipt-breakdown"
+          },
+          classes: "receipt-payment-type-" + paymentType
+        }) }}
+      {% else %}
+        {{ govukTable({
+          rows: breakdownRows,
+          attributes: {
+            id: "receipt-breakdown"
+          },
+          classes: "receipt-payment-type-" + paymentType
+        }) }}
+      {% endif %}
+
+      {# Penalty Details Table #}
+      {{ govukTable({
+        rows: [
+          [
+            { text: t.penalty_details.vehicle_reg },
+            { text: registrationNumber, classes: 'govuk-!-font-weight-bold' }
+          ],
+          [
+            { text: t.penalty_details.penalty_date },
+            { text: date, classes: 'govuk-!-font-weight-bold' }
+          ],
+          [
+            { text: t.penalty_details.location },
+            { text: location | escape, classes: 'govuk-!-font-weight-bold' }
+          ]
+        ],
+        attributes: {
+          id: "receipt-penalty-details"
+        }
+      }) }}
+
+      <h3 class="govuk-heading-m">{{ t.payment_details.payment_receipt_print_header }}</h3>
+      {{ govukInsetText({
+        text: t.payment_details.payment_receipt_print_info
+      }) }}
+
+      <p class="govuk-body">
         {% if paymentStatus == 'PAID' %}
-          {{ components.button(text=t.penalty_details_page.return_to_summary, url='/payment-code/' + paymentCode) }}
+          {{ govukButton({
+            text: t.penalty_details_page.return_to_summary,
+            href: '/payment-code/' + paymentCode
+          }) }}
         {% else %}
-          <a href='{{ urlroot }}/payment-code/{{ paymentCode }}'>{{ t.penalty_details_page.return_to_summary }}</a>
+          <a href="{{ urlroot }}/payment-code/{{ paymentCode }}" class="govuk-link">{{ t.penalty_details_page.return_to_summary }}</a>
         {% endif %}
       </p>
       <p class="govuk-body">
-        <a class="govuk-link" href="{{ t.penalty_details_page.feedback_link_url }}" >{{ t.penalty_details_page.feedback_link_text }}</a>
+        <a class="govuk-link" href="{{ t.penalty_details_page.feedback_link_url }}">{{ t.penalty_details_page.feedback_link_text }}</a>
       </p>
-    {%- endcall %}
-  {%- endcall %}
-  
+    </div>
+  </div>
 {% endblock %}

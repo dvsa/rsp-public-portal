@@ -1,9 +1,14 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
-    { text: t.breadcrumbs.home, url: '/' },
-    { text: t.breadcrumbs.payment_code, url: '/payment-code' },
+    { text: t.breadcrumbs.home, href: '/' },
+    { text: t.breadcrumbs.payment_code, href: '/payment-code' },
     { text: t.breadcrumbs.penalty_details }
   ]
 %}
@@ -11,175 +16,217 @@
 {% set paid = true if paymentStatus == 'PAID' else false %}
 
 {% block content %}
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-      {{ components.heading(text=t.penalty_details_page.penalty_details_title, tag='h1', size='large') }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-l">{{ t.penalty_details_page.penalty_details_title }}</h1>
+
       {% if paid == false %}
-        {{ components.paragraph(text=t.penalty_details_page.intro_part_paid) }}
+        <p class="govuk-body">{{ t.penalty_details_page.intro_part_paid }}</p>
       {% else %}
-        {{ components.paragraph(text=t.penalty_details_page.intro_paid) }}
-        <p>
+        <p class="govuk-body">{{ t.penalty_details_page.intro_paid }}</p>
+        <p class="govuk-body">
           {{ t.feedback_prompt.easy_to_use }}
-          <a href="{{ t.feedback_prompt.link }}" target="_blank">
+          <a href="{{ t.feedback_prompt.link }}" target="_blank" class="govuk-link">
             {{ t.feedback_prompt.tell_us }}</a>
           {{ t.feedback_prompt.improve_service }}
         </p>
       {% endif %}
-      {# Penalty details summary table #}
-      <table class="details multipenalty-summary-table">
-        <tbody>
-          <tr>
-            <td>{{ t.penalty_details.payment_code }}</td>
-            <td colspan=4>{{ paymentCode }}</td>
-          </tr>
-          <tr>
-            <td>{{ t.penalty_details.vehicle_reg }}</td>
-            <td>{{ penaltyGroupDetails.registrationNumber if penaltyGroupDetails.registrationNumber else 'N/A' }}</td>
-          </tr>
-          <tr>
-            <td>{{ t.penalty_details.penalty_date }}</td>
-            <td colspan=4>{{ penaltyGroupDetails.date }}</td>
-          </tr>
-          <tr>
-            <td>{{ t.penalty_details.location }}</td>
-            <td colspan=4>{{ location | escape }}</td>
-          </tr>
-          {% for amount in penaltyGroupDetails.splitAmounts|sort(attribute='type', reverse=true) %}
-            {% set amountPaid = true if amount.status == 'PAID' else false %}
-            {% set statusClass = 'confirmed' if amountPaid else 'unconfirmed' %}
-            {% set showPaymentButton = amount.status == 'UNPAID' %}
-            <tr class='no-border'>
-                {% if amount.type == 'FPN' %}
-                  <td data-testid="type_fpn">
-                    {{ t.penalty_details.type_fixed_penalty }}
-                  </td>
-                {% elif amount.type == 'CDN' %}
-                  <td data-testid="type_cdn">
-                    {{ t.penalty_details.type_court_deposit }}
-                  </td>
-                {% elif amount.type == 'IM' %}
-                  <td data-testid="type_im">
-                    {{ t.penalty_details.type_immobilisation }}
-                  </td>
-                {% endif %}
-              <td>
-                &pound;{{ amount.amount }}
-              </td>
-              <td>
-                <span class="{{statusClass}}">
-                  {% if amountPaid %}
-                    <strong>{{ t.penalty_details.status_paid }}</strong> &nbsp;&nbsp;
-                    <img src="{{ assets }}/images/icon-check.png" alt="" />
-                  {% else %}
-                    <strong>{{ t.penalty_details.status_unpaid }}</strong>
-                  {% endif %}
-                </span>
-              </td>
-              <td>
-                {% if amountPaid %}
-                  <a href="{{paymentCode}}/{{amount.type}}/receipt">{{ t.penalty_details.receipt_link }}</a>
-                {% endif %}
-              </td>
-            </tr>
-            {% for penaltyType in penaltyDetails %}
-              {% if penaltyType.type == amount.type %}
-                {% if penaltyType.penalties.length == 1 %}
-                  <tr {% if showPaymentButton %}class='no-border'{% endif %}>
-                    <td>
-                      {{ t.penalty_details.reference }}
-                    </td>
-                    <td colspan=3>
-                      <strong>{{ penaltyType.penalties[0].formattedReference }}</strong>
-                    </td>
-                  </tr>
-                {% else %}
-                  <tr {% if showPaymentButton %}class='no-border'{% endif %}>
-                    <td colspan=4>
-                      <details>
-                        <summary><span class="summary">{{ t.penalty_details_page.penalty_details_panel_title }}</span></summary>
-                        <div class="panel panel-border-narrow">
-                          <table>
-                            <tr>
-                              <td>{{ t.penalty_details.reference }}</td>
-                              <td class="numeric">{{ t.penalty_details.amount }}</td>
-                            </tr>
-                            {% for penalty in penaltyType.penalties %}
-                              <tr>
-                                <td><strong>{{ penalty.formattedReference }}</strong></td>
-                                <td class="numeric"><strong>&pound;{{ penalty.amount }}</strong></td>
-                              </tr>
-                            {% endfor %}
-                          </table>
-                        </div>
-                      </details>
-                    </td>
-                  </tr>
-                {% endif %}
-              {% endif %}
-            {% endfor %}
-            {% if showPaymentButton %}
-              <tr>
-                <td class="payment-button-cell" colspan=4>
-                  {% set detailsUrl = '/payment-code/' + paymentCode + '/' + amount.type + '/details' %}
-                  {{ components.button(text=t.penalty_details_page.continue_to_payment_button, url=detailsUrl) }}
-                </td>
-              </tr>
+
+      {# Build the summary table rows #}
+      {% set summaryRows = [
+        [
+          { text: t.penalty_details.payment_code },
+          { text: paymentCode, colspan: 4 }
+        ],
+        [
+          { text: t.penalty_details.vehicle_reg },
+          { text: penaltyGroupDetails.registrationNumber if penaltyGroupDetails.registrationNumber else 'N/A' }
+        ],
+        [
+          { text: t.penalty_details.penalty_date },
+          { text: penaltyGroupDetails.date, colspan: 4 }
+        ],
+        [
+          { text: t.penalty_details.location },
+          { text: location | escape, colspan: 4 }
+        ]
+      ] %}
+
+      {# Add payment type rows dynamically #}
+      {% for amount in penaltyGroupDetails.splitAmounts|sort(attribute='type', reverse=true) %}
+        {% set amountPaid = true if amount.status == 'PAID' else false %}
+        {% set statusClass = 'confirmed' if amountPaid else 'unconfirmed' %}
+        {% set showPaymentButton = amount.status == 'UNPAID' %}
+
+        {# Determine payment type label #}
+        {% if amount.type == 'FPN' %}
+          {% set typeLabel = t.penalty_details.type_fixed_penalty %}
+          {% set typeTestId = 'type_fpn' %}
+        {% elif amount.type == 'CDN' %}
+          {% set typeLabel = t.penalty_details.type_court_deposit %}
+          {% set typeTestId = 'type_cdn' %}
+        {% elif amount.type == 'IM' %}
+          {% set typeLabel = t.penalty_details.type_immobilisation %}
+          {% set typeTestId = 'type_im' %}
+        {% endif %}
+
+        {# Status cell HTML #}
+        {% set statusHtml %}
+          <span class="{{ statusClass }}">
+            {% if amountPaid %}
+              {{ t.penalty_details.status_paid }} ✓
+            {% else %}
+              {{ t.penalty_details.status_unpaid }}
             {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+          </span>
+        {% endset %}
+
+        {# Receipt link cell #}
+        {% set receiptCell %}
+          {% if amountPaid %}
+            <a href="{{ paymentCode }}/{{ amount.type }}/receipt" class="govuk-link">{{ t.penalty_details.receipt_link }}</a>
+          {% endif %}
+        {% endset %}
+
+        {# Add payment type row #}
+        {% set _ = summaryRows.push([
+          { text: typeLabel, attributes: { 'data-testid': typeTestId } },
+          { text: '£' + amount.amount|string },
+          { html: statusHtml, classes: 'govuk-!-font-weight-bold' },
+          { html: receiptCell }
+        ]) %}
+
+        {# Add reference row(s) #}
+        {% for penaltyType in penaltyDetails %}
+          {% if penaltyType.type == amount.type %}
+            {% if penaltyType.penalties.length == 1 %}
+              {# Single penalty - show reference directly #}
+              {% set _ = summaryRows.push([
+                { text: t.penalty_details.reference },
+                { text: penaltyType.penalties[0].formattedReference, colspan: 3, classes: 'govuk-!-font-weight-bold' }
+              ]) %}
+            {% else %}
+              {# miltiple penalties so we build table rows using a for loop as nunjucks map is limited #}
+              {% set penaltyTableRows = [] %}
+              {% for penalty in penaltyType.penalties %}
+                {% set _ = penaltyTableRows.push([
+                  { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
+                  { text: '£' + penalty.amount|string, format: 'numeric', classes: 'govuk-!-font-weight-bold' }
+                ]) %}
+              {% endfor %}
+
+              {% set detailsHtml %}
+                {{ govukDetails({
+                  summaryText: t.penalty_details_page.penalty_details_panel_title,
+                  html: govukTable({
+                    rows: penaltyTableRows,
+                    head: [
+                      { text: t.penalty_details.reference },
+                      { text: t.penalty_details.amount, format: 'numeric' }
+                    ]
+                  })
+                }) }}
+              {% endset %}
+
+              {% set _ = summaryRows.push([
+                { html: detailsHtml, colspan: 4 }
+              ]) %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+
+        {# Add payment button row if unpaid #}
+        {% if showPaymentButton %}
+          {% set detailsUrl = '/payment-code/' + paymentCode + '/' + amount.type + '/details' %}
+          {% set buttonHtml %}
+            {{ govukButton({
+              text: t.penalty_details_page.continue_to_payment_button,
+              href: detailsUrl
+            }) }}
+          {% endset %}
+
+          {% set _ = summaryRows.push([
+            { html: buttonHtml, colspan: 4, classes: 'payment-button-cell' }
+          ]) %}
+        {% endif %}
+      {% endfor %}
+
+      {# Render the main summary table #}
+      {{ govukTable({
+        rows: summaryRows,
+        classes: "details multipenalty-summary-table"
+      }) }}
+
       {% if paid == false %}
-        <p>
-          {{ components.notice(text=t.home.info_text) }}
-        </p>
-        <p>
-          <details>
-            <summary><span class="summary">{{ t.penalty_details_page.details_assistance_panel_title }}</span></summary>
-            <div class="panel panel-border-narrow">
-              <p>
-                {{ t.penalty_details_page.details_assistance_panel_paragraph_1 }}
-              </p>
-              <ul class="visible-bullets">
-                <li>
-                  {{ t.penalty_details_page.tell_examiner }}
-                </li>
-                <li>
-                  {{ t.penalty_details_page.call_dvsa }}
-                  <br />
-                  {{ components.link(text=t.penalty_details_page.call_charges_link, url='https://www.gov.uk/call-charges') }}
-                </li>
-              </ul>
-              <br />
-              {{ t.penalty_details_page.info_needed }}
-            </div>
-          </details>
-        </p>
-        {{ components.heading(text=t.home.other_ways, tag='h3', size='medium') }}
-        {{ components.heading(text=t.home.phone_heading, tag='h4', size='small') }}
-        <p>{{ t.home.phone_contact_details }}</p>
-        {{ components.link(text=t.home.phone_charges_link, url='https://www.gov.uk/call-charges') }}
-        <p>{{ t.home.phone_info_needed }}</p>
-        <ul class="visible-bullets">
+        {{ govukWarningText({
+          text: t.home.info_text,
+          iconFallbackText: "Warning"
+        }) }}
+
+        {{ govukDetails({
+          summaryText: t.penalty_details_page.details_assistance_panel_title,
+          html: '<p class="govuk-body">' + t.penalty_details_page.details_assistance_panel_paragraph_1 + '</p>
+                 <ul class="govuk-list govuk-list--bullet">
+                   <li>' + t.penalty_details_page.tell_examiner + '</li>
+                   <li>' + t.penalty_details_page.call_dvsa + '<br />
+                     <a href="https://www.gov.uk/call-charges" class="govuk-link">' + t.penalty_details_page.call_charges_link + '</a>
+                   </li>
+                 </ul>
+                 <p class="govuk-body">' + t.penalty_details_page.info_needed + '</p>'
+        }) }}
+
+        <h3 class="govuk-heading-m">{{ t.home.other_ways }}</h3>
+
+        <h4 class="govuk-heading-s">{{ t.home.phone_heading }}</h4>
+        <p class="govuk-body">{{ t.home.phone_contact_details }}</p>
+        <p class="govuk-body"><a href="https://www.gov.uk/call-charges" class="govuk-link">{{ t.home.phone_charges_link }}</a></p>
+        <p class="govuk-body">{{ t.home.phone_info_needed }}</p>
+        <ul class="govuk-list govuk-list--bullet">
           <li>{{ t.home.phone_bullet1 }}</li>
           <li>{{ t.home.phone_bullet2 }}</li>
           <li>{{ t.home.phone_bullet3 }}</li>
         </ul>
-        {{ components.heading(text=t.home.post_heading, tag='h4', size='small') }}
-        <p>{{ t.home.post_text }}</p>
-        {{ components.heading(text=t.home.cash_heading, tag='h4', size='small') }}
-        <p>{{ t.home.cash_text }}</p>
+
+        <h4 class="govuk-heading-s">{{ t.home.post_heading }}</h4>
+        <p class="govuk-body">{{ t.home.post_text }}</p>
+
+        <h4 class="govuk-heading-s">{{ t.home.cash_heading }}</h4>
+        <p class="govuk-body">{{ t.home.cash_text }}</p>
       {% endif %}
-    {# ends components.columnTwoThirds #}
-    {%- endcall %}
-    {% call components.columnOneThird() %}
-    <aside class="govuk-related-items" role="complementary">
-        {{ components.heading(text=t.home.language_guidance_header + ':', tag='h3', size='small', id='language-links-header' )}}
+    </div>
+
+    <div class="govuk-grid-column-one-third">
+      <aside class="govuk-related-items" role="complementary">
+        <h3 class="govuk-heading-s" id="language-links-header">{{ t.home.language_guidance_header }}:</h3>
         <nav role="navigation" aria-labelledby="language-links-header">
-          {{ components.translations("translations_side", "font-xsmall") }}
+          <ul class="govuk-list govuk-!-font-size-14" id="language-links" data-testid="language-links">
+                      <li><a href="?clang=bg" class="govuk-link">български</a></li>
+                      <li><a href="?clang=cs" class="govuk-link">Čeština</a></li>
+                      <li><a href="?clang=sr" class="govuk-link">Српски језик</a></li>
+                      <li><a href="?clang=cy" class="govuk-link">Cymraeg</a></li>
+                      <li><a href="?clang=de" class="govuk-link">Deutsch</a></li>
+                      <li><a href="?clang=el" class="govuk-link">Ελληνικά</a></li>
+                      <li><a href="?clang=et" class="govuk-link">Eesti keel</a></li>
+                      <li><a href="?clang=es" class="govuk-link">Español</a></li>
+                      <li><a href="?clang=fr" class="govuk-link">Français</a></li>
+                      <li><a href="?clang=hr" class="govuk-link">Hrvatski</a></li>
+                      <li><a href="?clang=it" class="govuk-link">Italiano</a></li>
+                      <li><a href="?clang=lv" class="govuk-link">Latviešu</a></li>
+                      <li><a href="?clang=lt" class="govuk-link">Lietuvių</a></li>
+                      <li><a href="?clang=hu" class="govuk-link">Magyar</a></li>
+                      <li><a href="?clang=nl" class="govuk-link">Nederlands</a></li>
+                      <li><a href="?clang=pl" class="govuk-link">Polski</a></li>
+                      <li><a href="?clang=pt" class="govuk-link">Português</a></li>
+                      <li><a href="?clang=ru" class="govuk-link">Ру́сский</a></li>
+                      <li><a href="?clang=ro" class="govuk-link">Română</a></li>
+                      <li><a href="?clang=sk" class="govuk-link">Slovenčina</a></li>
+                      <li><a href="?clang=sl" class="govuk-link">Slovenščina</a></li>
+                      <li><a href="?clang=tr" class="govuk-link">Türkçe</a></li>
+                      <li><a href="?clang=ua" class="govuk-link">Українська</a></li>
+                      <li><a href="?clang=en" class="govuk-link">English</a></li>
+                    </ul>
         </nav>
       </aside>
-    {%- endcall %}
-  {# ends components.gridRow #}
-  {%- endcall %}
-
+    </div>
+  </div>
 {% endblock %}

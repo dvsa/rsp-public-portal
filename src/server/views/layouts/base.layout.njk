@@ -1,30 +1,56 @@
-{# Import macros for global use in all views #}
-{% set components = {} %}
-{% for component in macroFilePaths %}
-  {% import component as temp %}{% set macro = _.assign(components, temp) %}
-{% endfor %}
-{# end #}
+{% extends "govuk/template.njk" %}
 
-<!DOCTYPE html>
-<!--[if lte IE 8 ]><html class="lte-ie8" lang={{ clang|default('en') }}><![endif]-->
-<!--[if IE 9 ]><html class="ie9" lang={{ clang|default('en') }}><![endif]-->
-<!--[if (gt IE 9)|!(IE)]><!--><html class="" lang={{ clang|default('en') }}><!--<![endif]-->
-  <head>
+{% from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
 
-    {% include './partials/head.njk' %}
-    {% block header %}{% endblock %}
+{# Set variables that template.njk uses #}
+{% set htmlLang = clang|default('en') %}
+{% set assetPath = assets %}
 
-  </head>
-  <body class="">
+{% block pageTitle %}{{ pageTitle }}{% endblock %}
 
-    {% include './partials/no-js-fallback.njk' %}
-    {% include './partials/cookie-banner.njk' %}
-    {% include './partials/header.njk' %}
+{% block head %}
+  <link rel="stylesheet" href="{{ assets }}/all.css?v={{ appVersion }}">
+{% endblock %}
 
-    {% block bodyContentWrapper %}{% endblock %}
+{% block bodyStart %}
+  {% include './partials/cookie-banner.njk' %}
+{% endblock %}
 
-    {% include './partials/footer.njk' %}
-    {% include './partials/body-scripts.njk' %}
+{% block header %}
+  {% include './partials/header.njk' %}
+{% endblock %}
 
-  </body>
-</html>
+{% block beforeContent %}
+  {% if not hideLayoutPhaseBanner %}
+    {{ govukPhaseBanner({
+      tag: {
+        text: "beta"
+      },
+      html: t.phase_banner.new_service + ' <a class="govuk-link" href="' + t.phase_banner.feedback_link + '">' + t.phase_banner.feedback + '</a> ' + t.phase_banner.help_improve
+    }) }}
+  {% endif %}
+
+  {% if pageBreadcrumbItems %}
+    {{ govukBreadcrumbs({
+      items: pageBreadcrumbItems
+    }) }}
+  {% endif %}
+{% endblock %}
+
+{# The content block is already defined in template.njk, child pages will fill it #}
+
+{# Override footer to use your custom footer #}
+{% block footer %}
+  {% include './partials/footer.njk' %}
+{% endblock %}
+
+{# Add your JavaScript at the end #}
+{% block bodyEnd %}
+  <script src="{{ assets }}/all.js"></script>
+  <script type="module" {%- if cspNonce %} nonce="{{ cspNonce }}"{% endif %}>
+    import { initAll } from '{{ assets }}/all.js'
+    initAll()
+  </script>
+    <script src="{{ assets }}/client.js?={{ appVersion }}" defer></script>
+{% endblock %}

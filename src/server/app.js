@@ -8,12 +8,11 @@ import awsServerlessExpressMiddleware from 'aws-serverless-express/middleware';
 import nunjucks from 'nunjucks';
 import path from 'path';
 import _ from 'lodash';
-import walkSync from 'walk-sync';
-import resolvePath from 'resolve-path';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import nocache from 'nocache';
 import i18n from 'i18n-express';
+import crypto from 'crypto';
 import config from './config';
 import { allowList } from './utils/language-allowlist';
 
@@ -22,8 +21,11 @@ const SIXTY_DAYS_IN_SECONDS = 5184000;
 export default async () => {
   await config.bootstrap();
 
-  // Create nunjucks fileloader instance for the views folder
-  const nunjucksFileLoader = new nunjucks.FileSystemLoader(config.views(), {
+  // Create nunjucks fileloader instance for the views folder -- edited to use govuk templates
+  const nunjucksFileLoader = new nunjucks.FileSystemLoader([
+    config.views(),
+    path.join(__dirname, '..', '..', 'node_modules', 'govuk-frontend', 'dist'),
+  ], {
     noCache: true,
   });
 
@@ -34,15 +36,10 @@ export default async () => {
     },
   });
 
-  const marcosPath = path.resolve(config.views(), 'macros');
-
-  // Gets absolute path of each macro file
-  const macros = walkSync(marcosPath, { directories: false })
-    .map((file) => resolvePath(marcosPath, file));
-
-  env.addGlobal('macroFilePaths', macros);
-  env.addGlobal('assets', config.isDevelopment() ? '' : config.assets());
+  env.addGlobal('assets', '');
   env.addGlobal('urlroot', config.urlRoot());
+  env.addGlobal('govukRebrand', true);
+  env.addGlobal('appVersion', process.env.APP_VERSION || '1.0.0');
 
   // Add lodash as a global for view templates
   env.addGlobal('_', _);
@@ -56,23 +53,38 @@ export default async () => {
   app.use(helmet.xssFilter({ setOnOldIE: true }));
   app.use(helmet.crossOriginEmbedderPolicy({ policy: 'credentialless' }));
 
-  const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
+  app.use((req, res, next) => {
+    const nonce = crypto.randomBytes(16).toString('base64');
+    res.locals.cspNonce = nonce;
+    next();
+  });
 
-  app.use(helmet.contentSecurityPolicy({
-    directives: {
-      defaultSrc: ["'self'", assetsUrl],
-      formAction: ['*'],
-      scriptSrc: [assetsUrl, 'https://www.googletagmanager.com/', 'https://www.google-analytics.com/'],
-      fontSrc: ['data:'],
-      imgSrc: [
-        assetsUrl,
-        'https://www.google-analytics.com/',
-        'https://stats.g.doubleclick.net/',
-        'https://www.google.co.uk/ads/',
-        'https://www.google.com/ads/',
-      ],
-    },
-  }));
+  const assetsUrl = config.isDevelopment() ? 'http://localhost:3000/' : `${config.assets()}/`;
+  app.use('/', express.static(path.join(__dirname, '..', '..', 'dist', 'public')));
+  app.set('views', path.join(__dirname, '..', '..', 'dist', 'views'));
+
+  app.use((req, res, next) => {
+    helmet.contentSecurityPolicy({
+      directives: {
+        defaultSrc: ["'self'", assetsUrl],
+        formAction: ['*'],
+        scriptSrc: [
+          `'nonce-${res.locals.cspNonce}'`,
+          assetsUrl,
+          'https://www.googletagmanager.com/',
+          'https://www.google-analytics.com/',
+        ],
+        fontSrc: ["'self'", 'data:', assetsUrl],
+        imgSrc: [
+          assetsUrl,
+          'https://www.google-analytics.com/',
+          'https://stats.g.doubleclick.net/',
+          'https://www.google.co.uk/ads/',
+          'https://www.google.com/ads/',
+        ],
+      },
+    })(req, res, next);
+  });
 
   app.use(helmet.hsts({
     maxAge: SIXTY_DAYS_IN_SECONDS,

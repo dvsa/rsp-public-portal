@@ -73,5 +73,3 @@ cypress/screenshot
 
 # Mac files
 .DS_Store
-
-.nyc_output

@@ -1,4 +1,4 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
@@ -6,7 +6,7 @@
     { text: t.breadcrumbs.payment_code, url: '/payment-code' },
     { text: t.breadcrumbs.penalty_details, url: '/payment-code/' + paymentCode },
     { text: t.breadcrumbs.payment }
-  ] 
+  ]
 %}
 
 {% if penaltyType == 'FPN' %}
@@ -35,19 +35,19 @@
             {% for penalty in penaltyDetails %}
               {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
               <tr>
-                <td>{{ penalty.formattedReference }}</td> 
-                <td>&pound;{{ penalty.amount }}</td> 
+                <td>{{ penalty.formattedReference }}</td>
+                <td>&pound;{{ penalty.amount }}</td>
                 <td class="{{ statusClass }}">
                   <strong>
                     {{ t.penalty_details.status_paid if penalty.status == 'PAID' else t.penalty_details.status_unpaid }}
                   </strong>
                 </td>
-              </tr>   
+              </tr>
             {% endfor %}
             {% if penaltyDetails.length > 1 %}
               <tr>
-                <td>{{ t.penalty_details_page.amount_due }}</td> 
-                <td><strong>&pound;{{ totalAmount if totalAmount else 'N/A' }}</strong></td> 
+                <td>{{ t.penalty_details_page.amount_due }}</td>
+                <td><strong>&pound;{{ totalAmount if totalAmount else 'N/A' }}</strong></td>
                 <td></td>
               </tr>
             {% endif %}
@@ -77,11 +77,11 @@
                 <p>{{ t.penalty_details_page.info_needed }}</p>
                 </p>
               </div>
-            </details>    
+            </details>
           </p>
         {% endif %}
       {%- endcall %}
     {%- endcall %}
   {%- endcall %}
-  
+
 {% endblock %}

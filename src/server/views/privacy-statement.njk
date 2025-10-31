@@ -1,87 +1,112 @@
-{% extends 'layouts/default.layout.njk' %}
+{% extends 'layouts/base.layout.njk' %}
+
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
 
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
   {
     text: t.breadcrumbs.home,
-    url: '/'
+    href: '/'
   }, {
     text: t.breadcrumbs.privacy_statement
   }
 ] %}
 
 {% block content %}
-    {% call components.gridRow() %}
-        {% call components.columnTwoThirds() %}
-              {{ components.heading(text=t.privacy_statement.title, tag='h1', size='xlarge') }}
-              {{ components.heading(text=t.privacy_statement.introduction.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.introduction.about) }}
-              {{ components.paragraph(text=t.privacy_statement.introduction.purpose) }}
-              {{ components.paragraph(text=t.privacy_statement.introduction.dataController) }}
-             
-              {{ components.heading(text=t.privacy_statement.what_data.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.what_data.what_we_need.statement) }}
-              {{ components.list(items=t.privacy_statement.what_data.what_we_need.details, type='bullet') }}
-              {{ components.paragraph(text=t.privacy_statement.what_data.reason) }}
-              {{ components.paragraph(text=t.privacy_statement.what_data.legal) }}
-       
-              {{ components.heading(text=t.privacy_statement.why.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.why.data.statement) }}
-              {{ components.list(items=t.privacy_statement.why.data.details, type='bullet') }}
-            
-              {{ components.heading(text=t.privacy_statement.what_we_do_with.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.what_we_do_with.data.statement) }}
-              {{ components.paragraph(text=t.privacy_statement.what_we_do_with.data.excluding) }}
-              {{ components.list(items=t.privacy_statement.what_we_do_with.data.details, type='bullet') }}
-              {{ components.paragraph(text=t.privacy_statement.what_we_do_with.data.law) }}
-            
-              {{ components.heading(text=t.privacy_statement.how_long.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.how_long.data.statement) }}
-              {{ components.paragraph(text=t.privacy_statement.how_long.data.hold) }}
-              {{ components.list(items=t.privacy_statement.how_long.data.details, type='bullet') }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <h1 class="govuk-heading-xl">{{ t.privacy_statement.title }}</h1>
 
-              {{ components.heading(text=t.privacy_statement.where.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.where.statement_one) }}
-              {{ components.paragraph(text=t.privacy_statement.where.statement_two) }}
-              {{ components.paragraph(text=t.privacy_statement.where.statement_three) }}
-             
-              {{ components.heading(text=t.privacy_statement.protection.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.protection.statement_one) }}
-              
-              {{ components.heading(text=t.privacy_statement.automated.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.automated.statement_one) }}
-              
-              {{ components.heading(text=t.privacy_statement.changes.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.changes.statement_one) }}
-              {{ components.paragraph(text=t.privacy_statement.changes.statement_two) }}
-              {{ components.paragraph(text=t.privacy_statement.changes.statement_three) }}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.introduction.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.introduction.about }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.introduction.purpose }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.introduction.dataController }}</p>
 
-              {{ components.heading(text=t.privacy_statement.contact.heading, tag='h2',size='medium') }}
-              {{ components.paragraph(text=t.privacy_statement.contact.statement_one) }}
-              <div class="govuk-inset-text">
-                {{components.paragraph(text=t.privacy_statement.contact.statement_two)}}
-                {{components.span(item=t.privacy_statement.contact.line_one)}}
-                {{components.address(address=t.privacy_statement.contact.address)}}
-                {{components.paragraph(text=t.privacy_statement.contact.dvsa_email.heading)}}
-                {{components.link(url="mailto:"+ t.privacy_statement.contact.dvsa_email.link,text=t.privacy_statement.contact.dvsa_email.link)}}
-              </div>
-                {{components.paragraph(text=t.privacy_statement.contact.customer_services)}}
-                {{components.paragraph(text=t.privacy_statement.contact.regulator)}}
-              <div class="govuk-inset-text">
-                
-                {{components.paragraph(text=t.privacy_statement.contact.ico_email.heading)}}
-                {{components.link(url="mailto:"+t.privacy_statement.contact.ico_email.link,t.privacy_statement.contact.ico_email.link)}}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.what_data.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.what_data.what_we_need.statement }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.privacy_statement.what_data.what_we_need.details %}
+            <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
+      <p class="govuk-body">{{ t.privacy_statement.what_data.reason }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.what_data.legal }}</p>
 
-                {{components.paragraph(text=t.privacy_statement.contact.ico_contact.heading)}}
-                {{components.link(url="mailto:"+t.privacy_statement.contact.ico_contact.form,text=t.privacy_statement.contact.ico_contact.form)}}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.why.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.why.data.statement }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.privacy_statement.why.data.details %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
 
-                {{components.paragraph(text=t.privacy_statement.contact.ico_contact.telephone)}}
-                {{components.span(item=t.privacy_statement.contact.ico_contact.telno)}}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.what_we_do_with.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.what_we_do_with.data.statement }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.what_we_do_with.data.excluding }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.privacy_statement.what_we_do_with.data.details %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
+      <p class="govuk-body">{{ t.privacy_statement.what_we_do_with.data.law }}</p>
 
-                {{components.paragraph(text=t.privacy_statement.contact.ico_contact.textphone)}}
-                {{components.span(item=t.privacy_statement.contact.ico_contact.textphone_no)}}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.how_long.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.how_long.data.statement }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.how_long.data.hold }}</p>
+      <ul class="govuk-list govuk-list--bullet">
+        {% for item in t.privacy_statement.how_long.data.details %}
+          <li>{{ item.text }}</li>
+        {% endfor %}
+      </ul>
 
-              </div>
-       {%- endcall %}
-  {%- endcall %}
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.where.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.where.statement_one }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.where.statement_two }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.where.statement_three }}</p>
+
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.protection.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.protection.statement_one }}</p>
+
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.automated.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.automated.statement_one }}</p>
+
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.changes.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.changes.statement_one }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.changes.statement_two }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.changes.statement_three }}</p>
+
+      <h2 class="govuk-heading-m">{{ t.privacy_statement.contact.heading }}</h2>
+      <p class="govuk-body">{{ t.privacy_statement.contact.statement_one }}</p>
+
+      {% set contactHtml %}
+        <p class="govuk-body">{{ t.privacy_statement.contact.statement_two }}</p>
+        <span>{{ t.privacy_statement.contact.line_one.text }}</span><br>
+        {% for item in t.privacy_statement.contact.address %}
+          {{ item.text }}<br>
+        {% endfor %}
+        <p class="govuk-body">{{ t.privacy_statement.contact.dvsa_email.heading }}</p>
+        <a href="mailto:{{ t.privacy_statement.contact.dvsa_email.link }}" class="govuk-link">
+          {{ t.privacy_statement.contact.dvsa_email.link }}
+        </a>
+      {% endset %}
+
+      {{ govukInsetText({
+        html: contactHtml
+      }) }}
+
+      <p class="govuk-body">{{ t.privacy_statement.contact.customer_services }}</p>
+      <p class="govuk-body">{{ t.privacy_statement.contact.regulator }}</p>
+
+      {{ govukInsetText({
+        html: '<p class="govuk-body">' + t.privacy_statement.contact.ico_email.heading + '<br>
+               <a href="mailto:' + t.privacy_statement.contact.ico_email.link + '" class="govuk-link">' + t.privacy_statement.contact.ico_email.link + '</a></p>
+               <p class="govuk-body">' + t.privacy_statement.contact.ico_contact.heading + '<br>
+               <a href="mailto:' + t.privacy_statement.contact.ico_contact.form + '" class="govuk-link">' + t.privacy_statement.contact.ico_contact.form + '</a></p>
+               <p class="govuk-body">' + t.privacy_statement.contact.ico_contact.telephone + '<br>
+               <span>' + t.privacy_statement.contact.ico_contact.telno.text + '</span></p>
+               <p class="govuk-body">' + t.privacy_statement.contact.ico_contact.textphone + '<br>
+               <span>' + t.privacy_statement.contact.ico_contact.textphone_no.text + '</span>'
+      }) }}
+    </div>
+  </div>
 {% endblock %}

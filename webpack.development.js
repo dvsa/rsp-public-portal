@@ -1,13 +1,13 @@
 const { merge } = require('webpack-merge');
-const common = require('./webpack.common.js');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const [serverConfig, clientConfig] = require('./webpack.common.js');
 
-const lambdaName = 'serveExpressApp';
-
-module.exports = merge(common, {
-  mode: 'development',
-  devtool: 'source-map',
-  watch: false,
-  plugins: [
-  ],
-});
+module.exports = [
+  merge(serverConfig, {
+    mode: 'development',
+    devtool: 'source-map',
+  }),
+  merge(clientConfig, {
+    mode: 'development',
+    devtool: 'source-map',
+  }),
+];

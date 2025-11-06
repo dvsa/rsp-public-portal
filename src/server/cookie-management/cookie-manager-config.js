@@ -7,11 +7,16 @@ export const cookieManagerConfig = {
   'user-preference-configuration-form-id': 'cookie-preferences-form',
   'user-preference-saved-callback': () => {
     const cookiePreferencesConfirmation = document.getElementById('cookie-preferences-confirmation');
-    cookiePreferencesConfirmation.classList.remove('hidden');
+    cookiePreferencesConfirmation.classList.remove('govuk-!-display-none');
     window.scrollTo(0, 0);
   },
+  'cookie-banner-saved-callback': () => {
+    console.log('Cookie banner preferences saved - Hiding :)');
+    const cookieBanner = document.getElementById('global-cookie-banner');
+    cookieBanner.classList.add('govuk-!-display-none');
+  },
   'cookie-banner-id': 'global-cookie-banner',
-  'cookie-banner-visibility-class': 'hidden',
+  'cookie-banner-visibility-class': 'govuk-!-display-none',
   'cookie-banner-visible-on-page-with-preference-form': false,
   'set-checkboxes-in-preference-form': true,
   'domains': [

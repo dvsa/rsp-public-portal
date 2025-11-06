@@ -52,7 +52,7 @@ const serverConfig = {
         { from: 'node_modules/govuk-frontend/dist/govuk', to: 'views/govuk' },
         { from: 'node_modules/govuk-frontend/dist/govuk/all.bundle.js', to: 'public/all.bundle.js' },
         { from: 'node_modules/govuk-frontend/dist/govuk/all.bundle.js.map', to: 'public/all.bundle.js.map' },
-        { from: 'node_modules/@dvsa/cookie-manager/cookie-manager.js', to: 'public/cookie-manager.js' },
+        // { from: 'node_modules/@dvsa/cookie-manager/cookie-manager.js', to: 'public/cookie-manager.js' },
         {
           from: 'src/public/scss/index.scss',
           to: 'public/all.css',
@@ -75,7 +75,7 @@ const clientConfig = {
   entry: {
     client: {
       import: [
-        path.resolve(publicJsDir, 'dvsa', 'index.js'),
+        // path.resolve(publicJsDir, 'dvsa', 'index.js'),
         path.resolve(publicJsDir, 'cookie-manager.js'),
         path.resolve(publicJsDir, 'go-back.js'),
         path.resolve(publicJsDir, 'google-tag-manager.js'),

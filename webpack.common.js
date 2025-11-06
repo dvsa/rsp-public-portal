@@ -62,7 +62,8 @@ module.exports = {
         { from: 'node_modules/govuk-frontend/dist/govuk/assets', to: 'public/assets' },
         { from: 'node_modules/govuk-frontend/dist/govuk/template.njk', to: 'views/template.njk' },
         { from: 'node_modules/govuk-frontend/dist/govuk', to: 'views/govuk' },
-        { from: 'node_modules/govuk-frontend/dist/govuk/govuk-frontend.min.js', to: 'public/all.js' },
+        { from: 'node_modules/govuk-frontend/dist/govuk/all.bundle.js', to: 'public/all.bundle.js' },
+        { from: 'node_modules/govuk-frontend/dist/govuk/all.bundle.js.map', to: 'public/all.bundle.js.map' },
         { from: 'node_modules/@dvsa/cookie-manager/cookie-manager.js', to: 'public/cookie-manager.js' },
         {
           from: 'src/public/scss/index.scss',

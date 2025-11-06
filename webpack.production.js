@@ -7,6 +7,7 @@ const fs = require('fs-extra');
 const { execSync } = require('child_process');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
+const path = require('path');
 
 const LAMBDA_NAME = 'serveExpressApp';
 const OUTPUT_FOLDER = './dist';
@@ -17,62 +18,53 @@ try {
 } catch (error) {
   BRANCH_NAME = 'main';
 }
-class BundlePlugin {
-  constructor({ archives = [], assets = [] }) {
-    this.archives = archives;
-    this.assets = assets;
+class PackagePlugin {
+  constructor({ outputPath, outputName }) {
+    this.outputPath = outputPath;
+    this.outputName = outputName;
   }
 
   apply(compiler) {
-    compiler.hooks.afterEmit.tap('zip-pack-plugin', async () => {
-      this.archives.forEach(async (archive) => {
-        await this.createArchive(archive.inputPath, archive.outputPath, archive.outputName, archive.ignore);
+    compiler.hooks.afterEmit.tap('package-plugin', async () => {
+      if (!fs.existsSync(this.outputPath)) fs.mkdirSync(this.outputPath, { recursive: true });
+
+      const output = fs.createWriteStream(`${this.outputPath}/${this.outputName}.zip`);
+      const archive = archiver('zip', {
+        zlib: { level: 9 }
       });
 
-      this.assets.forEach((asset) => {
-        fs.copySync(asset.inputPath, asset.outputPath);
-      });
+      archive.pipe(output);
+
+      archive.append(fs.readFileSync(path.join(this.outputPath, 'handler.js')), { name: 'app.js' });
+      archive.directory(path.join(this.outputPath, 'public'), 'public');
+      archive.directory(path.join(this.outputPath, 'views'), 'views');
+      archive.directory(path.join(this.outputPath, 'i18n'), 'i18n');
+      archive.finalize();
     });
   }
-
-  createArchive(inputPath, outputPath, outputName, ignore = []) {
-    if (!fs.existsSync(outputPath)) fs.mkdirSync(outputPath, { recursive: true });
-
-    const output = fs.createWriteStream(`${outputPath}/${outputName}.zip`);
-    const archive = archiver('zip');
-
-    archive.pipe(output);
-    archive.glob('**/*', { cwd: inputPath, ignore });
-    return archive.finalize();
-  }
 }
-
 module.exports = merge(common, {
   mode: 'production',
   devtool: false,
   optimization: {
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+    minimizer: [new CssMinimizerPlugin(), new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
+      extractComments: false, // This prevents the LICENSE.txt file
+    }),
+    ],
   },
   plugins: [
     // Make app version available to the application
     new webpack.DefinePlugin({
       'process.env.APP_VERSION': JSON.stringify(packageJson.version),
     }),
-    new BundlePlugin({
-      archives: [
-        {
-          inputPath: OUTPUT_FOLDER,
-          outputPath: OUTPUT_FOLDER,
-          outputName: `${REPO_NAME}-${BRANCH_NAME}-lambda`,
-          ignore: ['public', '*.zip', `${REPO_NAME}-cloudfront-assets-*`],
-        },
-      ],
-      assets: [
-        {
-          inputPath: `${OUTPUT_FOLDER}/public`,
-          outputPath: `${OUTPUT_FOLDER}/${REPO_NAME}-cloudfront-assets-${BRANCH_NAME}`,
-        },
-      ],
+    new PackagePlugin({
+      outputPath: OUTPUT_FOLDER,
+      outputName: 'package',
     }),
   ],
 });

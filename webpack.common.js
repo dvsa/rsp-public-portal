@@ -22,7 +22,7 @@ module.exports = {
   output: {
     filename: (chunkData) => {
       if (chunkData.chunk.name === 'lambda') {
-        return 'lambda.js'; // keep lambda in dist root (needed by Lambda)
+        return 'handler.js'; // keep lambda in dist root (needed by Lambda)
       }
       return 'public/[name].js'; // all other JS into dist/public so easier to link in view pages
     },

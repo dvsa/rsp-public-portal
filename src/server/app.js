@@ -36,7 +36,7 @@ export default async () => {
     },
   });
 
-  env.addGlobal('assets', '');
+  env.addGlobal('assets', config.isDevelopment() ? '' : config.assets());
   env.addGlobal('urlroot', config.urlRoot());
   env.addGlobal('govukRebrand', true);
   env.addGlobal('appVersion', process.env.APP_VERSION || '1.0.0');

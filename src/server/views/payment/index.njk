@@ -67,3 +67,61 @@
     </div>
   </div>
 {% endblock %}
+
+{% block footer %}
+  {% from "govuk/components/footer/macro.njk" import govukFooter %}
+  {{ govukFooter({
+    meta: {
+      items: [
+        {
+          href: "/cookie-preferences",
+          text: t.footer.cookies,
+          attributes: { id: "cookies-link" }
+        },
+        {
+          href: "https://www.gov.uk/help/terms-conditions",
+          text: t.footer.terms_conditions
+        },
+        {
+          href: "/accessibility-statement",
+          text: t.footer.accessibility_statement
+        },
+        {
+          href: "/privacy-statement",
+          text: t.footer.privacy_statement
+        }
+      ],
+      html: '<p class="govuk-footer__meta-custom">' + t.home.language_guidance_header + ':</p>
+             <ul class="govuk-list govuk-!-font-size-16" id="language-links" data-testid="language-links">
+               <li><a href="?clang=bg" class="govuk-footer__link">български</a></li>
+               <li><a href="?clang=cs" class="govuk-footer__link">Čeština</a></li>
+               <li><a href="?clang=sr" class="govuk-footer__link">Српски језик</a></li>
+               <li><a href="?clang=cy" class="govuk-footer__link">Cymraeg</a></li>
+               <li><a href="?clang=de" class="govuk-footer__link">Deutsch</a></li>
+               <li><a href="?clang=el" class="govuk-footer__link">Ελληνικά</a></li>
+               <li><a href="?clang=et" class="govuk-footer__link">Eesti keel</a></li>
+               <li><a href="?clang=es" class="govuk-footer__link">Español</a></li>
+               <li><a href="?clang=fr" class="govuk-footer__link">Français</a></li>
+               <li><a href="?clang=hr" class="govuk-footer__link">Hrvatski</a></li>
+               <li><a href="?clang=it" class="govuk-footer__link">Italiano</a></li>
+               <li><a href="?clang=lv" class="govuk-footer__link">Latviešu</a></li>
+               <li><a href="?clang=lt" class="govuk-footer__link">Lietuvių</a></li>
+               <li><a href="?clang=hu" class="govuk-footer__link">Magyar</a></li>
+               <li><a href="?clang=nl" class="govuk-footer__link">Nederlands</a></li>
+               <li><a href="?clang=pl" class="govuk-footer__link">Polski</a></li>
+               <li><a href="?clang=pt" class="govuk-footer__link">Português</a></li>
+               <li><a href="?clang=ru" class="govuk-footer__link">Ру́сский</a></li>
+               <li><a href="?clang=ro" class="govuk-footer__link">Română</a></li>
+               <li><a href="?clang=sk" class="govuk-footer__link">Slovenčina</a></li>
+               <li><a href="?clang=sl" class="govuk-footer__link">Slovenščina</a></li>
+               <li><a href="?clang=tr" class="govuk-footer__link">Türkçe</a></li>
+               <li><a href="?clang=ua" class="govuk-footer__link">Українська</a></li>
+               <li><a href="?clang=en" class="govuk-footer__link">English</a></li>
+             </ul>
+             <p class="govuk-footer__meta-custom">' + t.footer.built_by + '</p>
+             <p class="govuk-footer__meta-custom">' + t.footer.licence + '</p>
+             <p class="govuk-footer__meta-custom">Version 3.1.4</p>'
+    }
+  }) }}
+  <div id="global-app-error" class="app-error hidden"></div>
+{% endblock %}

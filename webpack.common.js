@@ -17,7 +17,7 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist'),
   },
-  target: 'node16',
+  target: 'node24',
   node: {
     __dirname: false,
     __filename: false,
@@ -34,10 +34,7 @@ const serverConfig = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', { targets: { node: '16.16' }, useBuiltIns: 'entry', corejs: '3' }],
-            ],
-            plugins: [
-              ['@babel/plugin-proposal-class-properties', { loose: false }],
+              ['@babel/preset-env', { targets: { node: '24' }, useBuiltIns: 'entry', corejs: '3' }],
             ],
           },
         },
@@ -104,16 +101,13 @@ const clientConfig = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', { 
+              ['@babel/preset-env', {
                 targets: {
                   browsers: ['> 1%', 'last 2 versions', 'ie >= 11']
-                }, 
-                useBuiltIns: 'entry', 
-                corejs: '3' 
+                },
+                useBuiltIns: 'entry',
+                corejs: '3'
               }],
-            ],
-            plugins: [
-              ['@babel/plugin-proposal-class-properties', { loose: false }],
             ],
           },
         },

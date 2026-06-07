@@ -1,16 +1,14 @@
 {% from "govuk/components/header/macro.njk" import govukHeader %}
-{% from "govuk/components/skip-link/macro.njk" import govukSkipLink %}
-
-{{ govukSkipLink({
-  text: "Skip to main content",
-  href: "#main-content"
-}) }}
+{% from "govuk/components/service-navigation/macro.njk" import govukServiceNavigation %}
 
 {{ govukHeader({
   homepageUrl: "https://www.gov.uk",
-  serviceName: "DVSA roadside fines portal",
-  serviceUrl: "/",
   containerClasses: "govuk-width-container"
+}) }}
+
+{{ govukServiceNavigation({
+  serviceName: "DVSA roadside fines portal",
+  serviceUrl: "/"
 }) }}
 
 

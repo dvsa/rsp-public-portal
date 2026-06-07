@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-spaces */
 import dotenv from 'dotenv';
 import path from 'path';
-import { SecretsManager } from 'aws-sdk';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { logInfo, logError } from './utils/logger';
 
 dotenv.config();
@@ -25,26 +25,26 @@ const configMetadata = {
 
 let configuration = {};
 async function bootstrap() {
-  return new Promise((resolve, reject) => {
-    if (process.env.USE_SECRETS_MANAGER === 'true') {
-      const SecretId = process.env.SECRETS_MANAGER_SECRET_NAME;
-      logInfo('PublicPortalSecretsManagerId', { secretId: SecretId });
-      const secretsManagerClient = new SecretsManager({ region: process.env.REGION });
-      secretsManagerClient.getSecretValue({ SecretId }, (err, secretsManagerResponse) => {
-        if (err) {
-          logError('PublicPortalSecretsManagerError', err.message);
-          reject(err);
-        }
-        configuration = JSON.parse(secretsManagerResponse.SecretString);
-        resolve(configuration);
-      });
-    } else {
-      console.log('Using envvars for config');
-      configuration = Object.values(configMetadata)
-        .reduce((config, envkey) => ({ [envkey]: process.env[envkey], ...config }), configuration);
-      resolve(configuration);
+  if (process.env.USE_SECRETS_MANAGER === 'true') {
+    const SecretId = process.env.SECRETS_MANAGER_SECRET_NAME;
+    logInfo('PublicPortalSecretsManagerId', { secretId: SecretId });
+    const client = new SecretsManagerClient({ region: process.env.REGION });
+    try {
+      const response = await client.send(new GetSecretValueCommand({ SecretId }));
+      configuration = JSON.parse(response.SecretString);
+    } catch (err) {
+      const errorDetails = err instanceof Error
+        ? { name: err.name, message: err.message, stack: err.stack }
+        : { message: String(err) };
+      logError('PublicPortalSecretsManagerError', errorDetails);
+      throw err;
     }
-  });
+  } else {
+    console.log('Using envvars for config');
+    configuration = Object.values(configMetadata)
+      .reduce((config, envkey) => ({ [envkey]: process.env[envkey], ...config }), configuration);
+  }
+  return configuration;
 }
 
 function ensureRelativeUrl(url) {

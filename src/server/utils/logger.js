@@ -4,10 +4,28 @@ export const ServiceName = {
   Documents: 'DocumentsService',
 };
 
+const REDACTED = '[REDACTED]';
+const SENSITIVE_KEY_PATTERN = /(secret|password|passwd|token|api[_-]?key|private[_-]?key|authorization|cookie|session|credential)/i;
+
+function sanitizeForLogging(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => sanitizeForLogging(item));
+  }
+
+  if (value && typeof value === 'object') {
+    return Object.entries(value).reduce((acc, [key, val]) => {
+      acc[key] = SENSITIVE_KEY_PATTERN.test(key) ? REDACTED : sanitizeForLogging(val);
+      return acc;
+    }, {});
+  }
+
+  return value;
+}
+
 export function logInfo(logName, message) {
   console.log(JSON.stringify({
     logName,
-    message,
+    message: sanitizeForLogging(message),
     logLevel: 'INFO',
   }, null, 2));
 }
@@ -15,7 +33,7 @@ export function logInfo(logName, message) {
 export function logError(logName, message) {
   console.error(JSON.stringify({
     logName,
-    message,
+    message: sanitizeForLogging(message),
     logLevel: 'ERROR',
   }, null, 2));
 }
@@ -48,12 +66,12 @@ export function logAxiosError(logName, serviceName, error, details) {
   const log = {
     logName,
     serviceName,
-    requestErrorMessage: message,
+    requestErrorMessage: sanitizeForLogging(message),
     logLevel: 'ERROR',
   };
 
   if (details !== undefined) {
-    log.details = details;
+    log.details = sanitizeForLogging(details);
   }
 
   console.error(JSON.stringify(log, null, 2));

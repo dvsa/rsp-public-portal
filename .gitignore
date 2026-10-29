@@ -64,6 +64,7 @@ dist/
 build/
 .serverless/
 .vscode/*
+.idea/*
 !.vscode/launch.json
 
 cypress/videos

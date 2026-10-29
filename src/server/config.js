@@ -1,7 +1,7 @@
 /* eslint-disable no-multi-spaces */
 import dotenv from 'dotenv';
 import path from 'path';
-import { SecretsManager } from 'aws-sdk';
+import { SecretsManagerClient, GetSecretValueCommand } from '@aws-sdk/client-secrets-manager';
 import { logInfo, logError } from './utils/logger';
 
 dotenv.config();
@@ -25,26 +25,25 @@ const configMetadata = {
 
 let configuration = {};
 async function bootstrap() {
-  return new Promise((resolve, reject) => {
-    if (process.env.USE_SECRETS_MANAGER === 'true') {
-      const SecretId = process.env.SECRETS_MANAGER_SECRET_NAME;
-      logInfo('PublicPortalSecretsManagerId', { secretId: SecretId });
-      const secretsManagerClient = new SecretsManager({ region: process.env.REGION });
-      secretsManagerClient.getSecretValue({ SecretId }, (err, secretsManagerResponse) => {
-        if (err) {
-          logError('PublicPortalSecretsManagerError', err.message);
-          reject(err);
-        }
-        configuration = JSON.parse(secretsManagerResponse.SecretString);
-        resolve(configuration);
-      });
-    } else {
-      console.log('Using envvars for config');
-      configuration = Object.values(configMetadata)
-        .reduce((config, envkey) => ({ [envkey]: process.env[envkey], ...config }), configuration);
-      resolve(configuration);
+  if (process.env.USE_SECRETS_MANAGER === 'true') {
+    const SecretId = process.env.SECRETS_MANAGER_SECRET_NAME;
+    logInfo('PublicPortalSecretsManagerId', { secretId: SecretId });
+    // if running locally use the profile from the .env file, otherwise use the default profile
+    const profile = process.env.IS_OFFLINE ? process.env.AWS_PROFILE : undefined;
+    const secretsManagerClient = new SecretsManagerClient({ region: process.env.REGION, profile });
+    try {
+      const secretsManagerResponse = await secretsManagerClient.send(new GetSecretValueCommand({ SecretId }));
+      configuration = JSON.parse(secretsManagerResponse.SecretString);
+    } catch (err) {
+      logError('PublicPortalSecretsManagerError', err.message);
+      throw err;
     }
-  });
+    return configuration;
+  }
+  console.log('Using .env vars for config');
+  configuration = Object.values(configMetadata)
+    .reduce((config, envkey) => ({ [envkey]: process.env[envkey], ...config }), configuration);
+  return configuration;
 }
 
 function ensureRelativeUrl(url) {

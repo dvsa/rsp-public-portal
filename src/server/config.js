@@ -28,9 +28,7 @@ async function bootstrap() {
   if (process.env.USE_SECRETS_MANAGER === 'true') {
     const SecretId = process.env.SECRETS_MANAGER_SECRET_NAME;
     logInfo('PublicPortalSecretsManagerId', { secretId: SecretId });
-    // if running locally use the profile from the .env file, otherwise use the default profile
-    const profile = process.env.IS_OFFLINE ? process.env.AWS_PROFILE : undefined;
-    const secretsManagerClient = new SecretsManagerClient({ region: process.env.REGION, profile });
+    const secretsManagerClient = new SecretsManagerClient({ region: process.env.REGION });
     try {
       const secretsManagerResponse = await secretsManagerClient.send(new GetSecretValueCommand({ SecretId }));
       configuration = JSON.parse(secretsManagerResponse.SecretString);

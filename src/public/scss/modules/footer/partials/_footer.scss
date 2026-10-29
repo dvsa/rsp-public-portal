@@ -5,3 +5,14 @@
     overflow: visible;
   }
 }
+
+#language-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: govuk-spacing(1) govuk-spacing(4);
+  padding: 0;
+
+  li {
+    list-style: none;
+  }
+}

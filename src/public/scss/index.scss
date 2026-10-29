@@ -3,3 +3,12 @@ $govuk-fonts-path: "/assets/fonts/";
 $govuk-images-path: "/assets/images/";
 
 @import "govuk-frontend/dist/govuk/index.scss";
+
+// Custom variables and modules (must come after govuk-frontend)
+@import 'gds/variables/variables';
+@import 'gds/mixins/mixins';
+@import 'gds/extends/extends';
+@import 'gds/elements/partials/helpers';
+@import 'mixins/mixins';
+@import 'variables';
+@import 'modules/modules';

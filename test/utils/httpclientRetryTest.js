@@ -11,7 +11,7 @@ describe('httpclient', () => {
   });
 
   after(() => {
-    sinon.reset();
+    sinon.restore();
   });
 
   beforeEach(() => {

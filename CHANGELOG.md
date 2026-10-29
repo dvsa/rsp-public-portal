@@ -1,5 +1,18 @@
 # Changelog
 
+## [4.1.0](https://github.com/dvsa/rsp-public-portal/compare/v4.0.3...v4.1.0) (2025-11-07)
+
+
+### Features
+
+* vol 6325 govuk refresh ([#219](https://github.com/dvsa/rsp-public-portal/issues/219)) ([a9579f8](https://github.com/dvsa/rsp-public-portal/commit/a9579f870ebe4bd4cd968d1940e9dcba802a6194))
+
+
+### Bug Fixes
+
+* bundled aws-sdk & assets ([#226](https://github.com/dvsa/rsp-public-portal/issues/226)) ([a93f668](https://github.com/dvsa/rsp-public-portal/commit/a93f668aa3596ba57720a3b7fcab24a8e8f1feea))
+* webpack ci build  ([#225](https://github.com/dvsa/rsp-public-portal/issues/225)) ([79e7214](https://github.com/dvsa/rsp-public-portal/commit/79e7214fb31ded5486f99a8803287d3806360396))
+
 ## [4.0.3](https://github.com/dvsa/rsp-public-portal/compare/v4.0.2...v4.0.3) (2024-12-09)
 
 

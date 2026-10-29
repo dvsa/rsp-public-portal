@@ -105,5 +105,8 @@
     "resolve-path": "^1.4.0",
     "url-parse": "^1.5.10",
     "walk-sync": "^3.0.0"
+  },
+  "overrides": {
+    "uuid": "^14.0.0"
   }
 }

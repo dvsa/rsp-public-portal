@@ -7,19 +7,19 @@ on:
 
 jobs:
   lint:
-    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v3.5.0
+    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v6.2.0
     with:
       node-version: 20.x
+      npm-version: 10.x
 
   test:
-    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v6.2.0
     with:
       node-version: 20.x
+      npm-version: 10.x
 
   security:
-    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v5.0.4
-    with:
-      args: --all-projects
+    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v6.2.0
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -41,11 +41,12 @@ jobs:
           echo "ARCHIVE_NAME=${PRETTY_BRANCH_NAME}" >> $GITHUB_OUTPUT
 
   build:
-    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v6.2.0
     needs: [ build-names ]
     with:
       upload-artifact: true
       node-version: 20.x
+      npm-version: 10.x
 
   upload-s3:
     if: startsWith(github.ref, 'refs/heads/feat/') || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || startsWith(github.ref, 'refs/heads/master')

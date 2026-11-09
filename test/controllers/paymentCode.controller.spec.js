@@ -275,23 +275,73 @@ describe('Payment Code Controller', () => {
 
       context('for a group penalty', () => {
         let clock;
+        let configMock;
+        let groupDetails;
 
         beforeEach(() => {
           clock = sinon.useFakeTimers(new Date(2018, 2, 15));
+          configMock = sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000);
+          groupDetails = {
+            ...parsedMultiPenalties[0],
+            issueDate: '14/03/2018',
+            penaltyGroupDetails: {
+              ...parsedMultiPenalties[0].penaltyGroupDetails,
+              date: '14/03/2018',
+              dateTime: (Date.now() / 1000) - 86400,
+              registrationNumber: 'TEST123',
+            },
+          };
 
-          mockPenaltyGroupSvc
-            .callsFake((paymentCode) => Promise.resolve(parsedMultiPenalties.find((p) => p.paymentCode === paymentCode)));
+          mockPenaltyGroupSvc.resolves(groupDetails);
         });
 
         afterEach(() => {
           clock.restore();
-          mockPenaltyGroupSvc.restore();
+          configMock.restore();
         });
 
-        it('should render the multi payment info page', async () => {
+        it('should accept an in-date group using its nested registration and issue date', async () => {
           req = { params: { payment_code: '47hsqs103i0' } };
           await getPaymentDetails[1](req, res);
+          sinon.assert.calledWith(renderSpy, 'payment/multiPaymentInfo', {
+            ...groupDetails,
+            location: groupDetails.penaltyDetails[0].penalties[0].location,
+            paymentPending: false,
+            pendingMinutes: 15,
+          });
+          sinon.assert.notCalled(redirectSpy);
+        });
+
+        [undefined, ''].forEach((registrationNumber) => {
+          it(`should reject a group with ${registrationNumber === undefined ? 'missing' : 'empty'} registration`, async () => {
+            groupDetails.penaltyGroupDetails.registrationNumber = registrationNumber;
+            req = { params: { payment_code: groupDetails.paymentCode } };
+
+            await getPaymentDetails[1](req, res);
+
+            sinon.assert.calledWith(redirectSpy, '../payment-code?invalidPaymentCode&vrm=false');
+            sinon.assert.notCalled(renderSpy);
+          });
+        });
+
+        it('should accept a group at 28 full days old', async () => {
+          groupDetails.penaltyGroupDetails.dateTime = (Date.now() / 1000) - (28 * 86400);
+          req = { params: { payment_code: groupDetails.paymentCode } };
+
+          await getPaymentDetails[1](req, res);
+
           sinon.assert.calledWith(renderSpy, 'payment/multiPaymentInfo');
+          sinon.assert.notCalled(redirectSpy);
+        });
+
+        it('should reject a group at 29 full days old despite having a registration', async () => {
+          groupDetails.penaltyGroupDetails.dateTime = (Date.now() / 1000) - (29 * 86400);
+          req = { params: { payment_code: groupDetails.paymentCode } };
+
+          await getPaymentDetails[1](req, res);
+
+          sinon.assert.calledWith(redirectSpy, `../payment-code?invalidPaymentCode&type=overdue&id=${groupDetails.paymentCode}`);
+          sinon.assert.notCalled(renderSpy);
         });
       });
     });

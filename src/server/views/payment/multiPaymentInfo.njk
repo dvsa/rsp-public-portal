@@ -21,7 +21,7 @@
       <h1 class="govuk-heading-l">{{ t.penalty_details_page.penalty_details_title }}</h1>
 
       {% if paid == false %}
-        <p class="govuk-body">{{ t.penalty_details_page.intro_part_paid }}</p>
+        <p class="govuk-body govuk-!-font-weight-bold">{{ t.penalty_details_page.intro_part_paid }}</p>
       {% else %}
         <p class="govuk-body">{{ t.penalty_details_page.intro_paid }}</p>
         <p class="govuk-body">
@@ -35,20 +35,20 @@
       {# Build the summary table rows #}
       {% set summaryRows = [
         [
-          { text: t.penalty_details.payment_code },
-          { text: paymentCode, colspan: 4 }
+          { text: t.penalty_details.payment_code, classes: 'govuk-!-font-weight-bold' },
+          { text: paymentCode, colspan: 3 }
         ],
         [
-          { text: t.penalty_details.vehicle_reg },
-          { text: penaltyGroupDetails.registrationNumber if penaltyGroupDetails.registrationNumber else 'N/A' }
+          { text: t.penalty_details.vehicle_reg, classes: 'govuk-!-font-weight-bold' },
+          { text: penaltyGroupDetails.registrationNumber if penaltyGroupDetails.registrationNumber else 'N/A', colspan: 3 }
         ],
         [
-          { text: t.penalty_details.penalty_date },
-          { text: penaltyGroupDetails.date, colspan: 4 }
+          { text: t.penalty_details.penalty_date, classes: 'govuk-!-font-weight-bold' },
+          { text: penaltyGroupDetails.date, colspan: 3 }
         ],
         [
-          { text: t.penalty_details.location },
-          { text: location | escape, colspan: 4 }
+          { text: t.penalty_details.location, classes: 'govuk-!-font-weight-bold' },
+          { text: location | escape, colspan: 3 }
         ]
       ] %}
 
@@ -90,7 +90,7 @@
 
         {# Add payment type row #}
         {% set _ = summaryRows.push([
-          { text: typeLabel, attributes: { 'data-testid': typeTestId } },
+          { text: typeLabel, classes: 'govuk-!-font-weight-bold', attributes: { 'data-testid': typeTestId } },
           { text: '£' + amount.amount|string },
           { html: statusHtml, classes: 'govuk-!-font-weight-bold' },
           { html: receiptCell }
@@ -102,7 +102,7 @@
             {% if penaltyType.penalties.length == 1 %}
               {# Single penalty - show reference directly #}
               {% set _ = summaryRows.push([
-                { text: t.penalty_details.reference },
+                { text: t.penalty_details.reference, classes: 'govuk-!-font-weight-bold' },
                 { text: penaltyType.penalties[0].formattedReference, colspan: 3, classes: 'govuk-!-font-weight-bold' }
               ]) %}
             {% else %}
@@ -117,6 +117,7 @@
 
               {% set detailsHtml %}
                 {{ govukDetails({
+                  classes: 'govuk-!-margin-bottom-0',
                   summaryText: t.penalty_details_page.penalty_details_panel_title,
                   html: govukTable({
                     rows: penaltyTableRows,
@@ -135,7 +136,6 @@
           {% endif %}
         {% endfor %}
 
-        {# Add payment button row if unpaid #}
         {% if showPaymentButton %}
           {% set detailsUrl = '/payment-code/' + paymentCode + '/' + amount.type + '/details' %}
           {% set buttonHtml %}

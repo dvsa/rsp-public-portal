@@ -6,6 +6,7 @@
 {% from "govuk/components/details/macro.njk" import govukDetails %}
 
 {% set pageTitle = t.payment_code_page.title %}
+{% set paymentCodeError = t.payment_code_page.overdue_error if type == 'overdue' else t.payment_code_page.error %}
 {% set pageBreadcrumbItems = [
     { text: t.breadcrumbs.home, href: '/' },
     { text: t.breadcrumbs.payment_code }
@@ -17,14 +18,15 @@
 
       {% if invalidPaymentCode %}
         {{ govukErrorSummary({
-          titleText: t.payment_code_page.error.title if type !== 'overdue' else t.payment_code_page.overdue_error.title,
+          titleText: paymentCodeError.title,
           errorList: [
             {
-              text: t.payment_code_page.error.invalid_code,
+              text: paymentCodeError.invalid_code,
               href: "#payment_code"
             }
           ]
         }) }}
+        <p class="govuk-body">{{ paymentCodeError.description }}</p>
       {% endif %}
 
       <h1 class="govuk-heading-xl">{{ t.payment_code_page.title }}</h1>
@@ -41,14 +43,37 @@
             text: t.payment_code_page.hint
           },
           errorMessage: {
-            text: t.payment_code_page.error.invalid_code
+            text: paymentCodeError.invalid_code
           } if invalidPaymentCode,
           attributes: {
             maxlength: 19
           }
         }) }}
 
-        {% if type !== 'overdue' %}
+        {% if type == 'overdue' %}
+          {% if id %}
+            <p class="govuk-body">
+              <strong>{{ t.payment_code_page.overdue_error.payment_code_colon }}</strong>
+              {{ id | escape }}
+            </p>
+          {% endif %}
+          <p class="govuk-body">{{ t.payment_code_page.overdue_error.assistance_intro }}</p>
+          <p class="govuk-body">{{ t.payment_code_page.overdue_error.assistance_instructions }}</p>
+          <p class="govuk-body">{{ t.payment_code_page.overdue_error.contact }}</p>
+          <div class="govuk-inset-text">
+            <h2 class="govuk-heading-m">{{ t.payment_code_page.contact_title }}</h2>
+            <ul class="govuk-list">
+              <li>
+                <a href="mailto:{{ t.payment_code_page.contact_email }}" class="govuk-link">{{ t.payment_code_page.contact_email }}</a>
+              </li>
+              <li>{{ t.payment_code_page.contact_phone }}</li>
+              <li>{{ t.payment_code_page.contact_opening_hours }}</li>
+              <li>
+                <a href="https://www.gov.uk/call-charges" class="govuk-link">{{ t.payment_code_page.call_charges_link }}</a>
+              </li>
+            </ul>
+          </div>
+        {% else %}
           {{ govukDetails({
             summaryText: t.payment_code_page.hidden_panel_title,
             html: '<p>' + t.penalty_details_page.details_assistance_panel_paragraph_1 + '</p>

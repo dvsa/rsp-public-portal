@@ -88,8 +88,13 @@ export const getPaymentDetails = [
             res.redirect(`../payment-code?invalidPaymentCode&type=overdue&id=${paymentCode}`);
             return;
           }
+
+          const vehicleRegMissing = isSinglePenalty
+            ? (!entityData.vehicleReg || entityData.vehicleReg === '')
+            : (!entityData.penaltyGroupDetails.registrationNumber || entityData.penaltyGroupDetails.registrationNumber === '');
+
           // return bad payment code if penalty has not got vehicle details
-          if (!entityData.vehicleReg || entityData.vehicleReg === '') {
+          if (vehicleRegMissing) {
             logInfo('NoVehicleDetails', {
               paymentCode,
             });

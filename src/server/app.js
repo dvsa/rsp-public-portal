@@ -74,6 +74,12 @@ export default async () => {
           'https://www.googletagmanager.com/',
           'https://www.google-analytics.com/',
         ],
+        connectSrc: [
+          "'self'",
+          assetsUrl,
+          'https://www.google-analytics.com/',
+          'https://region1.analytics.google.com/',
+        ],
         fontSrc: ["'self'", 'data:', assetsUrl],
         imgSrc: [
           assetsUrl,

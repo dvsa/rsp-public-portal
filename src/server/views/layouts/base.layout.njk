@@ -5,7 +5,7 @@
 
 {# Set variables that template.njk uses #}
 {% set htmlLang = clang|default('en') %}
-{% set assetPath = assets %}
+{% set assetPath = (assets | default('')) + '/assets/rebrand' %}
 
 {% block pageTitle %}{{ pageTitle }}{% endblock %}
 

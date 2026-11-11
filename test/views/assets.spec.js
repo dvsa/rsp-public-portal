@@ -46,4 +46,14 @@ describe('Portal asset URLs', () => {
       expect(new URL(url, 'http://localhost:3000/all.css').pathname).to.equal(`/${url}`);
     });
   });
+
+  it('styles paid and unpaid statuses in the compiled stylesheet', () => {
+    const { css } = sass.compile(path.join(root, 'src/public/scss/index.scss'), {
+      loadPaths: [path.join(root, 'node_modules')],
+      logger: sass.Logger.silent,
+    });
+
+    expect(css).to.match(/\.confirmed\s*\{\s*color:\s*#00703c;/i);
+    expect(css).to.match(/\.unconfirmed\s*\{\s*color:\s*#d4351c;/i);
+  });
 });

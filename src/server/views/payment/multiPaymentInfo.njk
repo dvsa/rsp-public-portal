@@ -74,7 +74,8 @@
         {% set statusHtml %}
           <span class="{{ statusClass }}">
             {% if amountPaid %}
-              {{ t.penalty_details.status_paid }} ✓
+              {{ t.penalty_details.status_paid }}
+              &nbsp;&nbsp;<img src="{{ assets }}/images/icon-check.png" alt="" />
             {% else %}
               {{ t.penalty_details.status_unpaid }}
             {% endif %}

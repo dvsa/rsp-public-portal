@@ -32,6 +32,7 @@ describe('Individual penalty details template', () => {
         expect(html).to.include(`<p class="govuk-body govuk-!-font-weight-bold">${translations.penalty_details_page.intro_part_paid}</p>`);
       } else {
         expect(html).to.include(`<p class="govuk-body">${translations.penalty_details_page.intro_paid}</p>`);
+        expect(html).to.include('src="/images/icon-check.png"');
       }
       expect(rows).to.have.lengthOf(status === 'PAID' ? 8 : 6);
       expect(rows[1]).to.include('TEST123');

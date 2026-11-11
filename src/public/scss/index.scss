@@ -3,3 +3,11 @@ $govuk-fonts-path: "assets/fonts/";
 $govuk-images-path: "assets/images/";
 
 @import "govuk-frontend/dist/govuk/index.scss";
+
+.confirmed {
+  color: govuk-colour("green");
+}
+
+.unconfirmed {
+  color: govuk-colour("red");
+}

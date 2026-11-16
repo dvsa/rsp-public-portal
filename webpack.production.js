@@ -1,17 +1,14 @@
 const { merge } = require('webpack-merge');
 const [serverConfig, clientConfig] = require('./webpack.common.js');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const archiver = require('archiver');
-const fs = require('fs-extra');
+const fs = require('node:fs');
 const { execSync } = require('child_process');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 const path = require('path');
 
-const LAMBDA_NAME = 'serveExpressApp';
 const OUTPUT_FOLDER = './dist';
-const REPO_NAME = 'rsp-public';
 let BRANCH_NAME;
 try {
   BRANCH_NAME = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim().replace(/\//g, '-');
@@ -30,7 +27,7 @@ class PackagePlugin {
 
       const output = fs.createWriteStream(`${this.outputPath}/${this.outputName}.zip`);
       const archive = archiver('zip', {
-        zlib: { level: 9 }
+        zlib: { level: 9 },
       });
 
       archive.pipe(output);

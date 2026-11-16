@@ -23,7 +23,7 @@ const serverConfig = {
     __filename: false,
   },
   externals: {
-    'fsevents': "require('fsevents')"
+    fsevents: "require('fsevents')",
   },
   module: {
     rules: [

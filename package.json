@@ -2,10 +2,13 @@
   "name": "dvsa-rsp-web-public",
   "version": "4.1.0",
   "description": "DVSA Public Payment Portal For RSP",
-  "engines": {
-    "node": "20.x"
-  },
   "main": "handler.js",
+  "author": "DVSA",
+  "license": "ISC",
+  "engines": {
+    "node": "24.22.3",
+    "npm": "11.x"
+  },
   "scripts": {
     "bundle": "npm run clean && npm run build-prod",
     "build": "npm run build-server && npm run build-frontend",
@@ -25,8 +28,6 @@
     "check-security": "git secrets --scan",
     "check-security-log": "git log -p | scanrepo"
   },
-  "author": "BJSS",
-  "license": "ISC",
   "devDependencies": {
     "@babel/cli": "^7.18.10",
     "@babel/core": "^7.18.10",

@@ -17,7 +17,7 @@ const serverConfig = {
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist'),
   },
-  target: 'node16',
+  target: 'node24',
   node: {
     __dirname: false,
     __filename: false,
@@ -34,7 +34,7 @@ const serverConfig = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', { targets: { node: '16.16' }, useBuiltIns: 'entry', corejs: '3' }],
+              ['@babel/preset-env', { targets: { node: '24.22.3' }, useBuiltIns: 'entry', corejs: '3' }],
             ],
             plugins: [
               ['@babel/plugin-proposal-class-properties', { loose: false }],

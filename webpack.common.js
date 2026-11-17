@@ -16,6 +16,7 @@ const serverConfig = {
     filename: 'handler.js',
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist'),
+    asyncChunks: false,
   },
   target: 'node24',
   node: {

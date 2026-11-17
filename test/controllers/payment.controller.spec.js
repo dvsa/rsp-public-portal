@@ -65,7 +65,7 @@ describe('Payment Controller', () => {
     after(() => {
       PenaltyService.prototype.getByPaymentCode.restore();
       PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
-      PenaltyGroupService.prototype.updateWithPaymentStartTime();
+      PenaltyGroupService.prototype.updateWithPaymentStartTime.restore();
       CpmsService.prototype.createCardPaymentTransaction.restore();
       CpmsService.prototype.createGroupCardPaymentTransaction.restore();
       redirectSpy.restore();

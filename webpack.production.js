@@ -22,21 +22,27 @@ class PackagePlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.afterEmit.tap('package-plugin', async () => {
+    compiler.hooks.afterEmit.tapPromise('package-plugin', async () => {
       if (!fs.existsSync(this.outputPath)) fs.mkdirSync(this.outputPath, { recursive: true });
 
+      const handler = fs.readFileSync(path.join(this.outputPath, 'handler.js'));
       const output = fs.createWriteStream(`${this.outputPath}/${this.outputName}.zip`);
       const archive = archiver('zip', {
         zlib: { level: 9 },
       });
 
-      archive.pipe(output);
+      await new Promise((resolve, reject) => {
+        output.once('close', resolve);
+        output.once('error', reject);
+        archive.once('error', reject);
+        archive.pipe(output);
 
-      archive.append(fs.readFileSync(path.join(this.outputPath, 'handler.js')), { name: 'app.js' });
-      archive.directory(path.join(this.outputPath, 'public'), 'public');
-      archive.directory(path.join(this.outputPath, 'views'), 'views');
-      archive.directory(path.join(this.outputPath, 'i18n'), 'i18n');
-      archive.finalize();
+        archive.append(handler, { name: 'app.js' });
+        archive.directory(path.join(this.outputPath, 'public'), 'public');
+        archive.directory(path.join(this.outputPath, 'views'), 'views');
+        archive.directory(path.join(this.outputPath, 'i18n'), 'i18n');
+        archive.finalize().catch(reject);
+      });
     });
   }
 }
@@ -45,6 +51,7 @@ module.exports = [
   merge(serverConfig, {
     mode: 'production',
     devtool: false,
+    dependencies: ['client'],
     optimization: {
       minimizer: [new TerserPlugin({
         terserOptions: {

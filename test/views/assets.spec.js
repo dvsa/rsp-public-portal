@@ -15,6 +15,12 @@ const env = new nunjucks.Environment(new nunjucks.FileSystemLoader([
 env.addGlobal('govukRebrand', true);
 
 describe('Portal asset URLs', () => {
+  it('renders the GOV.UK homepage link without a service-name link', () => {
+    const html = env.render('layouts/partials/header.njk');
+    expect(html).to.include('href="https://www.gov.uk"');
+    expect(html).not.to.include('govuk-header__service-name');
+  });
+
   ['', 'https://assets.example.test/public'].forEach((assets) => {
     it(`links to the packaged rebranded manifest and icons with ${assets ? 'CDN' : 'local'} assets`, () => {
       const html = env.render('payment/index.njk', { t: translations, assets });

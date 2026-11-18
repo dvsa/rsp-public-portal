@@ -19,8 +19,8 @@
     "start-dev-server": "concurrently \"npm run build-frontend\" \"nodemon -e js,njk --watch src/server --exec npm run start-server\"",
     "clean": "rm -rf dist/",
     "package": "node scripts/i18n-shim.js && npm run bundle",
-    "test": "mocha --require @babel/register test/**/*.js",
-    "test:watch": "mocha --require @babel/register test/**/*.js --watch",
+    "test": "mocha --require ./test/setup.cjs --require @babel/register \"test/**/*.js\"",
+    "test:watch": "npm test -- --watch",
     "test:coverage": "nyc npm run test",
     "test:integration": "npm run build-server && node integration/run.js",
     "prepush": "npm test && npm run lint && npm run check-security && npm run check-security-log",
@@ -58,7 +58,7 @@
     "nyc": "^15.1.0",
     "osls": "^4.7.0",
     "sass": "^1.108.2",
-    "serverless-offline": "^9.3.1",
+    "serverless-offline": "^14.8.4",
     "sinon": "^14.0.2",
     "smooth-scroll": "^16.1.3",
     "store": "^2.0.12",
@@ -92,7 +92,6 @@
     "url-parse": "^1.5.10"
   },
   "overrides": {
-    "serverless": "npm:osls",
     "uuid": "^14.0.0"
   }
 }

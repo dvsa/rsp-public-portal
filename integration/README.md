@@ -46,19 +46,26 @@ group summary, payment-start and receipt routes do not add that validator.
 | `GET /privacy-statement` | Optional language query/cookie; rendered statement | None | Rendered page |
 | `GET /payment-code` | Optional invalid-code query; rendered code form | None | Form and validation-error rendering |
 | `POST /payment-code` | Form-encoded or JSON `payment_code`; normalizes then redirects or renders error | None | Normalized form and JSON redirects; invalid, bodyless and unsupported-content-type input |
-| `GET /payment-code/:payment_code` | Validates code; renders a single/group payment or redirects on invalid/missing/old data | Penalty service | Single-penalty render, invalid input and stubbed not-found response |
-| `GET /payment-code/:payment_code/receipt` | Renders a single-payment receipt or redirects when downstream data is unavailable | Penalty and payment services | Not covered |
-| `GET /payment-code/:payment_code/:type/details` | Renders a grouped-payment summary | Penalty service | Not covered |
+| `GET /payment-code/:payment_code` | Validates code; renders a single/group payment or redirects on invalid/missing/old data | Penalty service | Single/group render, invalid input and stubbed not-found response |
+| `GET /payment-code/:payment_code/receipt` | Renders a single-payment receipt or redirects when downstream data is unavailable | Penalty and payment services | Stubbed paid receipt and unavailable payment |
+| `GET /payment-code/:payment_code/:type/details` | Renders a grouped-payment summary | Penalty service | FPN summary, references, total and payment form |
 | `POST /payment-code/:payment_code/payment` | Starts a single or group payment; redirects to payment gateway or back to details | Penalty and CPMS services | Single-penalty gateway redirect and CPMS failure/retry path; outbound update and payloads asserted |
-| `POST /payment-code/:payment_code/:type/payment` | Starts a grouped payment | Penalty and CPMS services | Not covered |
+| `POST /payment-code/:payment_code/:type/payment` | Starts a grouped payment | Penalty and CPMS services | FPN redirect, exact update and CPMS payload |
 | `GET /payment-code/:payment_code/confirmPayment` | Confirms a single payment; redirects to receipt or renders failure | Penalty, CPMS and payment services | Stubbed success and cancellation; recording observed only at local payment stub |
-| `GET /payment-code/:payment_code/:type/confirmGroupPayment` | Confirms a grouped payment; redirects or renders failure | Penalty, CPMS and payment services | Not covered |
-| `GET /payment-code/:payment_code/:type/receipt` | Renders a grouped-payment receipt | Penalty and payment services | Not covered |
+| `GET /payment-code/:payment_code/:type/confirmGroupPayment` | Confirms a grouped payment; redirects or renders failure | Penalty, CPMS and payment services | Stubbed success, cancellation, rejection and recording failure; exact FPN payment payload |
+| `GET /payment-code/:payment_code/:type/receipt` | Renders a grouped-payment receipt | Penalty and payment services | FPN paid receipt, invalid type and unavailable payment |
 
 `serverless.yml` maps `ANY /` and `ANY /{proxy+}` to `handler.handler`. The
 suite tests Express over HTTP, not API Gateway event translation, deployed
 stage-prefix behavior, Lambda binary responses, or AWS permissions. Static
 asset delivery is also not covered.
+
+Unit tests in `test/lambdas/serveExpressApp.spec.js` separately exercise the real
+adapter with a controlled Express app: production path stripping, warm reuse,
+HTML, cookies/headers, base64 form input, redirects and binary bytes. They do not
+replace a packaged-archive or deployed-API check. Group HTTP scenarios currently
+use FPN fixtures; IM/CDN-specific journeys, pending groups and downstream timeout
+behaviour remain outside this manual suite.
 
 The app's body-sanitizing middleware creates an express-validator chain with
 `.escape()` but never runs it; the integration scenarios do not claim that

@@ -42,6 +42,7 @@ describe('Payment Controller', () => {
   describe('redirects to payment page for penalty groups', () => {
     const mockDateNow = () => 1587025800; // 16th April 2020 08:30
     let mockPenaltySvc;
+    let mockPenaltySvcUpdateStartTime;
     let mockPenaltyGroupSvc;
     let mockPenaltyGroupSvcUpdateStartTime;
     let mockCpmsSvcSingle;
@@ -54,6 +55,7 @@ describe('Payment Controller', () => {
       sinon.stub(config, 'redirectUrl').returns('https://localhost');
       sinon.stub(config, 'pendingPaymentTimeMilliseconds').returns(900000);
       mockPenaltySvc = sinon.stub(PenaltyService.prototype, 'getByPaymentCode');
+      mockPenaltySvcUpdateStartTime = sinon.stub(PenaltyService.prototype, 'updateWithPaymentStartTime').resolves();
       mockPenaltyGroupSvc = sinon.stub(PenaltyGroupService.prototype, 'getByPenaltyGroupPaymentCode');
       mockPenaltyGroupSvcUpdateStartTime = sinon.stub(PenaltyGroupService.prototype, 'updateWithPaymentStartTime');
       mockCpmsSvcSingle = sinon.stub(CpmsService.prototype, 'createCardPaymentTransaction');
@@ -64,6 +66,7 @@ describe('Payment Controller', () => {
 
     after(() => {
       PenaltyService.prototype.getByPaymentCode.restore();
+      mockPenaltySvcUpdateStartTime.restore();
       PenaltyGroupService.prototype.getByPenaltyGroupPaymentCode.restore();
       PenaltyGroupService.prototype.updateWithPaymentStartTime.restore();
       CpmsService.prototype.createCardPaymentTransaction.restore();
@@ -75,6 +78,7 @@ describe('Payment Controller', () => {
 
     afterEach(() => {
       mockPenaltySvc.resetHistory();
+      mockPenaltySvcUpdateStartTime.resetHistory();
       mockPenaltyGroupSvc.resetHistory();
       mockPenaltyGroupSvcUpdateStartTime.resetHistory();
       mockCpmsSvcSingle.resetHistory();
@@ -87,7 +91,10 @@ describe('Payment Controller', () => {
         originalDateNow = Date.now;
         Date.now = mockDateNow;
         mockPenaltySvc
-          .callsFake((paymentCode) => parsedSinglePenalties.find((p) => p.paymentCode === paymentCode));
+          .callsFake((paymentCode) => {
+            const penalty = parsedSinglePenalties.find((p) => p.paymentCode === paymentCode);
+            return penalty && { ...penalty, penaltyId: `${penalty.reference}_${penalty.type}` };
+          });
       });
 
       afterEach(() => {
@@ -107,6 +114,8 @@ describe('Payment Controller', () => {
         await PaymentController.redirectToPaymentPage(requestForPaymentCode('5e7a4c97c260e699'), responseHandle);
 
         sinon.assert.calledWith(redirectSpy, 'http://cpms.gateway');
+        sinon.assert.calledOnceWithExactly(mockPenaltySvcUpdateStartTime, '4257820253535_IM');
+        sinon.assert.callOrder(mockPenaltySvcUpdateStartTime, mockCpmsSvcSingle);
       });
 
       it('should redirect to the payment page when CPMS Service transaction fails', async () => {

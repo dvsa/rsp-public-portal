@@ -21,6 +21,35 @@ const syntheticPenalty = {
     penaltyType: 'FPN',
   },
 };
+const syntheticGroupCode = 'synthgroup1';
+const syntheticGroupPenalties = [syntheticPenalty, {
+  ...syntheticPenalty,
+  ID: 'SYNTHETIC-PENALTY-002_FPN',
+  Value: { ...syntheticPenalty.Value, referenceNo: 'SYNTHETIC-REFERENCE-002', penaltyAmount: 77 },
+}];
+const syntheticGroup = {
+  ID: syntheticGroupCode,
+  Enabled: true,
+  VehicleRegistration: 'SYNTHETIC',
+  Location: 'Synthetic Test Location',
+  Timestamp: syntheticPenalty.Value.dateTime,
+  TotalAmount: 200,
+  PaymentStatus: 'UNPAID',
+  Payments: [{
+    PaymentCategory: 'FPN',
+    TotalAmount: 200,
+    PaymentStatus: 'UNPAID',
+    Penalties: syntheticGroupPenalties,
+  }],
+};
+const syntheticPaymentDetail = {
+  PaymentMethod: 'CARD',
+  PaymentRef: syntheticReceiptReference,
+  AuthCode: 'SYNTHETIC-AUTH',
+  PaymentAmount: 200,
+  PaymentDate: 1609459200,
+  PaymentStatus: 'PAID',
+};
 
 function jsonResponse(response, status, value) {
   response.writeHead(status, { 'content-type': 'application/json' });
@@ -134,6 +163,9 @@ function resetStubs(stubs, state) {
   state.penaltyStatus = 200;
   state.cpmsCardStatus = 200;
   state.confirmCode = 801;
+  state.paid = false;
+  state.paymentReadStatus = 200;
+  state.paymentWriteStatus = 201;
 }
 
 function colour(text, code, stream) {
@@ -187,7 +219,8 @@ async function main() {
   const isolatedCwd = fs.mkdtempSync(path.join(os.tmpdir(), 'rsp-public-portal-integration-'));
   const stubs = [];
   const results = [];
-  const state = { penaltyStatus: 200, cpmsCardStatus: 200, confirmCode: 801 };
+  const state = {};
+  resetStubs({}, state);
   const report = {
     suite: 'RSP Public Portal manual integration suite',
     generatedAt: new Date().toISOString(),
@@ -200,7 +233,7 @@ async function main() {
       'AWS Secrets Manager, AWS credentials and permissions',
       'Real payment gateway initiation, confirmation and persistence',
       'Downstream timeout behavior',
-      'Grouped payment initiation, confirmation, summaries and receipts',
+      'IM/CDN-specific grouped journeys and pending groups',
       'API Gateway/Lambda adapter translation, stage prefixes and binary responses',
       'Static asset delivery and deployed infrastructure',
     ],
@@ -238,19 +271,39 @@ async function main() {
       ) {
         return {
           status: state.penaltyStatus,
-          body: state.penaltyStatus === 200 ? syntheticPenalty : { error: 'not-found' },
+          body: state.penaltyStatus === 200 ? {
+            ...syntheticPenalty,
+            Value: { ...syntheticPenalty.Value, paymentStatus: state.paid ? 'PAID' : 'UNPAID' },
+          } : { error: 'not-found' },
+        };
+      }
+      if (recordedRequest.method === 'GET' && recordedRequest.path === `/penaltyGroup/${syntheticGroupCode}`) {
+        return {
+          status: state.penaltyStatus,
+          body: {
+            ...syntheticGroup,
+            PaymentStatus: state.paid ? 'PAID' : 'UNPAID',
+            Payments: syntheticGroup.Payments.map((payment) => ({
+              ...payment,
+              PaymentStatus: state.paid ? 'PAID' : 'UNPAID',
+              Penalties: payment.Penalties.map((penalty) => ({
+                ...penalty,
+                Value: { ...penalty.Value, paymentStatus: state.paid ? 'PAID' : 'UNPAID' },
+              })),
+            })),
+          },
         };
       }
       if (
         recordedRequest.method === 'PUT'
-        && recordedRequest.path === '/documents/updateWithPaymentStartTime/'
+        && ['/documents/updateWithPaymentStartTime/', '/penaltyGroup/updateWithPaymentStartTime'].includes(recordedRequest.path)
       ) {
         return { status: 200, body: {} };
       }
       return { status: 404, body: { error: 'not-found' } };
     });
     const cpmsStub = createStub((recordedRequest) => {
-      if (recordedRequest.method === 'POST' && recordedRequest.path === '/cardPayment/') {
+      if (recordedRequest.method === 'POST' && ['/cardPayment/', '/groupPayment/'].includes(recordedRequest.path)) {
         return {
           status: state.cpmsCardStatus,
           body: { gateway_url: 'https://gateway.invalid/synthetic-session' },
@@ -268,11 +321,21 @@ async function main() {
       }
       return { status: 404, body: { error: 'not-found' } };
     });
-    const paymentStub = createStub((recordedRequest) => (
-      recordedRequest.method === 'POST' && recordedRequest.path === '/payments/'
-        ? { status: 201, body: {} }
-        : { status: 404, body: { error: 'not-found' } }
-    ));
+    const paymentStub = createStub((recordedRequest) => {
+      if (recordedRequest.method === 'POST' && ['/payments/', '/groupPayments/'].includes(recordedRequest.path)) {
+        return { status: state.paymentWriteStatus, body: {} };
+      }
+      if (recordedRequest.method === 'GET' && recordedRequest.path === '/payments/SYNTHETIC-PENALTY-001_FPN') {
+        return {
+          status: state.paymentReadStatus,
+          body: { payment: { PaymentDetail: { ...syntheticPaymentDetail, PaymentAmount: 123 } } },
+        };
+      }
+      if (recordedRequest.method === 'GET' && recordedRequest.path === `/groupPayments/${syntheticGroupCode}`) {
+        return { status: state.paymentReadStatus, body: { Payments: { FPN: syntheticPaymentDetail } } };
+      }
+      return { status: 404, body: { error: 'not-found' } };
+    });
 
     for (const stub of [penaltyStub, cpmsStub, paymentStub]) {
       stubs.push(stub);
@@ -513,6 +576,138 @@ async function main() {
         assert.ok(response.body.includes(syntheticPaymentCode));
         assert.equal(cpmsStub.requests.length, 1);
         assert.equal(paymentStub.requests.length, 0);
+      }],
+      ['group details and summary render the stubbed penalties and payment form', async () => {
+        const details = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}`);
+        assertStatus(details, 200);
+        assert.ok(details.body.includes('SYNTHETIC'));
+        assert.ok(details.body.includes(`/payment-code/${syntheticGroupCode}/FPN/details`));
+        const summary = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}/FPN/details`);
+        assertStatus(summary, 200);
+        assert.ok(summary.body.includes(`action="/payment-code/${syntheticGroupCode}/FPN/payment"`));
+        assert.ok(summary.body.includes('SYNTHETIC-REFERENCE-001'));
+        assert.ok(summary.body.includes('SYNTHETIC-REFERENCE-002'));
+        assert.match(summary.body, /&pound;200/);
+        assert.equal(penaltyStub.requests.length, 3);
+        assert.ok(penaltyStub.requests.every((item) => item.method === 'GET' && item.path === `/penaltyGroup/${syntheticGroupCode}`));
+        assert.equal(cpmsStub.requests.length, 0);
+        assert.equal(paymentStub.requests.length, 0);
+      }],
+      ['group initiation preserves update and CPMS payload contracts', async () => {
+        const response = await request(appOrigin, 'POST', `/payment-code/${syntheticGroupCode}/FPN/payment`);
+        assertStatus(response, 302);
+        assert.equal(response.headers.location, 'https://gateway.invalid/synthetic-session');
+        assert.deepEqual(penaltyStub.requests.map(({ method, path }) => [method, path]), [
+          ['GET', `/penaltyGroup/${syntheticGroupCode}`],
+          ['GET', `/penaltyGroup/${syntheticGroupCode}`],
+          ['PUT', '/penaltyGroup/updateWithPaymentStartTime'],
+        ]);
+        assert.deepEqual(penaltyStub.requests[2].body, { id: syntheticGroupCode, penaltyType: 'FPN' });
+        assert.equal(cpmsStub.requests.length, 1);
+        assert.equal(cpmsStub.requests[0].path, '/groupPayment/');
+        assert.deepEqual(cpmsStub.requests[0].body, {
+          PenaltyGroupId: syntheticGroupCode,
+          TotalAmount: 200,
+          VehicleRegistration: 'SYNTHETIC',
+          PenaltyType: 'FPN',
+          RedirectUrl: `http://127.0.0.1/portal/payment-code/${syntheticGroupCode}/FPN/confirmGroupPayment`,
+          Penalties: [
+            { PenaltyReference: 'SYNTHETIC-REFERENCE-001', PenaltyAmount: 123, VehicleRegistration: 'SYNTHETIC' },
+            { PenaltyReference: 'SYNTHETIC-REFERENCE-002', PenaltyAmount: 77, VehicleRegistration: 'SYNTHETIC' },
+          ],
+        });
+        assert.equal(paymentStub.requests.length, 0);
+      }],
+      ['group confirmation records the expected payment at the stub boundary', async () => {
+        const before = Math.floor(Date.now() / 1000);
+        const response = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}/FPN/confirmGroupPayment?receipt_reference=${syntheticReceiptReference}`);
+        assertStatus(response, 302);
+        assert.equal(response.headers.location, `/payment-code/${syntheticGroupCode}/FPN/receipt`);
+        assert.equal(penaltyStub.requests.length, 1);
+        assert.equal(penaltyStub.requests[0].path, `/penaltyGroup/${syntheticGroupCode}`);
+        assert.equal(cpmsStub.requests.length, 1);
+        assert.equal(cpmsStub.requests[0].path, '/confirm/');
+        assert.deepEqual(cpmsStub.requests[0].body, { receipt_reference: syntheticReceiptReference, penalty_type: 'FPN' });
+        assert.equal(paymentStub.requests.length, 1);
+        const recorded = paymentStub.requests[0];
+        assert.equal(recorded.method, 'POST');
+        assert.equal(recorded.path, '/groupPayments/');
+        const date = recorded.body.PaymentDetail.PaymentDate;
+        assert.ok(Number.isInteger(date) && date >= before && date <= Math.floor(Date.now() / 1000));
+        assert.deepEqual(recorded.body, {
+          PaymentCode: syntheticGroupCode,
+          PenaltyType: 'FPN',
+          PaymentDetail: {
+            PaymentMethod: 'CARD',
+            PaymentRef: syntheticReceiptReference,
+            AuthCode: 'SYNTHETIC-AUTH',
+            PaymentAmount: 200,
+            PaymentDate: date,
+          },
+          PenaltyIds: ['SYNTHETIC-PENALTY-001_FPN', 'SYNTHETIC-PENALTY-002_FPN'],
+        });
+      }],
+      ['cancelled and rejected group confirmations never record a payment', async () => {
+        for (const code of [807, 999]) {
+          resetStubs(namedStubs, state);
+          state.confirmCode = code;
+          const response = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}/FPN/confirmGroupPayment?receipt_reference=${syntheticReceiptReference}`);
+          assertStatus(response, code === 807 ? 302 : 200);
+          if (code === 807) assert.equal(response.headers.location, `/payment-code/${syntheticGroupCode}`);
+          else assert.ok(response.body.includes(syntheticGroupCode));
+          assert.equal(cpmsStub.requests.length, 1);
+          assert.equal(paymentStub.requests.length, 0);
+        }
+      }],
+      ['group payment recording failure does not redirect to a successful receipt', async () => {
+        state.paymentWriteStatus = 400;
+        const response = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}/FPN/confirmGroupPayment?receipt_reference=${syntheticReceiptReference}`);
+        assertStatus(response, 200);
+        assert.ok(response.body.includes(syntheticGroupCode));
+        assert.equal(paymentStub.requests.length, 1);
+        assert.equal(response.headers.location, undefined);
+      }],
+      ['single and group receipts render stubbed payment details', async () => {
+        state.paid = true;
+        for (const [route, paymentPath, amount] of [
+          [`/payment-code/${syntheticPaymentCode}/receipt`, '/payments/SYNTHETIC-PENALTY-001_FPN', 123],
+          [`/payment-code/${syntheticGroupCode}/FPN/receipt`, `/groupPayments/${syntheticGroupCode}`, 200],
+        ]) {
+          penaltyStub.reset();
+          paymentStub.reset();
+          const response = await request(appOrigin, 'GET', route);
+          assertStatus(response, 200);
+          assert.ok(response.body.includes('SYNTHETIC-AUTH'));
+          assert.ok(response.body.includes('SYNTHETIC-REFERENCE-001'));
+          assert.ok(response.body.includes(`\u00a3${amount}`));
+          assert.ok(response.body.includes('01/01/2021'));
+          assert.ok(response.body.includes('SYNTHETIC'));
+          assert.equal(penaltyStub.requests.length, 1);
+          assert.equal(paymentStub.requests.length, 1);
+          assert.equal(paymentStub.requests[0].method, 'GET');
+          assert.equal(paymentStub.requests[0].path, paymentPath);
+          assert.equal(cpmsStub.requests.length, 0);
+        }
+      }],
+      ['receipt failures redirect safely and invalid group types avoid downstream calls', async () => {
+        const invalid = await request(appOrigin, 'GET', `/payment-code/${syntheticGroupCode}/INVALID/receipt`);
+        assertStatus(invalid, 302);
+        assert.equal(invalid.headers.location, '/?invalidPaymentCode');
+        assertNoDownstreamCalls(namedStubs);
+        state.paymentReadStatus = 404;
+        for (const route of [
+          `/payment-code/${syntheticPaymentCode}/receipt`,
+          `/payment-code/${syntheticGroupCode}/FPN/receipt`,
+        ]) {
+          penaltyStub.reset();
+          paymentStub.reset();
+          const response = await request(appOrigin, 'GET', route);
+          assertStatus(response, 302);
+          assert.equal(response.headers.location, '/?invalidPaymentCode');
+          assert.equal(penaltyStub.requests.length, 1);
+          assert.equal(paymentStub.requests.length, 1);
+          assert.equal(cpmsStub.requests.length, 0);
+        }
       }],
     ];
 

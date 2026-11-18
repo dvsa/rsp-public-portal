@@ -76,7 +76,9 @@ describe('Group penalty details template', () => {
     const buttons = html.match(/<a\b[^>]*href="\/payment-code\/testgroup\/(?:FPN|IM)\/details"[^>]*>[\s\S]*?<\/a>/g);
     expect(buttons).to.have.lengthOf(2);
     buttons.forEach((button) => {
-      expect(button.replace(/<[^>]*>/g, '').trim()).to.equal(translations.penalty_details_page.continue_to_payment_button);
+      const text = button.match(/^<a\b[^>]*>([^<]*)<\/a>$/);
+      expect(text).not.to.equal(null);
+      expect(text[1].trim()).to.equal(translations.penalty_details_page.continue_to_payment_button);
     });
     expect(html.indexOf('href="/payment-code/testgroup/IM/details"')).to.be.lessThan(html.indexOf('data-testid="type_fpn"'));
     expect(html.indexOf('href="/payment-code/testgroup/FPN/details"')).to.be.lessThan(html.indexOf('data-testid="type_cdn"'));

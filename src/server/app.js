@@ -66,6 +66,7 @@ export default async () => {
   app.use((req, res, next) => {
     helmet.contentSecurityPolicy({
       directives: {
+        upgradeInsecureRequests: config.isDevelopment() ? null : [],
         defaultSrc: ["'self'", assetsUrl],
         formAction: ['*'],
         scriptSrc: [

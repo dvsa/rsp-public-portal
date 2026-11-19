@@ -20,12 +20,12 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ t.penalty_details_page.penalty_details_title }}</h1>
+      <h1 class="govuk-heading-l">{{ t.penalty_details_page.penalty_details_title }}</h1>
 
       {% if paid == false %}
-        <h2 class="govuk-heading-m">{{ t.penalty_details_page.intro_part_paid }}</h2>
+        <p class="govuk-body govuk-!-font-weight-bold">{{ t.penalty_details_page.intro_part_paid }}</p>
       {% else %}
-        <h2 class="govuk-heading-m">{{ t.penalty_details_page.intro_paid }}</h2>
+        <p class="govuk-body">{{ t.penalty_details_page.intro_paid }}</p>
         <p class="govuk-body">
           {{ t.feedback_prompt.easy_to_use }}
           <a href="{{ t.feedback_prompt.link }}" class="govuk-link" target="_blank">
@@ -52,19 +52,19 @@
       {% set tableRows = [
         [
           { text: t.penalty_details.payment_code, classes: 'govuk-!-font-weight-bold' },
-          { text: paymentCode, colspan: 4 }
+          { text: paymentCode, colspan: 3 }
         ],
         [
           { text: t.penalty_details.vehicle_reg, classes: 'govuk-!-font-weight-bold' },
-          { text: (vehicleReg if complete else t.penalty_details.not_available), colspan: 4 }
+          { text: (vehicleReg if complete else t.penalty_details.not_available), colspan: 3 }
         ],
         [
           { text: t.penalty_details.penalty_date, classes: 'govuk-!-font-weight-bold' },
-          { text: (issueDate if complete else 'Not available'), colspan: 4 }
+          { text: (issueDate if complete else 'Not available'), colspan: 3 }
         ],
         [
           { text: t.penalty_details.location, classes: 'govuk-!-font-weight-bold' },
-          { text: (location | escape if complete else 'Not available'), colspan: 4 }
+          { text: (location | escape if complete else 'Not available'), colspan: 3 }
         ],
         [
           { text: typeLabel, classes: 'govuk-!-font-weight-bold', attributes: { 'data-testid': typeTestId } },
@@ -74,21 +74,21 @@
         ],
         [
           { text: t.penalty_details.reference, classes: 'govuk-!-font-weight-bold' },
-          { text: formattedReference, colspan: 4 }
+          { text: formattedReference, colspan: 3 }
         ]
       ] %}
 
       {% if paymentAuthCode %}
         {% set _ = tableRows.push([
           { text: t.payment_details.authorisation_code, classes: 'govuk-!-font-weight-bold' },
-          { text: paymentAuthCode, colspan: 4 }
+          { text: paymentAuthCode, colspan: 3 }
         ]) %}
       {% endif %}
 
       {% if paid %}
         {% set _ = tableRows.push([
           { text: t.payment_details.paid_on, classes: 'govuk-!-font-weight-bold' },
-          { text: paymentDate, colspan: 4 }
+          { text: paymentDate, colspan: 3 }
         ]) %}
       {% endif %}
 

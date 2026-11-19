@@ -7,19 +7,19 @@ on:
 
 jobs:
   lint:
-    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v3.5.0
+    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v7
     with:
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   test:
-    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v7
     with:
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   security:
-    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v5.0.4
-    with:
-      args: --all-projects
+    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v7
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -30,26 +30,27 @@ jobs:
       short_sha: ${{ steps.sha.outputs.SHORT_SHA }}
       archive_name: ${{ steps.archive.outputs.ARCHIVE_NAME }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Set short sha output
         id: sha
-        run: echo "SHORT_SHA=$(git rev-parse --short=11 HEAD)" >> $GITHUB_OUTPUT
+        run: echo "SHORT_SHA=$(git rev-parse --short=11 HEAD)" >> "$GITHUB_OUTPUT"
       - name: Set archive name output
         id: archive
         run: |
-          export PRETTY_BRANCH_NAME=$(tr '/' '-' <<< ${{ github.ref_name }})
-          echo "ARCHIVE_NAME=${PRETTY_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          PRETTY_BRANCH_NAME=$(tr '/' '-' <<< ${{ github.ref_name }})
+          echo "ARCHIVE_NAME=${PRETTY_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
 
   build:
-    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v7
     needs: [ build-names ]
     with:
       upload-artifact: true
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   upload-s3:
     if: startsWith(github.ref, 'refs/heads/feat/') || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || startsWith(github.ref, 'refs/heads/master')
-    uses: dvsa/.github/.github/workflows/upload-to-s3.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/upload-to-s3.yaml@v7
     needs: [ lint, test, build, build-names ]
     with:
       environment: nonprod
@@ -67,7 +68,7 @@ jobs:
 
   update-lambda-code:
     if: ${{ github.ref_name == github.event.repository.default_branch }}
-    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v7
     needs: [ build-names, build, upload-s3 ]
     with:
       environment: nonprod

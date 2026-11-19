@@ -1,17 +1,14 @@
 const { merge } = require('webpack-merge');
 const [serverConfig, clientConfig] = require('./webpack.common.js');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const archiver = require('archiver');
-const fs = require('fs-extra');
+const fs = require('node:fs');
 const { execSync } = require('child_process');
 const webpack = require('webpack');
 const packageJson = require('./package.json');
 const path = require('path');
 
-const LAMBDA_NAME = 'serveExpressApp';
 const OUTPUT_FOLDER = './dist';
-const REPO_NAME = 'rsp-public';
 let BRANCH_NAME;
 try {
   BRANCH_NAME = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim().replace(/\//g, '-');
@@ -25,21 +22,27 @@ class PackagePlugin {
   }
 
   apply(compiler) {
-    compiler.hooks.afterEmit.tap('package-plugin', async () => {
+    compiler.hooks.afterEmit.tapPromise('package-plugin', async () => {
       if (!fs.existsSync(this.outputPath)) fs.mkdirSync(this.outputPath, { recursive: true });
 
+      const handler = fs.readFileSync(path.join(this.outputPath, 'handler.js'));
       const output = fs.createWriteStream(`${this.outputPath}/${this.outputName}.zip`);
       const archive = archiver('zip', {
-        zlib: { level: 9 }
+        zlib: { level: 9 },
       });
 
-      archive.pipe(output);
+      await new Promise((resolve, reject) => {
+        output.once('close', resolve);
+        output.once('error', reject);
+        archive.once('error', reject);
+        archive.pipe(output);
 
-      archive.append(fs.readFileSync(path.join(this.outputPath, 'handler.js')), { name: 'app.js' });
-      archive.directory(path.join(this.outputPath, 'public'), 'public');
-      archive.directory(path.join(this.outputPath, 'views'), 'views');
-      archive.directory(path.join(this.outputPath, 'i18n'), 'i18n');
-      archive.finalize();
+        archive.append(handler, { name: 'app.js' });
+        archive.directory(path.join(this.outputPath, 'public'), 'public');
+        archive.directory(path.join(this.outputPath, 'views'), 'views');
+        archive.directory(path.join(this.outputPath, 'i18n'), 'i18n');
+        archive.finalize().catch(reject);
+      });
     });
   }
 }
@@ -48,6 +51,7 @@ module.exports = [
   merge(serverConfig, {
     mode: 'production',
     devtool: false,
+    dependencies: ['client'],
     optimization: {
       minimizer: [new TerserPlugin({
         terserOptions: {

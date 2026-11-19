@@ -33,7 +33,7 @@
           {% if payment.PaymentStatus == 'PAID' %}
             {{ govukPanel({
               titleText: t.payment_details.payment_success,
-              html: '<p class="govuk-body govuk-!-font-size-24">' + paymentBannerTitle + '</p>',
+              html: '<p class="govuk-!-font-size-24">' + paymentBannerTitle + '</p>',
               classes: "govuk-!-margin-bottom-7"
             }) }}
           {% endif %}
@@ -83,24 +83,31 @@
             {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
 
             {% if penalty.status == 'PAID' %}
-              {% set statusText = t.penalty_details.status_paid + ' ✓' %}
+              {% set statusText = t.penalty_details.status_paid %}
             {% else %}
               {% set statusText = t.penalty_details.status_unpaid %}
             {% endif %}
+
+            {% set statusHtml %}
+              {{ statusText }}
+              {% if penalty.status == 'PAID' %}
+                &nbsp;&nbsp;<img src="{{ assets }}/images/icon-check.png" alt="" />
+              {% endif %}
+            {% endset %}
 
             {% if paymentType == 'IM' %}
               {# IM type has different column structure #}
               {% set _ = breakdownRows.push([
                 { text: t.penalty_details.reference },
                 { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
-                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+                { html: statusHtml, classes: statusClass + ' govuk-!-font-weight-bold' }
               ]) %}
             {% else %}
               {# FPN and CDN types #}
               {% set _ = breakdownRows.push([
                 { text: penalty.formattedReference, classes: 'govuk-!-font-weight-bold' },
                 { text: '£' + penalty.amount|string, classes: 'govuk-!-font-weight-bold' },
-                { text: statusText, classes: statusClass + ' govuk-!-font-weight-bold' }
+                { html: statusHtml, classes: statusClass + ' govuk-!-font-weight-bold' }
               ]) %}
             {% endif %}
           {% endfor %}

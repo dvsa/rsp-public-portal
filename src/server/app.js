@@ -66,6 +66,7 @@ export default async () => {
   app.use((req, res, next) => {
     helmet.contentSecurityPolicy({
       directives: {
+        upgradeInsecureRequests: config.isDevelopment() ? null : [],
         defaultSrc: ["'self'", assetsUrl],
         formAction: ['*'],
         scriptSrc: [
@@ -73,6 +74,12 @@ export default async () => {
           assetsUrl,
           'https://www.googletagmanager.com/',
           'https://www.google-analytics.com/',
+        ],
+        connectSrc: [
+          "'self'",
+          assetsUrl,
+          'https://www.google-analytics.com/',
+          'https://region1.analytics.google.com/',
         ],
         fontSrc: ["'self'", 'data:', assetsUrl],
         imgSrc: [

@@ -120,4 +120,23 @@ describe('Penalty Group Service', () => {
       return expect(result).rejectedWith(Error, 'Payment code not found');
     });
   });
+
+  describe('Updates a payment start time', () => {
+    it('sends the group ID and penalty type to the backend client', async () => {
+      const put = sinon.stub(penaltyGroupService.httpClient, 'put').resolves({ status: 200 });
+
+      try {
+        await penaltyGroupService.updateWithPaymentStartTime('synthetic-group-id', 'FPN');
+        sinon.assert.calledWith(
+          put,
+          'penaltyGroup/updateWithPaymentStartTime',
+          { id: 'synthetic-group-id', penaltyType: 'FPN' },
+          3,
+          'UpdateGroupWithPaymentStartTime',
+        );
+      } finally {
+        put.restore();
+      }
+    });
+  });
 });

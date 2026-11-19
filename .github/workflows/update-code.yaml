@@ -15,14 +15,15 @@ on:
 
 jobs:
   update-lambda-code:
-    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v2.2
+    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v7
     with:
       environment: ${{ github.event.inputs.environment }}
-      lambda_function_name: rsp-nonprod-apis-public-portal-serveExpressApp
-      bucket_key: public-portal/serveExpressApp/${{ github.event.inputs.zip_archive }}
+      lambda-function-name: rsp-nonprod-apis-public-portal-serveExpressApp
+      bucket-key: public-portal/serveExpressApp/${{ github.event.inputs.zip_archive }}
     permissions:
       id-token: write
     secrets:
+      AWS_ROLE_TO_ASSUME_ARN: ${{ secrets.AWS_ROLE_TO_ASSUME_ARN }}
       AWS_ACCOUNT: ${{ secrets.RSP_AWS_ACCOUNT }}
       AWS_REGION: ${{ secrets.RSP_AWS_REGION }}
       BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}

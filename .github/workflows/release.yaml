@@ -38,8 +38,11 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
       - name: Test asset uploader
-        run: python3 -m unittest discover -s test/scripts -p '*_test.py'
+        run: node --test test/scripts/upload-assets.test.cjs
       - name: Download release build
         uses: actions/download-artifact@v8
         with:
@@ -57,7 +60,7 @@ jobs:
           RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
           LAMBDA_KEY_PATH: ${{ vars.S3_KEY_PATH }}
         run: |
-          python3 scripts/upload-assets.py release-build/package.zip "$RELEASE_BUCKET" "$RELEASE_TAG" --release
+          node scripts/upload-assets.ts release-build/package.zip "$RELEASE_BUCKET" "$RELEASE_TAG" --release
           aws s3api put-object \
             --bucket "$RELEASE_BUCKET" \
             --key "$LAMBDA_KEY_PATH/serveExpressApp/release-$RELEASE_TAG.zip" \

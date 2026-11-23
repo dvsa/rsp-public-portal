@@ -80,8 +80,11 @@ jobs:
       id-token: write
     steps:
       - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
       - name: Test asset uploader
-        run: python3 -m unittest discover -s test/scripts -p '*_test.py'
+        run: node --test test/scripts/upload-assets.test.cjs
       - name: Download build
         uses: actions/download-artifact@v8
         with:
@@ -97,7 +100,7 @@ jobs:
         env:
           ASSETS_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
           BRANCH_NAME: ${{ needs.build-names.outputs.archive_name }}
-        run: python3 scripts/upload-assets.py release-build/package.zip "$ASSETS_BUCKET" "$BRANCH_NAME"
+        run: node scripts/upload-assets.ts release-build/package.zip "$ASSETS_BUCKET" "$BRANCH_NAME"
 
   update-lambda-code:
     if: ${{ github.ref_name == github.event.repository.default_branch }}

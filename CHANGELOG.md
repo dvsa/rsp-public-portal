@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.2.0](https://github.com/dvsa/rsp-public-portal/compare/v4.1.0...v4.2.0) (2026-11-23)
+
+
+### Features
+
+* upgrade public portal to Node 24  ([#247](https://github.com/dvsa/rsp-public-portal/issues/247)) ([4776862](https://github.com/dvsa/rsp-public-portal/commit/47768623a852ea957d23739fcd0818d742fdf870))
+
 ## [4.1.0](https://github.com/dvsa/rsp-public-portal/compare/v4.0.3...v4.1.0) (2025-11-07)
 
 

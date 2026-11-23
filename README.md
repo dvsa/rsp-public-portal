@@ -88,6 +88,10 @@ Feature and fix branch assets have the same seven-day lifecycle tag as their ZIP
 The GitHub AWS role needs permission to list, upload, tag and delete objects in
 that branch prefix.
 
+Each uploaded `public/` folder includes a generated `version.md`: its content is
+the branch name for CI, or the release ZIP name (for example `release-v4.1.0.zip`)
+for a release. This file is uploaded alongside the assets, not added to the ZIP.
+
 Before deploying the Node 24 bundle, confirm the Lambda runtime is `nodejs24.x`
 in the infrastructure configuration for each target environment and that the
 deployed handler matches `app.handler`. The local `serverless.yml` instead

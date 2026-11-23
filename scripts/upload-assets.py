@@ -42,6 +42,11 @@ def upload_assets(archive_path, bucket, name, release):
                 raise ValueError(f"Duplicate asset path: {item.filename}")
             keys.add(key)
 
+        version_key = prefix + "version.md"
+        if version_key in keys:
+            raise ValueError("Archive contains reserved public/version.md")
+        keys.add(version_key)
+
         old_keys = set()
         if not release:
             response = json.loads(aws("list-objects-v2", "--bucket", bucket, "--prefix", prefix,
@@ -61,6 +66,12 @@ def upload_assets(archive_path, bucket, name, release):
 
         for key in sorted(old_keys - keys):
             aws("delete-object", "--bucket", bucket, "--key", key)
+
+        version_file = Path(directory) / "version.md"
+        version_file.write_text(f"{'release-' if release else ''}{name}{'.zip' if release else ''}\n",
+                                encoding="utf-8")
+        aws("put-object", "--bucket", bucket, "--key", version_key,
+            "--body", str(version_file), "--content-type", "text/markdown", "--tagging", tagging)
 
 
 if __name__ == "__main__":

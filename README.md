@@ -86,7 +86,7 @@ For CI branches that upload a ZIP, CI also uploads its assets to
 `public-portal/public-web-assets/<branch-name>/public/`, replacing removed files in that prefix.
 Feature and fix branch assets have the same seven-day lifecycle tag as their ZIP.
 The GitHub AWS role needs permission to list, upload, tag and delete objects in
-that branch prefix.
+that branch prefix. CI does not update the nonprod Lambda.
 
 Each uploaded `public/` folder includes a generated `version.md`: its content is
 the branch name for CI, or the release name (for example `release-v4.1.0`)
@@ -107,7 +107,7 @@ Before deploying the Node 24 bundle, confirm the Lambda runtime is `nodejs24.x`
 in the infrastructure configuration for each target environment and that the
 deployed handler matches `app.handler`. The local `serverless.yml` instead
 references `handler.handler`. Changing that YAML does not change deployed
-infrastructure: the CI code-update workflow only calls `update-function-code`.
+infrastructure: the manual workflow's Lambda update only calls `update-function-code`.
 Coordinate the runtime change and rollback through the infrastructure owner;
 do not deploy Node-24-targeted output to an older runtime.
 

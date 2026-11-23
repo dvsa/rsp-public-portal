@@ -5,21 +5,25 @@ on:
     branches:
       - '**'
 
+concurrency:
+  group: public-portal-ci-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   lint:
-    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v3.5.0
+    uses: dvsa/.github/.github/workflows/nodejs-lint.yaml@v7
     with:
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   test:
-    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-test.yaml@v7
     with:
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   security:
-    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v5.0.4
-    with:
-      args: --all-projects
+    uses: dvsa/.github/.github/workflows/nodejs-security.yaml@v7
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
@@ -30,26 +34,27 @@ jobs:
       short_sha: ${{ steps.sha.outputs.SHORT_SHA }}
       archive_name: ${{ steps.archive.outputs.ARCHIVE_NAME }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Set short sha output
         id: sha
-        run: echo "SHORT_SHA=$(git rev-parse --short=11 HEAD)" >> $GITHUB_OUTPUT
+        run: echo "SHORT_SHA=$(git rev-parse --short=11 HEAD)" >> "$GITHUB_OUTPUT"
       - name: Set archive name output
         id: archive
         run: |
-          export PRETTY_BRANCH_NAME=$(tr '/' '-' <<< ${{ github.ref_name }})
-          echo "ARCHIVE_NAME=${PRETTY_BRANCH_NAME}" >> $GITHUB_OUTPUT
+          PRETTY_BRANCH_NAME=$(tr '/' '-' <<< ${{ github.ref_name }})
+          echo "ARCHIVE_NAME=${PRETTY_BRANCH_NAME}" >> "$GITHUB_OUTPUT"
 
   build:
-    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v7
     needs: [ build-names ]
     with:
       upload-artifact: true
-      node-version: 20.x
+      node-version: 24.x
+      npm-version: 11.x
 
   upload-s3:
     if: startsWith(github.ref, 'refs/heads/feat/') || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || startsWith(github.ref, 'refs/heads/master')
-    uses: dvsa/.github/.github/workflows/upload-to-s3.yaml@v5.0.4
+    uses: dvsa/.github/.github/workflows/upload-to-s3.yaml@v7
     needs: [ lint, test, build, build-names ]
     with:
       environment: nonprod
@@ -65,18 +70,34 @@ jobs:
       AWS_REGION: ${{ secrets.RSP_AWS_REGION }}
       BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
 
-  update-lambda-code:
-    if: ${{ github.ref_name == github.event.repository.default_branch }}
-    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v5.0.4
-    needs: [ build-names, build, upload-s3 ]
-    with:
-      environment: nonprod
-      lambda-function-name: rsp-nonprod-apis-public-portal-serveExpressApp
-      bucket-key: public-portal/serveExpressApp/${{ needs.build-names.outputs.archive_name }}.zip
+  upload-assets:
+    if: startsWith(github.ref, 'refs/heads/feat/') || startsWith(github.ref, 'refs/heads/feature/') || startsWith(github.ref, 'refs/heads/fix/') || startsWith(github.ref, 'refs/heads/master')
+    needs: [build-names, upload-s3]
+    runs-on: ubuntu-latest
+    environment: nonprod
     permissions:
+      contents: read
       id-token: write
-    secrets:
-      AWS_ROLE_TO_ASSUME_ARN: ${{ secrets.AWS_ROLE_TO_ASSUME_ARN }}
-      AWS_ACCOUNT: ${{ secrets.RSP_AWS_ACCOUNT }}
-      AWS_REGION: ${{ secrets.RSP_AWS_REGION }}
-      BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+      - name: Test asset uploader
+        run: node --test test/scripts/upload-assets.test.cjs
+      - name: Download build
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: release-build
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME_ARN }}
+          role-session-name: GithubActionsSession
+          aws-region: ${{ secrets.RSP_AWS_REGION }}
+      - name: Upload branch assets
+        env:
+          ASSETS_BUCKET: ${{ secrets.S3_BUCKET_NAME }}
+          BRANCH_NAME: ${{ needs.build-names.outputs.archive_name }}
+        run: node scripts/upload-assets.ts release-build/package.zip "$ASSETS_BUCKET" "$BRANCH_NAME"

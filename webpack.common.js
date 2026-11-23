@@ -16,14 +16,15 @@ const serverConfig = {
     filename: 'handler.js',
     libraryTarget: 'commonjs2',
     path: path.resolve(__dirname, 'dist'),
+    asyncChunks: false,
   },
-  target: 'node16',
+  target: 'node24',
   node: {
     __dirname: false,
     __filename: false,
   },
   externals: {
-    'fsevents': "require('fsevents')"
+    fsevents: "require('fsevents')",
   },
   module: {
     rules: [
@@ -34,7 +35,7 @@ const serverConfig = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', { targets: { node: '16.16' }, useBuiltIns: 'entry', corejs: '3' }],
+              ['@babel/preset-env', { targets: { node: '24.22.3' }, useBuiltIns: 'entry', corejs: '3' }],
             ],
             plugins: [
               ['@babel/plugin-proposal-class-properties', { loose: false }],
@@ -49,6 +50,7 @@ const serverConfig = {
       patterns: [
         { from: serverViews, to: 'views' },
         { from: 'src/server/i18n', to: 'i18n' },
+        { from: 'src/public/img/icon-check.png', to: 'public/images/icon-check.png' },
         { from: 'node_modules/govuk-frontend/dist/govuk/assets', to: 'public/assets' },
         { from: 'node_modules/govuk-frontend/dist/govuk/template.njk', to: 'views/template.njk' },
         { from: 'node_modules/govuk-frontend/dist/govuk', to: 'views/govuk' },
@@ -104,12 +106,12 @@ const clientConfig = {
           loader: 'babel-loader',
           options: {
             presets: [
-              ['@babel/preset-env', { 
+              ['@babel/preset-env', {
                 targets: {
                   browsers: ['> 1%', 'last 2 versions', 'ie >= 11']
-                }, 
-                useBuiltIns: 'entry', 
-                corejs: '3' 
+                },
+                useBuiltIns: 'entry',
+                corejs: '3'
               }],
             ],
             plugins: [

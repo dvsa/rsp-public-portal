@@ -48,6 +48,37 @@ describe('Penalty Service', () => {
     });
   });
 
+  describe('Parse incomplete penalties', () => {
+    it('marks a penalty without vehicle details as incomplete', () => {
+      const penalty = PenaltyService.parsePenalty({
+        ID: 'SYNTHETIC-PENALTY-001_FPN',
+        Enabled: true,
+        Value: {
+          paymentToken: 'synthetic-payment-code',
+          penaltyType: 'FPN',
+        },
+      });
+
+      expect(penalty.complete).to.equal(false);
+      expect(penalty.vehicleReg).to.equal(false);
+    });
+
+    it('formats a payment date when one is present', () => {
+      const penalty = PenaltyService.parsePenalty({
+        ID: 'SYNTHETIC-PENALTY-002_FPN',
+        Enabled: true,
+        Value: {
+          paymentToken: 'synthetic-payment-code',
+          penaltyType: 'FPN',
+          paymentDate: 1609459200,
+          vehicleDetails: { regNo: 'SYNTHETIC' },
+        },
+      });
+
+      expect(penalty.paymentDate).to.equal('01/01/2021');
+    });
+  });
+
   describe('Retrieves a penalty by payment code', () => {
     it('Should retrieve the correct penalty [WHEN] a valid single penalty payment code is provided', async () => {
       // Arrange

@@ -63,7 +63,9 @@ typings/
 dist/
 build/
 .serverless/
+/integration/reports/
 .vscode/*
+.idea/*
 !.vscode/launch.json
 
 cypress/videos

@@ -1,10 +1,15 @@
 {% extends 'layouts/base.layout.njk' %}
 
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/warning-text/macro.njk" import govukWarningText %}
+
 {% set pageTitle = t.site_title %}
 {% set pageBreadcrumbItems = [
-    { text: t.breadcrumbs.home, url: '/' },
-    { text: t.breadcrumbs.payment_code, url: '/payment-code' },
-    { text: t.breadcrumbs.penalty_details, url: '/payment-code/' + paymentCode },
+    { text: t.breadcrumbs.home, href: '/' },
+    { text: t.breadcrumbs.payment_code, href: '/payment-code' },
+    { text: t.breadcrumbs.penalty_details, href: '/payment-code/' + paymentCode },
     { text: t.breadcrumbs.payment }
   ]
 %}
@@ -18,26 +23,26 @@
 {% endif %}
 
 {% block content %}
-  {% call components.gridRow() %}
-    {% call components.columnTwoThirds() %}
-      {% call components.form(action='/payment-code/'+ paymentCode + '/' + penaltyType + '/payment', method='POST')  %}
-        {{ components.heading(text=titleAndContinueButtonText, tag='h1', size='xlarge') }}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <form action="/payment-code/{{ paymentCode }}/{{ penaltyType }}/payment" method="post">
+        <h1 class="govuk-heading-xl">{{ titleAndContinueButtonText }}</h1>
         {# Payment summary table #}
-        <table>
-          <thead>
-            <tr>
-              <th>{{t.penalty_details.reference}}</th>
-              <th>{{t.penalty_details.amount}}</th>
-              <th>{{t.penalty_details.status}}</th>
+        <table class="govuk-table">
+          <thead class="govuk-table__head">
+            <tr class="govuk-table__row">
+              <th scope="col" class="govuk-table__header">{{ t.penalty_details.reference }}</th>
+              <th scope="col" class="govuk-table__header govuk-table__header--numeric">{{ t.penalty_details.amount }}</th>
+              <th scope="col" class="govuk-table__header">{{ t.penalty_details.status }}</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody class="govuk-table__body">
             {% for penalty in penaltyDetails %}
               {% set statusClass = 'confirmed' if penalty.status == 'PAID' else 'unconfirmed' %}
-              <tr>
-                <td>{{ penalty.formattedReference }}</td>
-                <td>&pound;{{ penalty.amount }}</td>
-                <td class="{{ statusClass }}">
+              <tr class="govuk-table__row">
+                <td class="govuk-table__cell">{{ penalty.formattedReference | escape }}</td>
+                <td class="govuk-table__cell govuk-table__cell--numeric">&pound;{{ penalty.amount | escape }}</td>
+                <td class="govuk-table__cell {{ statusClass }}">
                   <strong>
                     {{ t.penalty_details.status_paid if penalty.status == 'PAID' else t.penalty_details.status_unpaid }}
                   </strong>
@@ -45,43 +50,46 @@
               </tr>
             {% endfor %}
             {% if penaltyDetails.length > 1 %}
-              <tr>
-                <td>{{ t.penalty_details_page.amount_due }}</td>
-                <td><strong>&pound;{{ totalAmount if totalAmount else 'N/A' }}</strong></td>
-                <td></td>
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header">{{ t.penalty_details_page.amount_due }}</th>
+                <td class="govuk-table__cell govuk-table__cell--numeric"><strong>&pound;{{ totalAmount if totalAmount else 'N/A' }}</strong></td>
+                <td class="govuk-table__cell"></td>
               </tr>
             {% endif %}
           </tbody>
         </table>
 
         {% if paymentStatus != 'PAID' %}
-          <br />
-          <div class="panel panel-border-wide">{{ t.penalty_details_page.gdpr_notification }}</div>
+          {{ govukInsetText({
+            text: t.penalty_details_page.gdpr_notification
+          }) }}
           {% if paymentPending %}
-            <p>
-              {{ components.notice(text=t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes)) }}
-            </p>
+            {{ govukWarningText({
+              text: t.payment_pending_page.pending_notice.replace('MINUTES', pendingMinutes),
+              iconFallbackText: "Warning"
+            }) }}
           {% endif %}
-          <br />
-          {{ components.button(text=titleAndContinueButtonText, type="submit", disabled=paymentPending) }}
-          <p>
-            <details>
-              <summary><span class="summary">{{ t.penalty_details_page.payment_assistance_panel_title }}</span></summary>
-              <div class="panel panel-border-narrow">
-                <p>{{ t.penalty_details_page.call_dvsa }}</p>
-                <p>
-                  <a href="https://www.gov.uk/call-charges" target="_blank">
-                    {{ t.penalty_details_page.call_charges_link }}
-                  </a>
-                </p>
-                <p>{{ t.penalty_details_page.info_needed }}</p>
-                </p>
-              </div>
-            </details>
-          </p>
+          {{ govukButton({
+            text: titleAndContinueButtonText,
+            type: "submit",
+            disabled: paymentPending
+          }) }}
+          {% set assistanceHtml %}
+            <p class="govuk-body">{{ t.penalty_details_page.call_dvsa }}</p>
+            <p class="govuk-body">
+              <a href="https://www.gov.uk/call-charges" target="_blank" rel="noopener noreferrer" class="govuk-link">
+                {{ t.penalty_details_page.call_charges_link }}
+              </a>
+            </p>
+            <p class="govuk-body">{{ t.penalty_details_page.info_needed }}</p>
+          {% endset %}
+          {{ govukDetails({
+            summaryText: t.penalty_details_page.payment_assistance_panel_title,
+            html: assistanceHtml
+          }) }}
         {% endif %}
-      {%- endcall %}
-    {%- endcall %}
-  {%- endcall %}
+      </form>
+    </div>
+  </div>
 
 {% endblock %}

@@ -1,9 +1,17 @@
 ignore:
- SNYK-JS-INFLIGHT-6095116:
+  SNYK-JS-INFLIGHT-6095116:
     - archiver@5.3.1 > archiver-utils@2.1.0 > glob@7.2.3 > inflight@1.0.6:
         reason: No fix
         expires: '2024-12-19T20:36:54.553Z'
-SNYK-JS-CROSSSPAWN-8303230:
+  SNYK-JS-CROSSSPAWN-8303230:
     - cross-spawn@6.0.5:
         reason: No fix
         expires: '2024-12-19T20:36:54.553Z'
+  SNYK-JS-GLOB-22112102:
+    - '*':
+        reason: Build-only Archiver dependency used with fixed generated directories; not included in the Lambda bundle.
+        expires: '2027-03-18T08:53:35.732Z'
+  SNYK-JS-MINIMATCH-22111072:
+    - '*':
+        reason: Build-only Archiver dependency used with fixed generated directories; not included in the Lambda bundle.
+        expires: '2027-03-18T08:53:35.732Z'

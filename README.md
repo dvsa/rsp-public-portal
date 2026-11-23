@@ -1,34 +1,58 @@
 # RSP Public Portal
 Public portal for Roadside Payments Project, aiming to enable drivers and/or their operators to pay penalty fines issued by DVSA.
 
-This project is a NodeJS + Express based application and is meant to be served through a serverless environment (AWS Lambda + S3 Bucket + DynamoDB + API Gateway).  
+This is a server-rendered Express and Nunjucks application, exposed through an
+API Gateway REST API and a single Lambda proxy.
 
-Work in progress.
+## GOV.UK Frontend and Nunjucks
 
-## DVSA Front-end Kit
-This project uses the [DVSA front-end](https://dvsa-front-end.herokuapp.com/) kit, which means all view templates/macros are available and should be used whenever possible to ensure maximum consistency accross DVSA projects.
+The portal uses [`govuk-frontend`](https://github.com/alphagov/govuk-frontend)
+for GDS styling and [GOV.UK Design System](https://design-system.service.gov.uk/)
+components, with Nunjucks templates rendered on the server by Express.
 
-More information about this available on [github](https://github.com/dvsa/front-end)
+- Page templates are in `src/server/views`. The shared
+  `layouts/base.layout.njk` extends `govuk/template.njk` and includes the portal's
+  header, footer and cookie banner.
+- Import GOV.UK Nunjucks macros from `govuk/components/<component>/macro.njk`.
+  Existing pages use components such as `govukInput`, `govukButton`,
+  `govukErrorSummary` and `govukBreadcrumbs`.
+- `src/public/scss/index.scss` imports the GOV.UK Frontend Sass. Webpack compiles
+  it to `dist/public/all.css` and copies the GOV.UK JavaScript, fonts, images and
+  component templates into the build output.
+
+Use the Design System's components, styles and patterns wherever appropriate
+rather than duplicating their markup or styling. Follow its accessibility
+guidance and retain translated content from `src/server/i18n` when changing views.
 
 ### Running the app locally 
 
 To run this project locally, clone the repository and the instructions below:
 
-1. `nvm use 16.16`
-Set Node to the required version
+1. `nvm use`
+Selects Node 24 based on the `.nvmrc` file.
 
 2. `npm install` 
 Installs all project dependencies
 
 3. `npm run build`
-Builds the dvsa-frontend specific resources and also the server related code.
-This will create a `build/` directory with the transpiled code and required assets as well
+Builds the GOV.UK Frontend styles and browser assets, and the server code.
+This creates Babel output in `build/server` and Webpack output in `dist/`,
+including public assets, views and translations.
 
 4. `npm run start-server`
-Runs the server from the `build/` directory. Note that this will use the Views and Assets that sit within the `build/` directory. There is no automatic reloading (on source code change) so for development purposes please use the next command instead.
+Builds and runs `build/server/app.local.js`. The local app adds static serving
+from the configured asset path; run the full build first. There is no automatic
+reloading.
 
 5. `npm run start-dev-server`
 Runs the application in development mode, meaning that source code changes will trigger a rebuild and server reload. 
+
+Startup loads `.env` from the working directory. Do not copy real configuration
+or credentials into source control. With `USE_SECRETS_MANAGER=true`, startup uses
+`REGION`, `SECRETS_MANAGER_SECRET_NAME` and the AWS SDK's normal credential chain.
+Select the intended AWS profile explicitly. If its SSO session expires, run
+`aws sso login --profile <your-profile>`, then restart the app (or enter `rs` in
+nodemon).
 
 ### Testing
 
@@ -38,12 +62,54 @@ or
 `test:watch`
 to re-run the tests automatically whenever source code changes
 
+`npm run test:coverage`
+
+`npm run test:integration` is a separate manual, local-only HTTP suite. See
+[`integration/README.md`](integration/README.md) for scenarios, safety restrictions
+and ignored JSON/HTML reports. Stubbed payment responses do not prove real
+payment persistence.
+
 ### Distribution
 
 Run the following command to build, bundle and package the required artifacts.
 `npm run package`
 
-The resulting archive (package.zip) will be available on the `dist/` directory and ready for deployment.
+The resulting archive (`package.zip`) is written to `dist/` directory and ready for deployment.
+
+When a release is created on `master`, the release workflow builds that revision and
+uploads its Lambda ZIP and the assets extracted from that same ZIP to the
+artefacts bucket. Assets are stored under `public-portal/public-web-assets/release-<tag>/public/`;
+both the ZIP and assets are tagged for promotion. This does not update the live
+assets bucket or deploy the release.
+
+For CI branches that upload a ZIP, CI also uploads its assets to
+`public-portal/public-web-assets/<branch-name>/public/`, replacing removed files in that prefix.
+Feature and fix branch assets have the same seven-day lifecycle tag as their ZIP.
+The GitHub AWS role needs permission to list, upload, tag and delete objects in
+that branch prefix. CI does not update the nonprod Lambda.
+
+Each uploaded `public/` folder includes a generated `version.md`: its content is
+the branch name for CI, or the release name (for example `release-v4.1.0`)
+for a release. This file is uploaded alongside the assets, not added to the ZIP.
+The upload workflows run `scripts/upload-assets.ts` with Node.js 24, `unzip` and
+the AWS CLI.
+
+The manual **Deploy Lambda and Assets** workflow has separate checkboxes for
+deploying assets and the Lambda to nonprod; both are unchecked by default.
+When both are selected, the Lambda is updated only after the assets deploy
+successfully. Asset deployment checks the selected ZIP and `version.md`, copies
+the matching assets to the nonprod bucket's `public/` prefix and removes files
+absent from that build. The GitHub AWS role needs source read and destination
+list, write and delete permissions. The workflow does not invalidate CloudFront;
+cached assets can remain visible until they expire.
+
+Before deploying the Node 24 bundle, confirm the Lambda runtime is `nodejs24.x`
+in the infrastructure configuration for each target environment and that the
+deployed handler matches `app.handler`. The local `serverless.yml` instead
+references `handler.handler`. Changing that YAML does not change deployed
+infrastructure: the manual workflow's Lambda update only calls `update-function-code`.
+Coordinate the runtime change and rollback through the infrastructure owner;
+do not deploy Node-24-targeted output to an older runtime.
 
 ### Git Hooks
 

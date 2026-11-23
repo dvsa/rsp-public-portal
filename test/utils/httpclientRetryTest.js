@@ -5,13 +5,14 @@ import HttpClient from '../../src/server/utils/httpclient';
 
 describe('httpclient', () => {
   let httpClient;
+  let consoleErrorStub;
 
   before(() => {
-    sinon.stub(console, 'error');
+    consoleErrorStub = sinon.stub(console, 'error');
   });
 
   after(() => {
-    sinon.reset();
+    consoleErrorStub.restore();
   });
 
   beforeEach(() => {

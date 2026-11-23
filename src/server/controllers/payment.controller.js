@@ -14,12 +14,9 @@ const cpmsService = new CpmsService(config.cpmsServiceUrl());
 
 const getPenaltyOrGroupDetails = (req) => {
   const paymentCode = req.params.payment_code;
-  if (paymentCode) {
-    return paymentCode.length === 16
-      ? penaltyService.getByPaymentCode(paymentCode)
-      : penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
-  }
-  return penaltyService.getById(req.params.penalty_id);
+  return paymentCode.length === 16
+    ? penaltyService.getByPaymentCode(paymentCode)
+    : penaltyGroupService.getByPenaltyGroupPaymentCode(paymentCode);
 };
 
 const redirectForSinglePenalty = (req, res, penaltyDetails, redirectHost) => {

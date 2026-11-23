@@ -5,9 +5,6 @@ on:
     branches:
       - master
 
-env:
-  COPY_SOURCE: master.zip
-
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -18,44 +15,56 @@ jobs:
       tag_name: ${{ steps.release.outputs.tag_name }}
       release_created: ${{ steps.release.outputs.release_created }}
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: googleapis/release-please-action@v5
         id: release
         with:
           release-type: node
-          package-name: ${{ github.event.repository.name }}
-  lambdas:
+          include-component-in-tag: false
+  build-release:
     if: ${{ needs.release-please.outputs.release_created }}
     needs: release-please
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.json.outputs.MATRIX }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: Read in lambdas names from JSON
-        id: json
-        run: |
-          echo "MATRIX=$(jq -c . < ./lambdas.json)" >> $GITHUB_OUTPUT
+    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v7
+    with:
+      upload-artifact: true
+      node-version: 24.x
+      npm-version: 11.x
+
   promote:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
-    needs: [lambdas, release-please]
+    needs: [build-release, release-please]
     permissions:
+      contents: read
       id-token: write
-    strategy:
-      matrix:
-        lambdaName: ${{ fromJSON(needs.lambdas.outputs.matrix).lambdas }}
     steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24.x
+      - name: Test asset uploader
+        run: node --test test/scripts/upload-assets.test.cjs
+      - name: Download release build
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: release-build
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.RSP_AWS_ACCOUNT }}:role/GithubActionsRole
           role-session-name: GithubActionsSession
           aws-region: ${{ secrets.RSP_AWS_REGION }}
-      - name: Upload to S3
-        run: >
-          aws s3api copy-object
-          --tagging-directive REPLACE
-          --tagging promote=YES
-          --copy-source ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}/${{ vars.S3_KEY_PATH }}/${{ matrix.lambdaName }}/${{ env.COPY_SOURCE }}
-          --key ${{ vars.S3_KEY_PATH }}/${{ matrix.lambdaName }}/release-${{ needs.release-please.outputs.tag_name }}.zip
-          --bucket ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}
+      - name: Upload matching release assets and Lambda archive
+        env:
+          RELEASE_BUCKET: ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+          LAMBDA_KEY_PATH: ${{ vars.S3_KEY_PATH }}
+        run: |
+          node scripts/upload-assets.ts release-build/package.zip "$RELEASE_BUCKET" "$RELEASE_TAG" --release
+          aws s3api put-object \
+            --bucket "$RELEASE_BUCKET" \
+            --key "$LAMBDA_KEY_PATH/serveExpressApp/release-$RELEASE_TAG.zip" \
+            --body release-build/package.zip \
+            --content-type application/zip \
+            --tagging promote=YES \
+            --no-cli-pager > /dev/null

@@ -1,4 +1,4 @@
-name: Run Lambda Function Update
+name: Deploy Lambda and Assets
 on:
   workflow_dispatch:
     inputs:
@@ -47,17 +47,17 @@ jobs:
           ZIP_ARCHIVE: ${{ inputs.zip_archive }}
         run: node scripts/deploy-assets.ts "$ARTEFACTS_BUCKET" "$ZIP_ARCHIVE"
 
-  # Enable only after Terraform updates the nonprod Lambda runtime to Node.js 24.
-  # update-lambda-code:
-  #   uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v7
-  #   with:
-  #     environment: ${{ github.event.inputs.environment }}
-  #     lambda-function-name: rsp-nonprod-apis-public-portal-serveExpressApp
-  #     bucket-key: public-portal/serveExpressApp/${{ github.event.inputs.zip_archive }}
-  #   permissions:
-  #     id-token: write
-  #   secrets:
-  #     AWS_ROLE_TO_ASSUME_ARN: ${{ secrets.AWS_ROLE_TO_ASSUME_ARN }}
-  #     AWS_ACCOUNT: ${{ secrets.RSP_AWS_ACCOUNT }}
-  #     AWS_REGION: ${{ secrets.RSP_AWS_REGION }}
-  #     BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+  update-lambda-code:
+    needs: deploy-assets
+    uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v7
+    with:
+      environment: ${{ github.event.inputs.environment }}
+      lambda-function-name: rsp-nonprod-apis-public-portal-serveExpressApp
+      bucket-key: public-portal/serveExpressApp/${{ github.event.inputs.zip_archive }}
+    permissions:
+      id-token: write
+    secrets:
+      AWS_ROLE_TO_ASSUME_ARN: ${{ secrets.AWS_ROLE_TO_ASSUME_ARN }}
+      AWS_ACCOUNT: ${{ secrets.RSP_AWS_ACCOUNT }}
+      AWS_REGION: ${{ secrets.RSP_AWS_REGION }}
+      BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}

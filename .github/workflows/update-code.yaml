@@ -12,23 +12,52 @@ on:
         required: true
         default: master.zip
         type: string
+      deploy_assets:
+        description: 'Deploy assets to nonprod'
+        required: true
+        default: false
+        type: boolean
+      deploy_lambda:
+        description: 'Deploy the Lambda to nonprod'
+        required: true
+        default: false
+        type: boolean
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Validate deployment selection
+        env:
+          SELECTED_ENVIRONMENT: ${{ inputs.environment }}
+          ZIP_ARCHIVE: ${{ inputs.zip_archive }}
+          DEPLOY_ASSETS: ${{ inputs.deploy_assets }}
+          DEPLOY_LAMBDA: ${{ inputs.deploy_lambda }}
+        run: |
+          if [[ "$SELECTED_ENVIRONMENT" != "nonprod" ]]; then
+            echo "::error::This workflow only deploys to nonprod."
+            exit 1
+          fi
+          if [[ "$DEPLOY_ASSETS" != "true" && "$DEPLOY_LAMBDA" != "true" ]]; then
+            echo "::error::Select assets, Lambda, or both."
+            exit 1
+          fi
+          if [[ ! "$ZIP_ARCHIVE" =~ ^[A-Za-z0-9._-]+\.zip$ ]] ||
+             [[ "${ZIP_ARCHIVE%.zip}" == "." || "${ZIP_ARCHIVE%.zip}" == ".." ]]; then
+            echo "::error::Enter a ZIP filename without a path."
+            exit 1
+          fi
+
   deploy-assets:
+    needs: validate
+    if: ${{ inputs.deploy_assets }}
     runs-on: ubuntu-latest
     environment: nonprod
     permissions:
       contents: read
       id-token: write
     steps:
-      - name: Restrict deployment to nonprod
-        env:
-          SELECTED_ENVIRONMENT: ${{ inputs.environment }}
-        run: |
-          if [ "$SELECTED_ENVIRONMENT" != "nonprod" ]; then
-            echo "::error::This workflow only deploys assets to nonprod."
-            exit 1
-          fi
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v6
         with:
@@ -48,7 +77,8 @@ jobs:
         run: node scripts/deploy-assets.ts "$ARTEFACTS_BUCKET" "$ZIP_ARCHIVE"
 
   update-lambda-code:
-    needs: deploy-assets
+    needs: [validate, deploy-assets]
+    if: ${{ !cancelled() && needs.validate.result == 'success' && inputs.deploy_lambda && (!inputs.deploy_assets || needs.deploy-assets.result == 'success') }}
     uses: dvsa/.github/.github/workflows/update-lambda-function.yaml@v7
     with:
       environment: ${{ github.event.inputs.environment }}

@@ -76,6 +76,18 @@ Run the following command to build, bundle and package the required artifacts.
 
 The resulting archive (`package.zip`) is written to `dist/` directory and ready for deployment.
 
+When a release is created on `master`, the release workflow builds that revision and
+uploads its Lambda ZIP and the assets extracted from that same ZIP to the
+artefacts bucket. Assets are stored under `public-web-assets/release-<tag>/public/`;
+both the ZIP and assets are tagged for promotion. This does not update the live
+assets bucket or deploy the release.
+
+For CI branches that upload a ZIP, CI also uploads its assets to
+`public-web-assets/<branch-name>/public/`, replacing removed files in that prefix.
+Feature and fix branch assets have the same seven-day lifecycle tag as their ZIP.
+The GitHub AWS role needs permission to list, upload, tag and delete objects in
+that branch prefix.
+
 Before deploying the Node 24 bundle, confirm the Lambda runtime is `nodejs24.x`
 in the infrastructure configuration for each target environment and that the
 deployed handler matches `app.handler`. The local `serverless.yml` instead

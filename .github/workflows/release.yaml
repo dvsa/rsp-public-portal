@@ -5,9 +5,6 @@ on:
     branches:
       - master
 
-env:
-  COPY_SOURCE: master.zip
-
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -23,39 +20,48 @@ jobs:
         with:
           release-type: node
           include-component-in-tag: false
-  lambdas:
+  build-release:
     if: ${{ needs.release-please.outputs.release_created }}
     needs: release-please
-    runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.json.outputs.MATRIX }}
-    steps:
-      - uses: actions/checkout@v7
-      - name: Read in lambdas names from JSON
-        id: json
-        run: |
-          echo "MATRIX=$(jq -c . < ./lambdas.json)" >> "$GITHUB_OUTPUT"
+    uses: dvsa/.github/.github/workflows/nodejs-build.yaml@v7
+    with:
+      upload-artifact: true
+      node-version: 24.x
+      npm-version: 11.x
+
   promote:
     runs-on: ubuntu-latest
     if: ${{ needs.release-please.outputs.release_created }}
-    needs: [lambdas, release-please]
+    needs: [build-release, release-please]
     permissions:
+      contents: read
       id-token: write
-    strategy:
-      matrix:
-        lambdaName: ${{ fromJSON(needs.lambdas.outputs.matrix).lambdas }}
     steps:
+      - uses: actions/checkout@v7
+      - name: Test asset uploader
+        run: python3 -m unittest discover -s test/scripts -p '*_test.py'
+      - name: Download release build
+        uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: release-build
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: arn:aws:iam::${{ secrets.RSP_AWS_ACCOUNT }}:role/GithubActionsRole
           role-session-name: GithubActionsSession
           aws-region: ${{ secrets.RSP_AWS_REGION }}
-      - name: Upload to S3
-        run: >
-          aws s3api copy-object
-          --tagging-directive REPLACE
-          --tagging promote=YES
-          --copy-source ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}/${{ vars.S3_KEY_PATH }}/${{ matrix.lambdaName }}/${{ env.COPY_SOURCE }}
-          --key ${{ vars.S3_KEY_PATH }}/${{ matrix.lambdaName }}/release-${{ needs.release-please.outputs.tag_name }}.zip
-          --bucket ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}
+      - name: Upload matching release assets and Lambda archive
+        env:
+          RELEASE_BUCKET: ${{ secrets.RSP_NONPROD_S3_BUCKET_NAME }}
+          RELEASE_TAG: ${{ needs.release-please.outputs.tag_name }}
+          LAMBDA_KEY_PATH: ${{ vars.S3_KEY_PATH }}
+        run: |
+          python3 scripts/upload-assets.py release-build/package.zip "$RELEASE_BUCKET" "$RELEASE_TAG" --release
+          aws s3api put-object \
+            --bucket "$RELEASE_BUCKET" \
+            --key "$LAMBDA_KEY_PATH/serveExpressApp/release-$RELEASE_TAG.zip" \
+            --body release-build/package.zip \
+            --content-type application/zip \
+            --tagging promote=YES \
+            --no-cli-pager > /dev/null

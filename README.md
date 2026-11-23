@@ -94,6 +94,14 @@ for a release. This file is uploaded alongside the assets, not added to the ZIP.
 The upload workflows run `scripts/upload-assets.ts` with Node.js 24, `unzip` and
 the AWS CLI.
 
+The manual **Run Lambda Function Update** workflow currently deploys only the
+selected ZIP's matching assets to the nonprod assets bucket's `public/` prefix.
+It checks the ZIP and `version.md`, copies the assets and removes files absent
+from the selected build. The GitHub AWS role needs source read and destination
+list, write and delete permissions. The workflow does not invalidate CloudFront;
+cached assets can remain visible until they expire. Its Lambda update is
+commented out until the nonprod runtime is updated to Node.js 24.
+
 Before deploying the Node 24 bundle, confirm the Lambda runtime is `nodejs24.x`
 in the infrastructure configuration for each target environment and that the
 deployed handler matches `app.handler`. The local `serverless.yml` instead

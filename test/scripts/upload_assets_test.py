@@ -30,8 +30,8 @@ class UploadAssetsTest(unittest.TestCase):
         self.calls.append(args)
         if args[0] == "list-objects-v2":
             return json.dumps({"Contents": [
-                {"Key": "public-web-assets/feat-node24-upgrade/public/old.js"},
-                {"Key": "public-web-assets/feat-node24-upgrade/public/all.css"},
+                {"Key": "public-portal/public-web-assets/feat-node24-upgrade/public/old.js"},
+                {"Key": "public-portal/public-web-assets/feat-node24-upgrade/public/all.css"},
             ]})
         if args[0] == "put-object":
             self.assertEqual(Path(args[args.index("--body") + 1]).read_bytes(), b"stylesheet")
@@ -41,13 +41,14 @@ class UploadAssetsTest(unittest.TestCase):
         self.archive({"public/all.css": b"stylesheet", "app.js": b"handler"})
         with patch.object(upload_assets, "aws", self.aws):
             upload_assets.upload_assets(self.archive_path, "bucket", "feat-node24-upgrade", False)
+        self.assertIn("public-portal/public-web-assets/feat-node24-upgrade/public/", self.calls[0])
         put = self.calls[1]
-        self.assertIn("public-web-assets/feat-node24-upgrade/public/all.css", put)
+        self.assertIn("public-portal/public-web-assets/feat-node24-upgrade/public/all.css", put)
         self.assertIn("lifecycle_subject=true", put)
         self.assertIn("text/css", put)
         self.assertEqual(self.calls[2], (
             "delete-object", "--bucket", "bucket", "--key",
-            "public-web-assets/feat-node24-upgrade/public/old.js",
+            "public-portal/public-web-assets/feat-node24-upgrade/public/old.js",
         ))
 
     def test_release_upload_never_lists_or_deletes_branch_objects(self):
@@ -55,7 +56,7 @@ class UploadAssetsTest(unittest.TestCase):
         with patch.object(upload_assets, "aws", self.aws):
             upload_assets.upload_assets(self.archive_path, "bucket", "v4.1.0", True)
         self.assertEqual(len(self.calls), 1)
-        self.assertIn("public-web-assets/release-v4.1.0/public/all.css", self.calls[0])
+        self.assertIn("public-portal/public-web-assets/release-v4.1.0/public/all.css", self.calls[0])
         self.assertIn("promote=YES", self.calls[0])
 
     def test_empty_or_invalid_archive_does_not_remove_objects(self):

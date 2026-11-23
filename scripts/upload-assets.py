@@ -23,7 +23,7 @@ def upload_assets(archive_path, bucket, name, release):
     if not release and not name.startswith(("feat-", "feature-", "fix-", "master")):
         raise ValueError("Invalid CI branch prefix")
 
-    prefix = f"public-web-assets/{'release-' if release else ''}{name}/public/"
+    prefix = f"public-portal/public-web-assets/{'release-' if release else ''}{name}/public/"
     tagging = "promote=YES" if release else (
         "lifecycle_subject=true" if name.startswith(("feat-", "feature-", "fix-"))
         else "lifecycle_subject=false"

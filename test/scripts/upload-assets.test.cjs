@@ -48,12 +48,12 @@ test('uploads branch assets and version, deleting only stale assets', () => {
   assert.equal(deletes[0][1][deletes[0][1].indexOf('--key') + 1], `${branchPrefix}old.js`);
 });
 
-test('uploads release assets and ZIP name without deleting objects', () => {
+test('uploads release assets and version without deleting objects', () => {
   const mock = mockCommands({ 'public/all.css': 'stylesheet' });
   uploadAssets('package.zip', 'bucket', 'v4.1.0', true, mock.run);
   assert.equal(mock.uploads.get(`${releasePrefix}all.css`).body, 'stylesheet');
   const version = mock.uploads.get(`${releasePrefix}version.md`);
-  assert.equal(version.body, 'release-v4.1.0.zip\n');
+  assert.equal(version.body, 'release-v4.1.0\n');
   assert.ok(version.args.includes('promote=YES'));
   assert.ok(!mock.calls.some(([, args]) => ['list-objects-v2', 'delete-object'].includes(args[1])));
 });

@@ -89,7 +89,7 @@ The GitHub AWS role needs permission to list, upload, tag and delete objects in
 that branch prefix.
 
 Each uploaded `public/` folder includes a generated `version.md`: its content is
-the branch name for CI, or the release ZIP name (for example `release-v4.1.0.zip`)
+the branch name for CI, or the release name (for example `release-v4.1.0`)
 for a release. This file is uploaded alongside the assets, not added to the ZIP.
 The upload workflows run `scripts/upload-assets.ts` with Node.js 24, `unzip` and
 the AWS CLI.

@@ -89,7 +89,7 @@ function uploadAssets(
     }
 
     const versionFile = path.join(directory, 'version.md');
-    fs.writeFileSync(versionFile, `${release ? 'release-' : ''}${name}${release ? '.zip' : ''}\n`);
+    fs.writeFileSync(versionFile, `${release ? 'release-' : ''}${name}\n`);
     aws('put-object', '--bucket', bucket, '--key', versionKey, '--body', versionFile,
       '--content-type', 'text/markdown', '--tagging', tagging);
   } finally {
